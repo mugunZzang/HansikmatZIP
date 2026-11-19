@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 이벤트 수정</title>
+    <!--/* Bootstrap CSS */--> 
+	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+	
+	<!--/* Font Awesome 6 Icons */-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+	
+	<!-- 분리한 커스텀 CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/event/eventEdit.css}"> 
+    
+	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="card event-form-card mx-auto">
+        <div class="card-body p-4 p-md-5">
+
+            <!-- 상단 타이틀 -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <div>
+                    <h4 class="fw-bold mb-1">이벤트 수정</h4>
+                    <p class="text-muted small mb-0">대표 이미지와 진행 기간, 상세 내용을 입력해 주세요.</p>
+                </div>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">이벤트 관리</span>
+            </div>
+
+            <form th:action="@{/admin/event/save}" method="post" enctype="multipart/form-data">
+
+                <!-- 상단: 이미지 업로드 + 기본 정보 -->
+                <div class="row g-4 mb-4">
+
+                    <!-- 왼쪽: 대표 이미지 -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">대표 이미지</label>
+                        <label for="eventImage" class="image-upload-box w-100 d-flex flex-column justify-content-center align-items-center text-center p-3">
+							
+							<img th:src="@{/images/jungyj/event/imageicon.png}"
+						         alt="이미지 업로드 아이콘"
+						         class="mb-2"
+						         style="width: 48px; height: 48px; object-fit: contain;">
+						         
+                            <span class="fw-semibold text-dark small">클릭하여 이미지 업로드</span>
+                            <span class="text-muted mt-1" style="font-size: 0.75rem;">JPG, PNG (최대 5MB)</span>
+                        </label>
+                        <input type="file" id="eventImage" name="eventImage" accept="image/*" class="d-none">
+                    </div>
+
+                    <!-- 오른쪽: 제목 + 기간 -->
+                    <div class="col-md-8 d-flex flex-column justify-content-between gap-3">
+                        <div>
+                            <label for="eventTitle" class="form-label fw-semibold">이벤트 제목 <span class="text-danger">*</span></label>
+                            <input type="text" id="eventTitle" name="title" class="form-control custom-input" placeholder="예) 11월 레시피 챌린지 이벤트">
+                        </div>
+
+                        <div>
+                            <label class="form-label fw-semibold">진행 기간 <span class="text-danger">*</span></label>
+                            <div class="row g-2 align-items-center">
+                                <div class="col">
+                                    <input type="date" id="startDate" name="startDate" class="form-control custom-input">
+                                </div>
+                                <div class="col-auto text-muted fw-bold">~</div>
+                                <div class="col">
+                                    <input type="date" id="endDate" name="endDate" class="form-control custom-input">
+                                </div>
+                            </div>
+                            <div class="form-text">종료일 자정(23:59) 기준으로 이벤트가 자동 마감됩니다.</div>
+                        </div>
+                        
+                        <div class="col-sm-4">
+				            <label for="winnerCount" class="form-label fw-semibold">당첨 인원 <span class="text-danger">*</span></label>
+				            <div class="input-group">
+				                <input type="number" id="winnerCount" name="winnerCount" class="form-control custom-input" min="1" placeholder="0">
+				                <span class="input-group-text bg-light">명</span>
+				            </div>
+				        </div>
+                    </div>
+
+                </div>
+
+                <!-- 중단: 스마트에디터 영역 -->
+                <div class="mb-4">
+                    <label for="smartEditorContent" class="form-label fw-semibold">상세 내용</label>
+                    <textarea id="smartEditorContent" name="content" class="form-control custom-input" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
+                </div>
+
+                <!-- 하단: 액션 버튼 바 -->
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <a th:href="@{/admin/event/list}" class="btn btn-light border px-3">목록으로</a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">수정하기</button>
+                        <button type="button" class="btn btn-outline-danger px-4" id="btnDelete">삭제</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

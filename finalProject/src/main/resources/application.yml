@@ -1,0 +1,116 @@
+spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백개수를 반드시 꼭 지켜야 한다.
+  application:
+    name: hansikmatzip
+
+  profiles: #실행환경(dev(개발),test(테스트),local(로컬),prod(운영))
+    active: local
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/  # classpath: 은 src/main/resources 경로를 말한다.
+    suffix: .html
+
+  datasource-final-orauser: 
+    driver-class-name: oracle.jdbc.OracleDriver
+    jdbcUrl: jdbc:oracle:thin:@//211.238.142.54:1521/XEPDB1 # 2개의 datasource 를 설정하려면 기본 스프링 부트 datasource 설정과는 다르게 url 로 되어있던 부분을 jdbcUrl 로 변경해야 한다. JavaConfig 를 통해 사용자가 직접 지정하여 데이터 소스를 구성할 경우 url 이 아닌 jdbcUrl 을 사용하기 때문이다.
+    username: FINAL_ORAUSER
+    password: bclass
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari: #커넥션풀 
+      minimum-idle: 5        # 최소 유휴(쓰지 않고 놀리는 것) 커넥션 (5개)
+      maximum-pool-size: 10  # 최대 커넥션 개수 설정 (10개). pool 의 커넥션 수가 옵션 값(10개)에 도달하게 되면 idle 인 상태는 존재하지 않게 된다.  
+      idle-timeout: 30000    # 30초 후 연결 실패시 예외 발생 
+      max-lifetime: 1800000  # 커넥션 풀에서 살아있을 수 있는 커넥션의 최대 수명시간 1,800초(30분). 30분 이상 유지된 커넥션은 제거  
+      connection-timeout: 30000 # 클라이언트가 pool에 connection을 요청하는데 기다리는 최대시간을 설정 30초
+
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect      # Spring Boot 3.2.1 버전 이후 부터는 JPA Provider가 적절한 Dialect 를 찾아내게 해주므로, 즉 설정을 명시하지 않아도 Oracle을 자동 인식해주므로 이를 명시적으로 지정하게 되면 오류가 발생하게 된다.  
+       #database-platform: org.hibernate.dialect.Oracle12cDialect  # Spring Boot 3.2.1 버전 이전까지 사용. 공식 18c 버전은 없음. oracle 12C 이후부터 통용됨.
+       #database-platform: org.hibernate.dialect.Oracle10gDialect  # Spring Boot 3.2.1 버전 이전까지 사용. oracle 11g 버전에서는 database-platform: org.hibernate.dialect.Oracle10gDialect
+       
+    hibernate:
+      ddl-auto: none
+         #ddl-auto: create  # 테이블이나 시퀀스 자동 생성이다. 테이블이나 시퀀스가 존재하지 않는 경우 최초실행시 에러발생함. 무시해도 됨. 테이블을 생성을 해야할 맨처음에만 create 하고 테이블과 관련된 DDL 작업이 없을 때는 none 으로 변경하자.   
+                  # create      -> 기존 테이블이나 시퀀스를 drop 한 후 다시 생성한다.                 [개발초기단계]
+                  # create-drop -> SessionFactory 가 시작될 때 테이블이나 시퀀스를 drop 및 생성한다.  [개발초기단계]
+                  #                SessionFactory 가 종료될 때 테이블을 테이블이나 시퀀스를 drop 한다. 
+                  #                in-memory DB인 H2 Database 의 기본값이다. 
+                  # update      -> 테이블의 내용이 변경된 경우 자동으로 변경된 것만 DDL 을 실행해준다.     [개발초기단계]  
+                  # validate    -> 엔티티와 테이블이 정상 매핑되었는지만 확인.                         [개발초기단계] 또는 [테스터서버]
+                  # none        -> 아무것도 실행하지 않는다.                                       [배포운영단계]          
+                  # !!!! 실제 배포운영시에는 ddl-auto: none 으로만 해야 한다. 
+                  # !!!! 실제 배포운영시에는 절대로 crate, create-drop, update, validate 를 사용하면 안된다. !!!! 
+         #naming:
+           #physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            # JPA 엔티티 클래스의 필드 이름을 실제 DB 컬럼명 매핑 방식으로 지정함.
+            # Spring Boot는 기본적으로 필드명에 카멜 표기를 사용하면 DB 컬럼명을 스네이크 표기(언더스코어)로 변환함. (ex. 필드명 userName → 컬럼명 user_name).
+            # 위와 같이 자동 변환을 해주는 기본 설정을 사용하지 않고, 필드명을 그대로 DB 컬럼명으로 사용하겠다는 설정임.
+            # 예를 들어, 필드명 userName 은 DB 컬럼명도 userName 그대로 사용하겠다는 말임.
+
+    properties:
+      hibernate:
+        '[show_sql]': true         
+        '[format_sql]': true
+        '[use_sql_comments]': true
+            # '[show_sql]': true 는 사용되는 SQL문(JPQL)을 콘솔에 출력 해줌 
+            # '[format_sql]': true 는 가독성이 좋도록 1줄로 되어진 SQL문(JPQL)을 탭이나 줄바꿈을 하여 보여줌 
+            # '[use_sql_comments]': true 는 사용자 주석문을 보여줌 
+
+    open-in-view: false # 지연 로딩(Lazy Loading) 사용여부를 결정하는 것임. 기본값은 true 로 지연 로딩(Lazy Loading)을 하는 것이다. 실무에서는 성능 최적화와 커넥션 관리를 위해 이 옵션을 false로 설정하는 것을 권장한다. 
+
+
+  messages: #메시지(파일이 여러개일 경우 ,로 구분)
+    basename: messages.validation
+    encoding: UTF-8
+
+  devtools: #View reload
+    livereload:
+      enabled: true
+
+    restart: #컨트롤러, 모델단이 바뀌었을 때 프로젝트 재시작(reload) 설정 (정확히는 classpath에 있는 모든 파일)
+      enabled: true #재시작(reload) 함
+
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true #http 인코딩 지원을 활성화할지 여부
+      force: true #post 방식으로 전송했을때 한글데이터가 안깨지도록 함.
+
+    multipart:
+      max-file-size: 5MB     # 파일 업로드 용량제한 설정하기. 파일 업로드 용량을 설정하지 않으면 기본값은 1048576 bytes (1MB)으로 된다.
+      max-request-size: 12MB  # 파일 및 파일을 제외한 input 태그값 업로드 용량제한 설정하기. 업로드 용량을 설정하지 않으면 기본값은 1048576 bytes (1MB)으로 된다.
+
+
+mybatis: #mybatis 설정
+  mapper-locations: classpath:mybatis/mapper/**/*.xml   # classpath:는 src/main/resources 내의 해당 경로를 탐색한다.
+
+
+logging: #로그 지정
+  level:
+    #root: error
+    '[com.spring.app]': debug  #com.spring.app 패키지와 그 하위 패키지에서 발생하는 모든 로그 중 debug 레벨 이상을 출력하는 뜻이다. 반드시 한칸 공백이 있어야 한다. 
+
+
+server:
+  port: 8000
+  servlet:
+    context-path: /hansikmatzip
+                                 # context-path 를 /myspringboot 으로 주었으므로 Boot Dashboard 에 가서 myspringboot 에 마우스 우측클릭 Show Properties 에 클릭하여 General 에서 Path: 란에 myspringboot 을 입력해준다.  
+  tomcat:
+    max-part-count: 30  # 폼 태그에 들어올 수 있는 파라미터 개수 및 파일의 총 개수는 최대 30개. -1 로 해주면 무제한임.
+    relaxed-query-chars: "<,>,[,\\,],^,`,{,|,}"  # URL 요청의 쿼리 스트링(Query String)에 포함된 특정 특수문자들 중 톰캣(Tomcat) 서버가 예외적으로 오류없이 허용해 줄 특수문자 목록들을 설정해주는 것.
+                                                 # URL에서 ?key=value 형태로 전달되는 쿼리 스트링에는 원래 RFC 7230 및 RFC 3986 규격에 따라 허용되지 않는 엄격한 특수문자들이 존재한다. 
+                                                 # 톰캣은 보안상의 이유(HTTP Request Smuggling, XSS 방지 등)로 규격을 위반한 특수문자가 URL에 들어가면 HTTP 400 Bad Request 오류를 발생시키며 요청을 차단한다.
+
+file:
+  profileimage-dir: file_profileimage               # 프로필 이미지 업로드를 위한 폴더
+  qnaimage-dir: file_qnaimage                       # QnA 이미지 업로드를 위한 폴더
+  eventimageimage-dir: file_eventimageimage         # 이벤트 배너 이미지 업로드를 위한 폴더
+  reviewimage-dir: file_reviewimage                 # 리뷰 이미지 업로드를 위한 폴더
+  recipeimage-dir: file_recipeimage                 # 레시피 대표 이미지 업로드를 위한 폴더
+  rcpfinishedimage-dir: file_rcpfinishedimage			  # 레시피 완성 이미지 업로드를 위한 폴더
+  cookorderimage-dir: file_cookorderimage           # 요리 순서 이미지 업로드를 위한 폴더
+
+
+jwt:
+  secret: ec1b11ccfc94cec73cb1a7f3d4d87a6e938a781727be1657c65f25e83a478603

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 문의사항 목록</title>
+    <!--/* Bootstrap CSS */--> 
+	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+	
+	<!-- 분리한 커스텀 CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/qna/qna.css}">
+    
+	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+</head>
+<body>
+
+<div class="container mt-5">
+	<div class="qna-wrapper mx-auto">
+		<div class="d-flex justify-content-end align-items-center gap-4 bg-light border rounded px-3 py-2 mb-3 small">
+		    <div>
+		        <span class="text-muted me-1">답변 완료</span>
+		        <strong class="text-primary" id="completedCount">8</strong>건
+		    </div>
+		    <div class="vr"></div> <!-- Bootstrap 5 세로 구분선 -->
+		    <div>
+		        <span class="text-muted me-1">미답변</span>
+		        <strong class="text-danger" id="pendingCount">4</strong>건
+		    </div>
+		</div>
+		
+	    <!-- 1. 탭: 나중에 ?status=DONE / ?status=WAIT 같은 쿼리 파라미터로 분기하기 좋음 -->
+	    <ul class="nav nav-tabs mb-3">
+	        <li class="nav-item">
+	            <a class="nav-link active" aria-current="page" href="#">답변 미완료</a>
+	        </li>
+	        <li class="nav-item">
+	            <a class="nav-link" href="#">답변 완료</a>
+	        </li>
+	    </ul>
+	
+		<!-- ★ 탭과 아코디언 사이: 건수 요약 바 -->
+	
+	    <!-- 2. 목록이 비었을 때 보여줄 영역 (나중에 th:if="${#lists.isEmpty(...)}" 적용) -->
+	    <!--
+	    <div class="text-center py-5 text-muted border rounded">
+	        등록된 문의사항이 없습니다.
+	    </div>
+	    -->
+	
+	    <!-- 3. 문의내역 아코디언 (나중에 th:each="item, stat : ${inquiryList}" 반복) -->
+	    <div class="accordion" id="inquiryAccordion">
+	
+	        <!-- 반복될 아이템 1개 단위 (예시 1: 답변 미완료) -->
+	        <div class="accordion-item">
+	            <h2 class="accordion-header" id="heading1">
+	                <!-- 기본이 닫힘 상태면 collapsed 클래스 + aria-expanded="false" 필수 -->
+	                <button class="accordion-button collapsed" type="button"
+	                        data-bs-toggle="collapse" data-bs-target="#collapse1"
+	                        aria-expanded="false" aria-controls="collapse1">
+	                    <!-- Grid로 열 너비 맞추기 (me-3은 오른쪽 화살표 아이콘과 겹침 방지) -->
+	                    <div class="row w-100 align-items-center me-3">
+	                        <div class="col-auto">
+	                            <span class="badge rounded-pill bg-secondary">답변대기</span>
+	                        </div>
+	                        <div class="col text-truncate fw-bold">
+	                            문의 제목이 들어갈 자리입니다 (길면 말줄임 처리)
+	                        </div>
+	                        <div class="col-auto text-muted small">
+	                            작성자명
+	                        </div>
+	                        <div class="col-auto text-muted small">
+	                            2026-11-18 14:30
+	                        </div>
+	                    </div>
+	                </button>
+	            </h2>
+	
+	            <div id="collapse1" class="accordion-collapse collapse"
+	                 aria-labelledby="heading1" data-bs-parent="#inquiryAccordion">
+	                <div class="accordion-body">
+	                    <!-- 문의 상세 내용 -->
+	                    <div class="mb-3">
+	                        <p class="mb-2">여기에 사용자가 작성한 상세 문의 내용이 들어갑니다.</p>
+	                        <!-- 첨부 사진이 있을 때만 노출 (나중에 th:if로 제어) -->
+	                        <img src="#" alt="첨부 이미지" class="img-thumbnail" style="max-height: 200px;">
+	                    </div>
+	
+	                    <hr>
+	
+	                    <!-- 관리자 답변 작성 폼 (답변 미완료 상태일 때) -->
+	                    <form action="#" method="post">
+	                        <!-- 나중에 <input type="hidden" name="inquiryId" th:value="${item.id}"> 추가 -->
+	                        <div class="mb-2">
+	                            <label for="reply1" class="form-label fw-semibold">관리자 답변</label>
+	                            <textarea id="reply1" name="replyContent" class="form-control" rows="3" placeholder="답변 내용을 입력하세요."></textarea>
+	                        </div>
+	                        <div class="d-flex justify-content-end gap-2">
+	                            <button type="submit" class="btn btn-primary btn-sm">등록</button>
+	                            <button type="reset" class="btn btn-outline-secondary btn-sm">취소</button>
+	                        </div>
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	
+	        <!-- 반복될 아이템 (예시 2: 답변 완료 상태일 때의 모양 확인용 더미) -->
+	        <div class="accordion-item">
+	            <h2 class="accordion-header" id="heading2">
+	                <button class="accordion-button collapsed" type="button"
+	                        data-bs-toggle="collapse" data-bs-target="#collapse2"
+	                        aria-expanded="false" aria-controls="collapse2">
+	                    <div class="row w-100 align-items-center me-3">
+	                        <div class="col-auto">
+	                            <span class="badge rounded-pill bg-primary">답변완료</span>
+	                        </div>
+	                        <div class="col text-truncate fw-bold">
+	                            두 번째 문의 제목 예시
+	                        </div>
+	                        <div class="col-auto text-muted small">
+	                            홍길동
+	                        </div>
+	                        <div class="col-auto text-muted small">
+	                            2026-11-17 10:15
+	                        </div>
+	                    </div>
+	                </button>
+	            </h2>
+	
+	            <div id="collapse2" class="accordion-collapse collapse"
+	                 aria-labelledby="heading2" data-bs-parent="#inquiryAccordion">
+	                <div class="accordion-body">
+	                    <div class="mb-3">
+	                        <p class="mb-0">두 번째 문의 상세 내용입니다.</p>
+	                    </div>
+	
+	                    <!-- 답변 완료 상태일 때 보여줄 박스 (나중에 th:if로 답변 폼과 전환) -->
+	                    <div class="bg-light p-3 rounded border">
+	                        <div class="d-flex justify-content-between mb-1">
+	                            <span class="fw-semibold text-primary">관리자 답변</span>
+	                            <small class="text-muted">2026-11-17 11:00</small>
+	                        </div>
+	                        <p class="mb-0">등록된 답변 내용이 여기에 표시됩니다.</p>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+		    <!-- 4. 페이지네이션 -->
+	    <nav class="mt-4" aria-label="문의사항 페이지네이션">
+	        <ul class="pagination justify-content-center">
+	            <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
+	            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+	            <li class="page-item"><a class="page-link" href="#">2</a></li>
+	            <li class="page-item"><a class="page-link" href="#">3</a></li>
+	            <li class="page-item"><a class="page-link" href="#">다음</a></li>
+	        </ul>
+	    </nav>
+	    </div>
+	
+
+	</div>
+</div>	
+	
+</body>
+</html>

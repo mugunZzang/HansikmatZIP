@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 이벤트 목록</title>
+    <!--/* Bootstrap CSS */--> 
+	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+	
+	<!--/* Font Awesome 6 Icons */-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+	
+	<!-- 분리한 커스텀 CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/event/eventList.css}"> 
+    
+	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="event-list-wrapper mx-auto">
+
+        <!-- 상단 타이틀 + 등록 버튼 -->
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h4 class="fw-bold mb-1">이벤트 관리</h4>
+                <p class="text-muted small mb-0">진행 중인 이벤트와 참여자 신청 현황을 확인할 수 있습니다.</p>
+            </div>
+            <a th:href="@{/admin/event/register}" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+                <i class="fa-solid fa-plus me-1"></i> 이벤트 등록
+            </a>
+        </div>
+
+        <!-- 탭 바 -->
+        <ul class="nav event-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">
+                    현재 진행중인 이벤트
+                    <span class="badge rounded-pill bg-primary-subtle text-primary ms-1">2</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    종료된 이벤트
+                    <span class="badge rounded-pill bg-secondary-subtle text-secondary ms-1">5</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- 이벤트 목록 (나중에 th:each="event : ${eventList}" 반복 영역) -->
+        <div class="d-flex flex-column gap-3" id="eventList">
+
+            <!-- 이벤트 카드 1 -->
+            <div class="card event-item-card">
+                <div class="card-body p-3">
+                    <div class="row align-items-center g-3">
+
+                        <!-- 왼쪽: 배너 사진 (1200x630 비율: 240x126) -->
+                        <div class="col-12 col-md-auto">
+                            <a href="#" class="d-block event-thumb">
+                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="배너 사진">
+                            </a>
+                        </div>
+
+                        <!-- 가운데: D-Day 뱃지 + 제목 + 기간/당첨인원 -->
+                        <div class="col min-w-0">
+                            <div class="mb-2 d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1">D-2</span>
+                                <span class="text-muted small">
+                                    <i class="fa-solid fa-trophy text-warning me-1"></i>당첨 5명
+                                </span>
+                            </div>
+
+                            <a href="#" class="event-title-link text-decoration-none">
+                                <h5 class="fw-bold mb-2 text-truncate">어떤어떤 이벤트1</h5>
+                            </a>
+
+                            <div class="text-muted small">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                <span>2026.11.11 ~ 2027.01.15</span>
+                            </div>
+                        </div>
+
+                        <!-- 오른쪽: 신청현황 버튼 -->
+                        <div class="col-12 col-md-auto text-md-end">
+                            <a href="#" class="btn applicant-btn px-3 py-2 fw-semibold">
+                                <i class="fa-solid fa-users me-1 text-secondary"></i>
+                                신청현황 <span class="text-primary fw-bold ms-1">5</span>건
+                                <i class="fa-solid fa-chevron-right ms-2 small text-muted"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이벤트 카드 2 -->
+            <div class="card event-item-card">
+                <div class="card-body p-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-12 col-md-auto">
+                            <a href="#" class="d-block event-thumb">
+                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="배너 사진">
+                            </a>
+                        </div>
+                        <div class="col min-w-0">
+                            <div class="mb-2 d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill bg-success-subtle text-success px-2 py-1">D-15</span>
+                                <span class="text-muted small">
+                                    <i class="fa-solid fa-trophy text-warning me-1"></i>당첨 10명
+                                </span>
+                            </div>
+                            <a href="#" class="event-title-link text-decoration-none">
+                                <h5 class="fw-bold mb-2 text-truncate">어떤어떤 이벤트2</h5>
+                            </a>
+                            <div class="text-muted small">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                <span>2026.11.11 ~ 2027.01.15</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-auto text-md-end">
+                            <a href="#" class="btn applicant-btn px-3 py-2 fw-semibold">
+                                <i class="fa-solid fa-users me-1 text-secondary"></i>
+                                신청현황 <span class="text-primary fw-bold ms-1">3</span>건
+                                <i class="fa-solid fa-chevron-right ms-2 small text-muted"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 목록 비어있을 때 -->
+        <!--
+        <div class="card event-item-card text-center py-5 text-muted">
+            <i class="fa-regular fa-folder-open fs-2 mb-2 d-block"></i>
+            등록된 이벤트가 없습니다.
+        </div>
+        -->
+
+        <!-- 페이지네이션 -->
+        <nav class="mt-5" aria-label="이벤트 페이지네이션">
+            <ul class="pagination justify-content-center gap-1">
+                <li class="page-item disabled"><a class="page-link rounded" href="#">이전</a></li>
+                <li class="page-item active"><a class="page-link rounded" href="#">1</a></li>
+                <li class="page-item"><a class="page-link rounded" href="#">2</a></li>
+                <li class="page-item"><a class="page-link rounded" href="#">3</a></li>
+                <li class="page-item"><a class="page-link rounded" href="#">다음</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+</body>
+</html>

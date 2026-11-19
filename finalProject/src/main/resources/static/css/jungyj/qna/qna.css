@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+body {
+    background-color: #f4f6f9; /* 이벤트 페이지와 배경색도 통일 */
+}
+
+.qna-wrapper {
+    max-width: 1140px;
+}
+
+/* 아코디언 아이템 간격 및 개별 카드 스타일 */
+#inquiryAccordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 문의사항 사이 간격 */
+}
+
+#inquiryAccordion .accordion-item {
+    border: 1px solid var(--bs-border-color); /* 위쪽 테두리 복구 */
+    border-radius: 0.5rem;                    /* 모서리 둥글게 */
+    overflow: hidden;                         /* 내부 버튼이 둥근 모서리 밖으로 튀어나오지 않게 */
+}
+	

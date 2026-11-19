@@ -1,0 +1,8 @@
+spring.application.name=KoreanRecipeZIP
+
+spring.thymeleaf.cache=false
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+
+server.port=9080
+server.servlet.context-path=/KoreanRecipeZIP

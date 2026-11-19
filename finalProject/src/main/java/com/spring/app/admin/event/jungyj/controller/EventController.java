@@ -1,0 +1,56 @@
+package com.spring.app.admin.event.jungyj.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequestMapping(value="/admin/event")       // value 제거해도 상관 없음
+@RequiredArgsConstructor
+public class EventController {
+	
+	//============================================= 이벤트 등록 ==================================================
+	
+	@GetMapping("/register")
+	public ModelAndView register(ModelAndView mav) {
+		mav.setViewName("admin/jungyj/event/eventRegister");
+		//  src/main/resources/templates/admin/jungyj/event/eventRegister.html 페이지를 만들어야 한다.
+		return mav;
+	}
+	
+	
+	//============================================= 이벤트 목록 조회 ===============================================
+	
+	@GetMapping("/list")
+	public ModelAndView list(ModelAndView mav) {
+		mav.setViewName("admin/jungyj/event/eventList");
+		//  src/main/resources/templates/admin/jungyj/event/eventList.html 페이지를 만들어야 한다.
+		return mav;
+	}
+	
+	
+	//============================================== 이벤트 상세 페이지 =============================================
+	
+	@GetMapping("/detail")
+	public ModelAndView detail(ModelAndView mav) {
+		mav.setViewName("admin/jungyj/event/eventDetail");
+		//  src/main/resources/templates/admin/jungyj/event/eventDetail.html 페이지를 만들어야 한다.
+		return mav;
+	}
+	
+	
+	//================================================ 이벤트 수정 =================================================
+	
+	@GetMapping("/edit")
+	public ModelAndView edit(ModelAndView mav) {
+		mav.setViewName("admin/jungyj/event/eventEdit");
+		//  src/main/resources/templates/admin/jungyj/event/eventEdit.html 페이지를 만들어야 한다.
+		return mav;
+	}
+	
+	
+
+}
