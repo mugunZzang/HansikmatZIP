@@ -43,13 +43,11 @@
 	<div id="mycontainer">
 		
 
-		<div id="myheader" th:insert="~{fragment/header :: main_header}"></div>
+		<div id="myheader" th:insert="~{fragment/header :: adminheader}"></div>
 		
 
 		<div id="mycontent" th:insert="${content}"></div>
 		
-
-		<div id="myfooter" th:insert="~{fragment/footer :: footer}"></div>
 		
 		<!--/* 자바스크립트 인라인 */-->
         <script th:inline="javascript">
