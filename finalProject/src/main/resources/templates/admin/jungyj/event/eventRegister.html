@@ -15,7 +15,12 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/event/eventRegister.css}"> 
     
 	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
-
+	<script th:inline="javascript">
+	    const contextPath = /*[[@{/}]]*/ "/";
+	</script>
+	
+	<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jungyj/event/eventRegister.js}"></script>
 </head>
 <body>
 
@@ -32,7 +37,7 @@
                 <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">이벤트 관리</span>
             </div>
 
-            <form th:action="@{/admin/event/save}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/admin/event/register}" method="post" enctype="multipart/form-data">
 
                 <!-- 상단: 이미지 업로드 + 기본 정보 -->
                 <div class="row g-4 mb-4">
@@ -40,7 +45,7 @@
                     <!-- 왼쪽: 대표 이미지 -->
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">대표 이미지</label>
-                        <label for="eventImage" class="image-upload-box w-100 d-flex flex-column justify-content-center align-items-center text-center p-3">
+                        <label for="eventImage" class="image-upload-box position-relative overflow-hidden w-100 d-flex flex-column justify-content-center align-items-center text-center p-3">
 							
 							<img th:src="@{/images/jungyj/event/imageicon.png}"
 						         alt="이미지 업로드 아이콘"
@@ -49,26 +54,38 @@
 						         
                             <span class="fw-semibold text-dark small">클릭하여 이미지 업로드</span>
                             <span class="text-muted mt-1" style="font-size: 0.75rem;">JPG, PNG (최대 5MB)</span>
+                       
+                       		<!-- 박스 전체를 채울 미리보기 이미지 (처음엔 d-none으로 숨김) -->
+							<img id="previewImg"
+							         src=""
+							         alt="대표 이미지 미리보기"
+							         class="d-none position-absolute top-0 start-0 w-100 h-100"
+							         style="object-fit: cover;">
+							         
                         </label>
-                        <input type="file" id="eventImage" name="eventImage" accept="image/*" class="d-none">
+                        <input type="file" id="eventImage" name="eventImage" accept="image/*" class="d-none infoData">
+               			<span class="error">필수입력</span>
                     </div>
 
                     <!-- 오른쪽: 제목 + 기간 -->
                     <div class="col-md-8 d-flex flex-column justify-content-between gap-3">
                         <div>
                             <label for="eventTitle" class="form-label fw-semibold">이벤트 제목 <span class="text-danger">*</span></label>
-                            <input type="text" id="eventTitle" name="title" class="form-control custom-input" placeholder="예) 11월 레시피 챌린지 이벤트">
+                            <input type="text" id="eventTitle" name="title" class="form-control custom-input infoData" placeholder="예) 11월 레시피 챌린지 이벤트">
+               				<span class="error">필수입력</span>
                         </div>
 
                         <div>
                             <label class="form-label fw-semibold">진행 기간 <span class="text-danger">*</span></label>
                             <div class="row g-2 align-items-center">
                                 <div class="col">
-                                    <input type="date" id="startDate" name="startDate" class="form-control custom-input">
+                                    <input type="date" id="startDate" name="startDate" class="form-control custom-input infoData">
+               						<span class="error">필수입력</span>
                                 </div>
                                 <div class="col-auto text-muted fw-bold">~</div>
                                 <div class="col">
-                                    <input type="date" id="endDate" name="endDate" class="form-control custom-input">
+                                    <input type="date" id="endDate" name="endDate" class="form-control custom-input infoData">
+               						<span class="error">필수입력</span>
                                 </div>
                             </div>
                             <div class="form-text">종료일 자정(23:59) 기준으로 이벤트가 자동 마감됩니다.</div>
@@ -77,9 +94,10 @@
                         <div class="col-sm-4">
 				            <label for="winnerCount" class="form-label fw-semibold">당첨 인원 <span class="text-danger">*</span></label>
 				            <div class="input-group">
-				                <input type="number" id="winnerCount" name="winnerCount" class="form-control custom-input" min="1" placeholder="0">
+				                <input type="number" id="winnerCount" name="winnerCount" class="form-control custom-input infoData" min="1" placeholder="0">
 				                <span class="input-group-text bg-light">명</span>
 				            </div>
+				            <span class="error">필수입력</span>
 				        </div>
                     </div>
 
@@ -88,14 +106,15 @@
                 <!-- 중단: 스마트에디터 영역 -->
                 <div class="mb-4">
                     <label for="smartEditorContent" class="form-label fw-semibold">상세 내용</label>
-                    <textarea id="smartEditorContent" name="content" class="form-control custom-input" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
+                    <textarea id="smartEditorContent" name="content" class="form-control custom-input infoData" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
+               	    <span class="error">필수입력</span>
                 </div>
 
                 <!-- 하단: 액션 버튼 바 -->
                 <div class="d-flex justify-content-between align-items-center pt-4 border-top">
                     <a th:href="@{/admin/event/list}" class="btn btn-light border px-3">목록으로</a>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary px-4 fw-semibold">등록하기</button>
+                        <button type="button" id = "eventRegister"class="btn btn-primary px-4 fw-semibold">등록하기</button>
                         <button type="button" class="btn btn-outline-danger px-4" id="btnDelete">삭제</button>
                     </div>
                 </div>
