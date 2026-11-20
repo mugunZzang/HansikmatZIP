@@ -62,7 +62,7 @@ public class EventController {
 		
 		try {
 			eventService.eventRegister(eventDto, multipartFile);
-			mav.setViewName("admin/jungyj/event/eventList");
+			mav.setViewName("redirect:/admin/event/list");
 			//  src/main/resources/templates/admin/jungyj/event/eventList.html 페이지로 이동
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,24 +80,26 @@ public class EventController {
 	
 	@GetMapping("/list")
 	public String list(@RequestParam(name = "status", defaultValue = "ongoing") String status,     // 탭 조건,
-			                 ModelAndView mav,
-							 HttpServletRequest request,
-							 Model model) {
+					   HttpServletRequest request,
+					   Model model) {
 		
 		// GET 방식인데 검색어가 있으므로 사용자가 URL 주소에 검색어를 직접 입력하여 장난칠 수 있으므로 
 		// 이것을 방지하고자 Referer 를 사용하도록 한다.
+/*
 		String referer = request.getHeader("Referer");
 		if(referer == null) {
 			return "redirect:/index";
 		}
-
-		System.out.println("~~~확인용 status: " + status);
+*/
+		
+//		System.out.println("~~~확인용 status: " + status);
+		// ~~~확인용 status: ended
 		
 		List<EventDTO> eventList = new ArrayList<>();
 		
 		// 탭 조건
 		Map<String, String> paraMap = new HashMap<>();
-
+		paraMap.put("status", status);
 		
 		eventList = eventService.list(paraMap);
 		
@@ -111,6 +113,8 @@ public class EventController {
 */
 		model.addAttribute("eventList", eventList);
 		model.addAttribute("status", status);
+		model.addAttribute("ongoingCount", eventService.getOngoingCount());
+		model.addAttribute("endedCount", eventService.getEndedCount());
 		
 		return "admin/jungyj/event/eventList";
 		//  src/main/resources/templates/admin/jungyj/event/eventList.html 페이지를 만들어야 한다.

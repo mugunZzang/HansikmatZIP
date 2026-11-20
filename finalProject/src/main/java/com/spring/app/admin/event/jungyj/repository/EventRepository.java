@@ -30,8 +30,8 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
     List<Event> findByEventEnddateLessThanOrderByEventseqDesc(LocalDate today);
 
     // 3. 진행 중인 이벤트 개수
-    long countByEventEnddateGreaterThanEqual(LocalDate today);
+    int countByEventEnddateGreaterThanEqual(LocalDate today);
 
     // 4. 종료된 이벤트 개수
-    long countByEventEnddateLessThan(LocalDate today);
+    int countByEventEnddateLessThan(LocalDate today);
 }

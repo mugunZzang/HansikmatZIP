@@ -57,7 +57,16 @@
             </li>
         </ul>
 
-        <!-- 이벤트 목록 (나중에 th:each="event : ${eventList}" 반복 영역) -->
+		<!-- 목록 비어있을 때 -->
+		<div th:if="${#lists.isEmpty(eventList)}" class="card event-item-card text-center py-5 text-muted">
+		    <i class="fa-regular fa-folder-open fs-2 mb-2 d-block"></i>
+		    <span th:text="${status == 'ended'} ? '종료된 이벤트가 없습니다.' : '현재 진행중인 이벤트가 없습니다.'">
+		        등록된 이벤트가 없습니다.
+		    </span>
+		</div>
+		
+		
+        <!-- 이벤트 목록  -->
         <div class="d-flex flex-column gap-3" id="eventList">
 			<th:block th:if="${not #lists.isEmpty(eventList)}">
 				
@@ -65,16 +74,16 @@
 	                <div class="card-body p-3">
 	                    <div class="row align-items-center g-3">
 	
-	                        <!-- 왼쪽: 배너 사진 (1200x630 비율: 240x126) -->
+	                        <!-- 왼쪽: 배너 사진 -->
 							<div class="col-12 col-md-auto">
 							    <a th:href="@{/event/view(eventseq=${eventDto.eventseq})}" class="d-block event-thumb">
 							        
-							        <!-- 1. DB에 저장된 배너 이미지가 있을 때 -->
+							        <!-- DB에 저장된 배너 이미지가 있을 때 -->
 							        <img th:if="${not #strings.isEmpty(eventDto.event_image_filename)}"
 							             th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
 							             th:alt="${eventDto.event_subject}">
 							
-							        <!-- 2. 배너 이미지가 없을 때 (기본 아이콘) -->
+							        <!-- 배너 이미지가 없을 때 (기본 아이콘) -->
 							        <img th:unless="${not #strings.isEmpty(eventDto.event_image_filename)}"
 							             th:src="@{/images/jungyj/event/imageicon.png}"
 							             alt="배너 사진">

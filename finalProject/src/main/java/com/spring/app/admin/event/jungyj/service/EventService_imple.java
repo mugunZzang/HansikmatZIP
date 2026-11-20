@@ -1,11 +1,12 @@
 package com.spring.app.admin.event.jungyj.service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,11 +57,29 @@ public class EventService_imple implements EventService {
 	@Override
 	public List<EventDTO> list(Map<String, String> paraMap) {
 		
-		List<Event> eventList = eventRepository.findAll(Sort.by(Sort.Direction.DESC, "eventseq"));
+		String status = paraMap.get("status");
+		LocalDate today = LocalDate.now();
+		
+		List<Event> eventList;
+		if("ended".equals(status)) {
+			eventList = eventRepository.findByEventEnddateLessThanOrderByEventseqDesc(today);
+		} else {
+			eventList = eventRepository.findByEventEnddateGreaterThanEqualOrderByEventseqDesc(today);
+		}
 		
 		return eventList.stream()
 	            .map(event -> new EventDTO(event)) // event -> new EventDTO(event) 와 동일
 	            .toList();
+	}
+	
+	// 진행 중인 이벤트 개수
+	public int getOngoingCount() {
+	    return eventRepository.countByEventEnddateGreaterThanEqual(LocalDate.now());
+	}
+
+	// 종료된 이벤트 개수
+	public int getEndedCount() {
+	    return eventRepository.countByEventEnddateLessThan(LocalDate.now());
 	}
 	
 	
@@ -82,6 +101,8 @@ public class EventService_imple implements EventService {
 		
 		return fileName;
 	}
+
+
 
 	
 }
