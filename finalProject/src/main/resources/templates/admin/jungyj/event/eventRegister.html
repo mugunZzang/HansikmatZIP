@@ -71,7 +71,7 @@
                     <div class="col-md-8 d-flex flex-column justify-content-between gap-3">
                         <div>
                             <label for="eventTitle" class="form-label fw-semibold">이벤트 제목 <span class="text-danger">*</span></label>
-                            <input type="text" id="eventTitle" name="title" class="form-control custom-input infoData" placeholder="예) 11월 레시피 챌린지 이벤트">
+                            <input type="text" id="eventTitle" name="event_subject" class="form-control custom-input infoData" placeholder="예) 11월 레시피 챌린지 이벤트">
                				<span class="error">필수입력</span>
                         </div>
 
@@ -79,12 +79,12 @@
                             <label class="form-label fw-semibold">진행 기간 <span class="text-danger">*</span></label>
                             <div class="row g-2 align-items-center">
                                 <div class="col">
-                                    <input type="date" id="startDate" name="startDate" class="form-control custom-input infoData">
+                                    <input type="date" id="startDate" name="event_startdate" class="form-control custom-input infoData">
                						<span class="error">필수입력</span>
                                 </div>
                                 <div class="col-auto text-muted fw-bold">~</div>
                                 <div class="col">
-                                    <input type="date" id="endDate" name="endDate" class="form-control custom-input infoData">
+                                    <input type="date" id="endDate" name="event_enddate" class="form-control custom-input infoData">
                						<span class="error">필수입력</span>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@
                         <div class="col-sm-4">
 				            <label for="winnerCount" class="form-label fw-semibold">당첨 인원 <span class="text-danger">*</span></label>
 				            <div class="input-group">
-				                <input type="number" id="winnerCount" name="winnerCount" class="form-control custom-input infoData" min="1" placeholder="0">
+				                <input type="number" id="winnerCount" name="event_total_winners" class="form-control custom-input infoData" min="1" placeholder="0">
 				                <span class="input-group-text bg-light">명</span>
 				            </div>
 				            <span class="error">필수입력</span>
@@ -106,7 +106,7 @@
                 <!-- 중단: 스마트에디터 영역 -->
                 <div class="mb-4">
                     <label for="smartEditorContent" class="form-label fw-semibold">상세 내용</label>
-                    <textarea id="smartEditorContent" name="content" class="form-control custom-input infoData" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
+                    <textarea id="smartEditorContent" name="event_contents" class="form-control custom-input infoData" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
                	    <span class="error">필수입력</span>
                 </div>
 
