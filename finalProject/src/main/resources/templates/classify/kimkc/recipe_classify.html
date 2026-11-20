@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+<meta charset="UTF-8">
+<title>한식맛ZIP</title>
+
+
+<!--/* Bootstrap CSS */--> 
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+
+<!--/* Optional JavaScript */-->
+<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+  
+<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+<!-- 커스텀 css -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/kimkc/recipe/recipe_classify.css}"> 
+
+<link rel="stylesheet" href="">
+
+<style type="text/css"></style>
+
+<!--/* 
+      자바스크립트 인라인 
+      th:inline="javascript" 은 스크립트 태그 내에서 Thymeleaf 문법([[...]])을 해석할 수 있게 해주는 설정이다.
+      JavaScript 안에서 Thymeleaf 값을 넣을 때는 th:inline="javascript" 와 /*[[뭐뭐뭐]]*/ 구문을 사용해야 한다. 
+*/-->
+<script th:inline="javascript">
+/*<![CDATA[*/
+	$(function(){
+		
+		// 처음 화면 로딩하기(레시피 불러오기)
+		goSearch('전체', '전체', '전체', '전체', '전체', '전체', '전체', '전체');
+		
+		
+		// 검색 버튼 클릭 시
+		$('button#btn-search').on("click", function() {
+			const type = $('input:radio[name=cf_type]').val();
+			const main = $('input:radio[name=cf_main]').val();
+			const situation = $('input:radio[name=cf_situation]').val();
+			const how = $('input:radio[name=cf_how]').val();
+			const time = $('select#time').val();
+			const difficulty = $('select#difficulty').val();
+			const membercnt = $('select#membercnt').val();
+			const membership = $('input:radio[name="cf_membership"]').val();
+			
+			
+			goSearch(type, main, situation, how, time, difficulty, membercnt, membership);
+			// 값 다른 방식으로 갖고오기
+		});
+		
+		
+	});
+	
+	// 검색 조건에 맞는 레시피 불러오기
+	function goSearch(type, main, situation, how, time, difficulty, membercnt, membership) {
+		console.log(`종류별 : ${type}, 주재료별 : ${main}, 상황별 : ${situation}, 방법별 : ${how}, 소요시간 : ${time}, 난이도 : ${difficulty}, 인원수 : ${membercnt}, 멤버십 : ${membership}`);
+	}
+	
+/*]]>*/   
+</script>
+
+</head>
+<body>
+    <div class="container">
+    	
+    	<span class="classify-title">분류</span>
+    	
+    	<hr>
+    	
+    	<!--/* 분류 선택란 */-->
+    	<div class="classify-wrap">
+    	
+    	
+    		<div class="cf-row d-flex">
+    			<div class="cf-label">종류별</div>
+	    		<div class="cf-list">
+	    			<input type="radio" id="r1_option1" name="cf_type" value="전체" checked>
+  					<label for="r1_option1">전체</label>
+	    			<input type="radio" id="r1_option2" name="cf_type" value="밥/죽/면">
+  					<label for="r1_option2">밥/죽/면</label>
+  					<input type="radio" id="r1_option3" name="cf_type" value="국/탕/찌개">
+  					<label for="r1_option3">국/탕/찌개</label>
+  					<input type="radio" id="r1_option4" name="cf_type" value="메인반찬">
+  					<label for="r1_option4">메인반찬</label>
+  					<input type="radio" id="r1_option5" name="cf_type" value="밑반찬">
+  					<label for="r1_option5">밑반찬</label>
+  					<input type="radio" id="r1_option6" name="cf_type" value="전/적/튀김">
+  					<label for="r1_option6">전/적/튀김</label>
+  					<input type="radio" id="r1_option7" name="cf_type" value="김치/젓갈/장아찌">
+  					<label for="r1_option7">김치/젓갈/장아찌</label>
+  					<input type="radio" id="r1_option8" name="cf_type" value="안주/야식/간식">
+  					<label for="r1_option8">안주/야식/간식</label>
+				</div>	    	
+    		</div>
+    		
+    		<div class="cf-row d-flex">
+    			<div class="cf-label">주재료별</div>
+    			<div class="cf-list">
+    				<input type="radio" id="r2_option1" name="cf_main" value="전체" checked>
+  					<label for="r2_option1">전체</label>
+	    			<input type="radio" id="r2_option2" name="cf_main" value="육류">
+  					<label for="r2_option2">육류</label>
+  					<input type="radio" id="r2_option3" name="cf_main" value="해산물/건어물">
+  					<label for="r2_option3">해산물/건어물</label>
+  					<input type="radio" id="r2_option4" name="cf_main" value="채소/버섯류">
+  					<label for="r2_option4">채소/버섯류</label>
+  					<input type="radio" id="r2_option5" name="cf_main" value="달걀/유제품">
+  					<label for="r2_option5">달걀/유제품</label>
+  					<input type="radio" id="r2_option6" name="cf_main" value="가공식품/기타">
+  					<label for="r2_option6">가공식품/기타</label>
+    			</div>
+    		</div>
+    		
+    		<div class="cf-row d-flex">
+    			<div class="cf-label">상황별</div>
+    			<div class="cf-list">
+    				<input type="radio" id="r3_option1" name="cf_situation" value="전체" checked>
+  					<label for="r3_option1">전체</label>
+	    			<input type="radio" id="r3_option2" name="cf_situation" value="혼밥/자취요리">
+  					<label for="r3_option2">혼밥/자취요리</label>
+  					<input type="radio" id="r3_option3" name="cf_situation" value="손님초대/생일상">
+  					<label for="r3_option3">손님초대/생일상</label>
+  					<input type="radio" id="r3_option4" name="cf_situation" value="술안주/해장">
+  					<label for="r3_option4">술안주/해장</label>
+  					<input type="radio" id="r3_option5" name="cf_situation" value="다이어트/건강식">
+  					<label for="r3_option5">다이어트/건강식</label>
+  					<input type="radio" id="r3_option6" name="cf_situation" value="도시락/밀키트">
+  					<label for="r3_option6">도시락/밀키트</label>
+    			</div>
+    		</div>
+    		
+    		<div class="cf-row d-flex">
+    			<div class="cf-label">방법별</div>
+    			<div class="cf-list">
+    				<input type="radio" id="r4_option1" name="cf_how" value="전체" checked>
+  					<label for="r4_option1">전체</label>
+	    			<input type="radio" id="r4_option2" name="cf_how" value="볶음/조림/찜">
+  					<label for="r4_option2">볶음/조림/찜</label>
+  					<input type="radio" id="r4_option3" name="cf_how" value="끓이기">
+  					<label for="r4_option3">끓이기</label>
+  					<input type="radio" id="r4_option4" name="cf_how" value="전/구이/튀김">
+  					<label for="r4_option4">전/구이/튀김</label>
+  					<input type="radio" id="r4_option5" name="cf_how" value="무침/회">
+  					<label for="r4_option5">무침/회</label>
+  					<input type="radio" id="r4_option6" name="cf_how" value="에어프라이어/전자레인지">
+  					<label for="r4_option6">에어프라이어/전자레인지</label>
+    			</div>
+    		</div>
+    		
+    		
+    		<div class="cf-row">
+    			<span>조리 시간</span>
+    			<select id="time">
+    				<option selected>전체</option>
+    				<option>5분 이내</option>
+    				<option>10분 이내</option>
+    				<option>15분 이내</option>
+    				<option>20분 이내</option>
+    				<option>30분 이내</option>
+    				<option>1시간 이내</option>
+    				<option>1시간 이상</option>
+    			</select>
+    			
+    			<span>난이도</span>
+    			<select id="difficulty">
+    				<option selected>전체</option>
+    				<option>초급(요린이)</option>
+    				<option>중급</option>
+    				<option>상급</option>
+    			</select>
+    			
+    			<span>인원수</span>
+    			<select id="membercnt">
+    				<option selected>전체</option>
+    				<option>1인분</option>
+    				<option>2인분</option>
+    				<option>3인분</option>
+    				<option>4인분</option>
+    				<option>4인분 이상</option>
+    			</select>
+    		</div>
+    		
+    		<div class="cf-row d-flex">
+    			<div class="cf-label">멤버십</div>
+    			<div class="cf-list">
+    				<input type="radio" id="r5_option1" name="cf_membership" value="전체" checked>
+  					<label for="r5_option1">전체</label>
+	    			<input type="radio" id="r5_option2" name="cf_membership" value="유료">
+  					<label for="r5_option2">유료</label>
+  					<input type="radio" id="r5_option3" name="cf_membership" value="무료">
+  					<label for="r5_option3">무료</label>
+    			</div>
+    		</div>
+    	
+    		<button id="btn-search" class="">검색</button>
+    		
+    	</div>
+    	
+    	
+    	<hr>
+    	
+    	<div class="recipe-wrap">
+    		
+    		<div class="recipe-tab-wrap d-flex">
+    			<span>총 000000개의 한식 레시피가 있습니다.</span>
+    			<ul class="recipe-tab d-flex">
+    				<li>조회순</li>
+    				<li>최신순</li>
+    			</ul>
+    		</div>
+    		
+    		
+    		<div class="recipe-content-wrap">
+    			<div class="row">
+    				<div class="recipe-content col-md-3">
+    					<div class="recipe-thumb">
+    						<img src=""/>
+    					</div>
+    					
+    					<div class="recipe-caption">
+    						<div class="recipe-caption-title">
+    							<a href="#">제목입니다123</a>
+    						</div>
+    						
+    						<div class="recipe-caption-writer">
+    							<a href="#"><img src=""/>작성자입니다.</a>
+    						</div>
+    						
+    						<div class="recipe-cation-rating">
+    							<span class="rating">★ 5.0</span>
+    							<span class="view-cnt">조회수 000</span>
+    						</div>
+    					</div>
+    					
+    				</div>
+    				
+    			</div>
+    		
+    		</div>
+    		
+    	
+    	</div>
+    	
+    	
+    
+    </div>
+</body>
+</html>

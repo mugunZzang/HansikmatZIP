@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+<meta charset="UTF-8">
+<title>한식맛ZIP</title>
+
+<!--/* Bootstrap CSS */--> 
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+
+<!--/* Optional JavaScript */-->
+<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+  
+<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+<!-- 커스텀 css -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/kimkc/event/event_list.css}"> 
+
+
+<link rel="stylesheet" href="">
+
+<style type="text/css"></style>
+
+<!--/* 
+      자바스크립트 인라인 
+      th:inline="javascript" 은 스크립트 태그 내에서 Thymeleaf 문법([[...]])을 해석할 수 있게 해주는 설정이다.
+      JavaScript 안에서 Thymeleaf 값을 넣을 때는 th:inline="javascript" 와 /*[[뭐뭐뭐]]*/ 구문을 사용해야 한다. 
+*/-->
+<script th:inline="javascript">
+ /*<![CDATA[*/
+	 
+ /*]]>*/   
+</script>
+
+</head>
+<body>
+    <div class="container"></div>
+</body>
+</html>
