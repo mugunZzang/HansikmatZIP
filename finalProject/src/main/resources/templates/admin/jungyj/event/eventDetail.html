@@ -14,8 +14,70 @@
 	<!-- 분리한 커스텀 CSS -->
     <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/event/eventDetail.css}"> 
     
+	<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
 	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
 
+
+<script th:inline="javascript">
+ /*<![CDATA[*/
+	 
+	 $(function(){
+		 $("#btnWin").on("click", function(){
+			const $checked = $(".recipe-check:checked");
+			const total_winners = $("input#totalWinner").val();
+			
+			if($checked.length == 0) {
+				alert("당첨 처리할 레시피를 선택해 주세요.");
+				return;
+			}
+			
+			if($checked.length > total_winners) {
+				alert("당첨 처리는 총 당첨 인원 안에서 선택 가능합니다.");
+				return;
+			}
+			
+			if (!confirm("선택한 " + $checked.length + "개의 레시피를 당첨 처리하시겠습니까?")) {
+                return;
+            }
+			
+			const entryseqs = $checked.map(function () {
+                return Number($(this).val());
+            }).get();
+
+            const eventseq = /*[[${eventDto.eventseq}]]*/ 0;
+            const winUrl = /*[[@{/admin/event/win}]]*/ "";
+            
+            $.ajax({
+            	url: winUrl,
+            	type: "post",
+            	data: {
+            		eventseq: eventseq,
+            		entryseqs: entryseqs
+            	},
+            	dataType: "json",
+            	success: function(data){
+            		alert(data.message);
+            		if (data.success) {
+                        location.reload();
+                    }
+            	},
+                error: function(xhr){
+                    const msg = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : "서버 통신 중 오류가 발생했습니다.";
+               		alert(msg);
+                }
+            	
+            	
+            });
+			
+		 });
+		 
+	 }); // end of $(function(){})----------------
+ 
+ 
+ /*]]>*/   
+</script>	 
 </head>
 <body>
 <div class="container py-5">
@@ -84,83 +146,39 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center gap-2">
                         <h5 class="fw-bold mb-0">참가한 레시피</h5>
-                        <span class="badge rounded-pill bg-primary-subtle text-primary" id="participantCount">총 5건</span>
+						<!-- 건수 뱃지 -->
+						<span class="badge rounded-pill bg-primary-subtle text-primary"
+						      id="participantCount"
+						      th:text="'총 ' + ${#lists.size(entryList)} + '건'">총 0건</span>
                     </div>
                     <span class="text-muted small">당첨 처리할 레시피를 선택하세요.</span>
                 </div>
 
+				<div th:if="${#lists.isEmpty(entryList)}" class="text-center py-4 text-muted">
+				    아직 참가한 레시피가 없습니다.
+				</div>
                 <!-- 5열 레시피 카드 그리드 (나중에 th:each 반복) -->
                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 mb-4" id="participantRecipeList">
 
+
                     <!-- 카드 1 (체크박스 클릭/선택 가능) -->
-                    <div class="col">
-                        <label class="card recipe-select-card h-100">
-                            <input type="checkbox" class="form-check-input recipe-check" value="1">
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="레시피 썸네일">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">김치찌개 황금레시피</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자1</div>
-                            </div>
-                        </label>
-                    </div>
+					<div class="col" th:each="entry : ${entryList}">
+					        <label class="card recipe-select-card h-100">
+					            <input type="checkbox"
+					                   class="form-check-input recipe-check"
+					                   th:value="${entry.entryseq}"
+					                   th:disabled="${entry.chk_win == 1}">
+					            <div class="recipe-card-img">
+					                <img th:src="@{/file_recipeimage/{filename}(img=${entry.r_imgname})}" alt="레시피 썸네일">
+					            </div>
+					            <div class="card-body p-2">
+					                <div class="fw-semibold small text-truncate" th:text="${entry.r_subject}">레시피 제목</div>
+					                <div class="text-muted" style="font-size: 0.75rem;" th:text="${entry.nickname}">작성자</div>
+					            </div>
+					        </label>
+					    </div>
+                 
 
-                    <!-- 카드 2 -->
-                    <div class="col">
-                        <label class="card recipe-select-card h-100">
-                            <input type="checkbox" class="form-check-input recipe-check" value="2">
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="레시피 썸네일">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">초간단 계란말이</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자2</div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- 카드 3 -->
-                    <div class="col">
-                        <label class="card recipe-select-card h-100">
-                            <input type="checkbox" class="form-check-input recipe-check" value="3">
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="레시피 썸네일">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">바삭한 감자전</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자3</div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- 카드 4 -->
-                    <div class="col">
-                        <label class="card recipe-select-card h-100">
-                            <input type="checkbox" class="form-check-input recipe-check" value="4">
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="레시피 썸네일">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">매콤 제육볶음</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자4</div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- 카드 5 -->
-                    <div class="col">
-                        <label class="card recipe-select-card h-100">
-                            <input type="checkbox" class="form-check-input recipe-check" value="5">
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="레시피 썸네일">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">크림 파스타</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자5</div>
-                            </div>
-                        </label>
-                    </div>
 
                 </div>
 
@@ -177,48 +195,47 @@
         <!-- =========================================================
              3. 하단 카드: 당첨 레시피 목록 (두 번째 설계서 하단)
              ========================================================= -->
+             
+
         <div class="card admin-card">
             <div class="card-body p-4">
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
+                
                     <div class="d-flex align-items-center gap-2">
                         <h5 class="fw-bold mb-0">
                             <i class="fa-solid fa-trophy text-warning me-1"></i> 당첨 레시피
                         </h5>
-                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis" id="winnerCountBadge">총 2 / 5명</span>
+                        <input type="hidden" id ="totalWinner" th:value="${eventDto.event_total_winners}">
+                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis"
+						      id="winnerCountBadge"
+						      th:text="|총 ${#lists.size(winnerList)} / ${eventDto.event_total_winners}명|">총 0 / 5명</span>
                     </div>
                 </div>
+		        <!-- 비어있을 때 안내 -->
+				<div th:if="${#lists.isEmpty(winnerList)}" class="text-center py-4 text-muted">
+				    아직 선정된 당첨 레시피가 없습니다.
+				</div>
 
                 <!-- 5열 당첨 레시피 카드 그리드 -->
                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3" id="winnerRecipeList">
 
                     <!-- 당첨 카드 1 -->
-                    <div class="col">
-                        <label class="card recipe-select-card winner-card h-100">
-                            <span class="badge bg-warning text-dark winner-badge">당첨</span>
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="당첨 레시피">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">김치찌개 황금레시피</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자1</div>
-                            </div>
-                        </label>
-                    </div>
+					<div class="col" th:each="winner : ${winnerList}">
+					    <label class="card recipe-select-card winner-card h-100">
+					         <span class="badge bg-warning text-dark winner-badge">당첨</span>
+					         <div class="recipe-card-img">
+					             <img th:src="@{/file_recipeimage/{filename}(img=${winner.r_imgname})}" alt="당첨 레시피">
+					             
+					         </div>
+					         <div class="card-body p-2">
+					             <div class="fw-semibold small text-truncate" th:text="${winner.r_subject}">레시피 제목</div>
+					             <div class="text-muted" style="font-size: 0.75rem;" th:text="${winner.nickname}">작성자</div>
+					         </div>
+					     </label>
+					 </div>
 
-                    <!-- 당첨 카드 2 -->
-                    <div class="col">
-                        <label class="card recipe-select-card winner-card h-100">
-                            <span class="badge bg-warning text-dark winner-badge">당첨</span>
-                            <div class="recipe-card-img">
-                                <img th:src="@{/images/jungyj/event/imageicon.png}" alt="당첨 레시피">
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="fw-semibold small text-truncate">초간단 계란말이</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">작성자2</div>
-                            </div>
-                        </label>
-                    </div>
+
 
                 </div>
 

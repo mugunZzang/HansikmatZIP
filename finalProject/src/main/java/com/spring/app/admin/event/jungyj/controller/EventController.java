@@ -5,16 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
+import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
 import com.spring.app.admin.event.jungyj.service.EventService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -131,13 +135,48 @@ public class EventController {
 //		~~~ 확인용 eventseq: 7
 		
 		EventDTO eventDto = eventService.detail(eventseq);
+		List<EventEntryDTO> allEntries = eventService.getEntryList(eventseq);
+		
+		// 참가한 레시피 목록
+		List<EventEntryDTO> entryList = allEntries.stream()
+									              .filter(entry -> entry.getChk_win() == 0)
+									              .toList();
+		// 당첨자 레시피 목록
+	    List<EventEntryDTO> winnerList = allEntries.stream()
+	                                               .filter(entry -> entry.getChk_win() == 1)
+	                                               .toList();
+		
 		
 		mav.addObject("eventDto", eventDto);
+		mav.addObject("entryList", entryList);   // 중단 카드: 참가한 레시피
+	    mav.addObject("winnerList", winnerList); // 하단 카드: 당첨 레시피
+		
 		mav.setViewName("admin/jungyj/event/eventDetail");
 		//  src/main/resources/templates/admin/jungyj/event/eventDetail.html 페이지를 만들어야 한다.
 		return mav;
 	}
 	
+	@PostMapping("/win")
+	@ResponseBody
+	public ResponseEntity winEntries(@RequestParam("eventseq") Integer eventseq,
+	                                 @RequestParam("entryseqs") List<Integer> entryseqs) {
+		Map<String, Object> result = new HashMap<>();
+	    try {
+	        eventService.winEntries(eventseq, entryseqs);
+	        result.put("success", true);
+	        result.put("message", "당첨 처리가 완료되었습니다.");
+	        return ResponseEntity.ok(result);
+	    } catch (IllegalArgumentException e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	        return ResponseEntity.badRequest().body(result);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("success", false);
+	        result.put("message", "당첨 처리 중 오류가 발생했습니다.");
+	        return ResponseEntity.internalServerError().body(result);
+	    }
+	}
 	
 	//================================================ 이벤트 수정 =================================================
 	

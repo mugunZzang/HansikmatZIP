@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
+import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
 
 public interface EventService {
 
@@ -26,6 +27,10 @@ public interface EventService {
 
 	// 이벤트 수정하기
 	void eventEdit(EventDTO eventDto, MultipartFile multipartFile) throws Exception;
+
+	List<EventEntryDTO> getEntryList(int eventseq);
+
+	void winEntries(int eventseq, List<Integer> entryseqs);
 
 
 }

@@ -62,8 +62,7 @@
 							         class="d-none position-absolute top-0 start-0 w-100 h-100"
 							         style="object-fit: cover;">
                         </label>
-                        <input type="file" id="eventImage" name="eventImage" accept="image/*" class="d-none infoData" th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}">
-               			<span class="error">필수입력</span>
+                        <input type="file" id="eventImage" name="eventImage" accept="image/*" class="d-none" th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}">
                     </div>
 
                     <!-- 오른쪽: 제목 + 기간 -->

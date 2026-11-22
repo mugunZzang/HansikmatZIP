@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.spring.app.entity.jungyj.Event;
 
-public interface EventRepository extends JpaRepository<Event, Integer>, EventRepositoryCustom {
+public interface EventRepository extends JpaRepository<Event, Integer> {
 	
 /*
 	 LessThan            findByAgeLessThan          … where x.age < ?1

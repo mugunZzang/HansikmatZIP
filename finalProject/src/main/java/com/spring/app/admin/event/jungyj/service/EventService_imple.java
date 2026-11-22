@@ -5,15 +5,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
+import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
 import com.spring.app.admin.event.jungyj.repository.EntryRepository;
 import com.spring.app.admin.event.jungyj.repository.EventRepository;
 import com.spring.app.common.FileManager;
+import com.spring.app.entity.jungyj.Entry;
 import com.spring.app.entity.jungyj.Event;
 
 import jakarta.transaction.Transactional;
@@ -98,6 +99,42 @@ public class EventService_imple implements EventService {
 	@Override
 	public EventDTO detail(int eventseq) {
 		return getEventEntity(eventseq).toDTO();
+	}
+	
+	@Transactional
+	@Override
+	public void winEntries(int eventseq, List<Integer> entryseqs) {
+
+	    Event event = getEventEntity(eventseq);
+
+	    // 이미 당첨된 인원 + 이번에 선택한 인원이 당첨 정원을 초과하는지 체크
+	    long currentWinners = entryRepository.countByFkEventseqAndChkWin(eventseq, 1);
+	    List<Entry> targetEntries = entryRepository.findByEntryseqInAndFkEventseq(entryseqs, eventseq);
+
+	    // 아직 미당첨(chkWin == 0)인 항목만 추려내기
+	    List<Entry> newWinners = targetEntries.stream()
+	                                          .filter(entry -> entry.getChkWin() == 0)
+	                                          .toList();
+
+	    if (currentWinners + newWinners.size() > event.getEventTotalWinners()) {
+	        throw new IllegalArgumentException(
+	            "당첨 정원(" + event.getEventTotalWinners() + "명)을 초과할 수 없습니다. (현재 당첨: " + currentWinners + "명)"
+	        );
+	    }
+
+	    // 당첨 처리 (@Transactional 변경 감지로 자동 UPDATE)
+	    for (Entry entry : newWinners) {
+	        entry.setChkWin(1);
+	    }
+	}
+	
+	
+	
+	
+	// 이벤트 참가 레시피 목록 조회
+	@Override
+	public List<EventEntryDTO> getEntryList(int eventseq) {
+	    return entryRepository.findEntriesByEventseq(eventseq);
 	}
 	
 	// 이벤트 수정하기
