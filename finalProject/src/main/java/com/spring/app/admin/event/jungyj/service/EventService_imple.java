@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
+import com.spring.app.admin.event.jungyj.repository.EntryRepository;
 import com.spring.app.admin.event.jungyj.repository.EventRepository;
 import com.spring.app.common.FileManager;
 import com.spring.app.entity.jungyj.Event;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class EventService_imple implements EventService {
 
 	private final EventRepository eventRepository;
+	private final EntryRepository entryRepository;
 	
 	// === 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) === 
 	private final FileManager fileManager;
@@ -53,7 +55,7 @@ public class EventService_imple implements EventService {
 		
 	}
 	
-
+	// 이벤트 리스트 조회
 	@Override
 	public List<EventDTO> list(Map<String, String> paraMap) {
 		
@@ -67,9 +69,19 @@ public class EventService_imple implements EventService {
 			eventList = eventRepository.findByEventEnddateGreaterThanEqualOrderByEventseqDesc(today);
 		}
 		
-		return eventList.stream()
-	            .map(event -> new EventDTO(event)) // event -> new EventDTO(event) 와 동일
-	            .toList();
+		// 먼저 DTO 리스트로 변환해서 변수에 담기
+		List<EventDTO> dtoList = eventList.stream()
+		        .map(event -> new EventDTO(event))
+		        .toList();
+		
+		// EventDTO 안에 신청현황 필드를 추가
+		// 이러면 추후 HTML에 보여줄 때 편하게 보여줄 수 있음
+		for (EventDTO dto : dtoList) {
+		    long count = entryRepository.countByFkEventseq(dto.getEventseq());
+		    dto.setEntryCount(count);
+		}
+		
+		return dtoList;
 	}
 	
 	// 진행 중인 이벤트 개수

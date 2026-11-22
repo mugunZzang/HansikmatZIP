@@ -29,6 +29,9 @@ public class EventDTO {
 	
 	// ===== 파일 저장을 위한 필드
 	private Long fileSize;       // 파일크기
+	
+	// ===== 신청 건수 (목록 화면 표시용)
+	private long entryCount;
 
 	// Event Entity를 통째로 받아서 DTO로 변환하는 생성자 (목록 조회용)
     public EventDTO(Event event) {
