@@ -12,6 +12,7 @@ public interface EventService {
 
 	void eventRegister(EventDTO eventDto, MultipartFile multipartFile) throws Exception;
 
+	// 이벤트 List 조회
 	List<EventDTO> list(Map<String, String> paraMap);
 
 	@Nullable
@@ -19,6 +20,12 @@ public interface EventService {
 
 	@Nullable
 	int getEndedCount();
+
+	// 이벤트 1건 조회
+	EventDTO detail(int eventseq);
+
+	// 이벤트 수정하기
+	void eventEdit(EventDTO eventDto, MultipartFile multipartFile) throws Exception;
 
 
 }

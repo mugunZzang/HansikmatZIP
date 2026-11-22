@@ -35,3 +35,5 @@ body {
 .custom-input:focus {
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
 }
+
+.error { display: none; color: #dc3545; font-size: 0.85rem; margin-top: 4px; }

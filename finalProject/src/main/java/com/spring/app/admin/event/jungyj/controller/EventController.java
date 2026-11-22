@@ -124,7 +124,15 @@ public class EventController {
 	//============================================== 이벤트 상세 페이지 =============================================
 	
 	@GetMapping("/detail")
-	public ModelAndView detail(ModelAndView mav) {
+	public ModelAndView detail(ModelAndView mav,
+			                   @RequestParam(name = "eventseq") int eventseq) {
+		
+//		System.out.println("~~~ 확인용 eventseq: " + eventseq);
+//		~~~ 확인용 eventseq: 7
+		
+		EventDTO eventDto = eventService.detail(eventseq);
+		
+		mav.addObject("eventDto", eventDto);
 		mav.setViewName("admin/jungyj/event/eventDetail");
 		//  src/main/resources/templates/admin/jungyj/event/eventDetail.html 페이지를 만들어야 한다.
 		return mav;
@@ -134,9 +142,51 @@ public class EventController {
 	//================================================ 이벤트 수정 =================================================
 	
 	@GetMapping("/edit")
-	public ModelAndView edit(ModelAndView mav) {
+	public ModelAndView edit(ModelAndView mav,
+			                 @RequestParam(name = "eventseq") int eventseq) {
+		
+//		System.out.println("~~~ 확인용 eventseq: " + eventseq);
+//		~~~ 확인용 eventseq: 7
+		
+		// 기존 정보 전달
+		EventDTO eventDto = eventService.detail(eventseq);
+		
+		mav.addObject("eventDto", eventDto);
+		
 		mav.setViewName("admin/jungyj/event/eventEdit");
 		//  src/main/resources/templates/admin/jungyj/event/eventEdit.html 페이지를 만들어야 한다.
+		return mav;
+	}
+	
+	@PostMapping("/edit")
+	public ModelAndView eventEdit(ModelAndView mav,
+							      EventDTO eventDto,
+			                      @RequestParam("eventImage") MultipartFile multipartFile    // Spring 에서 파일 받는 방법 RequestParam 은 HTML 에 있는 name 값
+			                ) {
+/*
+		System.out.println(eventDto.getEvent_subject());
+		System.out.println(eventDto.getEvent_contents());
+		System.out.println(eventDto.getEvent_total_winners());
+		System.out.println(eventDto.getEvent_startdate());
+		System.out.println(eventDto.getEvent_enddate());
+		System.out.println(multipartFile.getOriginalFilename());
+		
+		진행중인 이벤트 수정 첫 번쨰 테스트 제목
+		진행중인 이벤트 수정 첫번쨰 테스트 내용
+		11
+		2026-11-20
+		2026-11-26
+		스크린샷 2026-03-05 122808.png
+*/
+		
+		try {
+			eventService.eventEdit(eventDto, multipartFile);
+			mav.setViewName("redirect:/admin/event/detail?eventseq=" + eventDto.getEventseq());
+		} catch (Exception e) {
+			e.printStackTrace();
+			mav.setViewName("admin/jungyj/error");
+		}
+		
 		return mav;
 	}
 	

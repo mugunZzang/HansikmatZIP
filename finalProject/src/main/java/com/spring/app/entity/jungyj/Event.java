@@ -1,7 +1,8 @@
 package com.spring.app.entity.jungyj;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+import com.spring.app.admin.event.jungyj.domain.EventDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,4 +63,18 @@ public class Event {
 	    }
 	}
 
+	
+	public EventDTO toDTO() {
+	    return EventDTO.builder()
+	            .eventseq(this.eventseq)
+	            .event_subject(this.eventSubject)
+	            .event_startdate(this.eventStartdate)
+	            .event_enddate(this.eventEnddate)
+	            .event_drawingdate(this.eventDrawingdate)
+	            .event_image_org_filename(this.eventImageOrgFilename)
+	            .event_image_filename(this.eventImageFilename)
+	            .event_contents(this.eventContents)
+	            .event_total_winners(this.eventTotalWinners)
+	            .build();
+	}
 }

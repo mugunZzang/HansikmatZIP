@@ -31,29 +31,33 @@
                 <div class="border-bottom pb-3 mb-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1">D-2</span>
+                            <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1"
+                                  th:classappend="${eventDto.ddayBadgeClass}"
+							      th:text="${eventDto.ddayText}">D-2</span>
                             <span class="text-muted small">
-                                <i class="fa-solid fa-trophy text-warning me-1"></i>당첨 인원 <strong>5</strong>명
+                                <i class="fa-solid fa-trophy text-warning me-1"></i>당첨 인원 <strong th:text="${eventDto.event_total_winners}">5</strong>명
                             </span>
                         </div>
                         <div class="text-muted small">
                             <i class="fa-regular fa-calendar me-1"></i>
-                            <span>2026.11.11 ~ 2027.01.15</span>
+                            <span th:text="${eventDto.event_startdate}"></span> ~ 
+                            <span th:text="${eventDto.event_enddate}"></span>
                         </div>
                     </div>
-                    <h3 class="fw-bold mb-0">어떤어떤 이벤트 제목이 들어갑니다</h3>
+                    <h3 class="fw-bold mb-0" th:text="${eventDto.event_subject}">어떤어떤 이벤트 제목이 들어갑니다</h3>
                 </div>
 
                 <!-- 이벤트 배너 이미지 (800x420 / 1200x630 비율) -->
                 <div class="event-detail-banner mx-auto mb-4">
-                    <img th:src="@{/images/jungyj/event/imageicon.png}" alt="이벤트 상세 이미지">
+                    <img th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
+						 th:alt="${eventDto.event_subject}">
                 </div>
 
                 <!-- 이벤트 내용 (나중에 스마트에디터 HTML -> th:utext로 출력) -->
                 <div class="mb-4">
                     <h6 class="fw-bold text-secondary mb-2">이벤트 내용</h6>
                     <div class="event-content-box p-4 rounded-3">
-                        <p class="mb-0">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</p>
+                        <p class="mb-0" th:text="${eventDto.event_contents}">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</p>
                     </div>
                 </div>
 
@@ -63,7 +67,7 @@
                         <i class="fa-solid fa-arrow-left me-1"></i> 목록으로
                     </a>
                     <div class="d-flex gap-2">
-                        <a href="#" class="btn btn-primary px-4 fw-semibold">수정</a>
+                        <a th:href="@{/admin/event/edit(eventseq=${eventDto.eventseq})}" class="btn btn-primary px-4 fw-semibold">수정</a>
                         <button type="button" class="btn btn-outline-danger px-4" id="btnDeleteEvent">삭제</button>
                     </div>
                 </div>
