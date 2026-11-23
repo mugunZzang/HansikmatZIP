@@ -1,0 +1,162 @@
+@charset "UTF-8";
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+/* custom.css - 부트스트랩 기본 CSS 뒤에 로드해 주세요 */
+:root {
+  /* Primary */
+  --bs-primary: #1E3A8A;
+  --bs-primary-rgb: 30, 58, 138;
+
+  /* Secondary */
+  --bs-secondary: #64748B;
+  --bs-secondary-rgb: 100, 116, 139;
+
+  /* Success */
+  --bs-success: #F97316;
+  --bs-success-rgb: 249, 115, 22;
+
+  /* Info */
+  --bs-info: #3B82F6;
+  --bs-info-rgb: 59, 130, 246;
+
+  /* Link 색상 (Primary 기준) */
+  --bs-link-color: #1E3A8A;
+  --bs-link-color-rgb: 30, 58, 138;
+  --bs-link-hover-color: #182E6E;
+  --bs-link-hover-color-rgb: 24, 46, 110;
+}
+
+/* =========================================
+   기본 버튼 (.btn-*)
+   ========================================= */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #1E3A8A;
+  --bs-btn-border-color: #1E3A8A;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #182E6E;
+  --bs-btn-hover-border-color: #152961;
+  --bs-btn-focus-shadow-rgb: 30, 58, 138;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #152961;
+  --bs-btn-active-border-color: #122353;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #1E3A8A;
+  --bs-btn-disabled-border-color: #1E3A8A;
+}
+
+.btn-secondary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #64748B;
+  --bs-btn-border-color: #64748B;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #556376;
+  --bs-btn-hover-border-color: #505D6F;
+  --bs-btn-focus-shadow-rgb: 100, 116, 139;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #505D6F;
+  --bs-btn-active-border-color: #4B5768;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #64748B;
+  --bs-btn-disabled-border-color: #64748B;
+}
+
+.btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #F97316;
+  --bs-btn-border-color: #F97316;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #D46213;
+  --bs-btn-hover-border-color: #C75C12;
+  --bs-btn-focus-shadow-rgb: 249, 115, 22;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #C75C12;
+  --bs-btn-active-border-color: #BB5611;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #F97316;
+  --bs-btn-disabled-border-color: #F97316;
+}
+
+.btn-info {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #3B82F6;
+  --bs-btn-border-color: #3B82F6;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #326FD1;
+  --bs-btn-hover-border-color: #2F68C5;
+  --bs-btn-focus-shadow-rgb: 59, 130, 246;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #2F68C5;
+  --bs-btn-active-border-color: #2C62B9;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #3B82F6;
+  --bs-btn-disabled-border-color: #3B82F6;
+}
+
+/* =========================================
+   Outline 버튼 (.btn-outline-*)
+   ========================================= */
+.btn-outline-primary {
+  --bs-btn-color: #1E3A8A;
+  --bs-btn-border-color: #1E3A8A;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1E3A8A;
+  --bs-btn-hover-border-color: #1E3A8A;
+  --bs-btn-focus-shadow-rgb: 30, 58, 138;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #1E3A8A;
+  --bs-btn-active-border-color: #1E3A8A;
+  --bs-btn-disabled-color: #1E3A8A;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #1E3A8A;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #64748B;
+  --bs-btn-border-color: #64748B;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #64748B;
+  --bs-btn-hover-border-color: #64748B;
+  --bs-btn-focus-shadow-rgb: 100, 116, 139;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #64748B;
+  --bs-btn-active-border-color: #64748B;
+  --bs-btn-disabled-color: #64748B;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #64748B;
+}
+
+.btn-outline-success {
+  --bs-btn-color: #F97316;
+  --bs-btn-border-color: #F97316;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #F97316;
+  --bs-btn-hover-border-color: #F97316;
+  --bs-btn-focus-shadow-rgb: 249, 115, 22;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #F97316;
+  --bs-btn-active-border-color: #F97316;
+  --bs-btn-disabled-color: #F97316;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #F97316;
+}
+
+.btn-outline-info {
+  --bs-btn-color: #3B82F6;
+  --bs-btn-border-color: #3B82F6;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #3B82F6;
+  --bs-btn-hover-border-color: #3B82F6;
+  --bs-btn-focus-shadow-rgb: 59, 130, 246;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #3B82F6;
+  --bs-btn-active-border-color: #3B82F6;
+  --bs-btn-disabled-color: #3B82F6;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #3B82F6;
+}
+
+* {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
