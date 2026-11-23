@@ -196,8 +196,9 @@ public class SecurityConfig {
                        https://codevang.tistory.com/282
          */
         
-        String[] excludeUri = {"/test/**"
-        		 			   
+        String[] excludeUri = {"/test/**",
+        						"/security/everybody",  
+        						"/chef/chef_list",
                              }; 
     	
         http
