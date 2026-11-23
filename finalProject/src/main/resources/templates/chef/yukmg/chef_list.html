@@ -44,6 +44,10 @@
 			margin:0 24px;
 			
 		}
+		
+		.profile-photo {
+			border-radius:50%;
+		}
 	</style>
 	
 	<!--/* 
@@ -107,7 +111,7 @@
 			<div class="tab-content" id="chefTabContent">
 				<div class="tab-pane fade show active p-3 clearfix pt-6" id="ranking-pane" role="tabpanel" aria-labelledby="ranking-tab" tabindex="0">
 					<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
-					  <button type="button" class="btn btn-secondary active">팔로워순</button>
+					  <button type="button" class="btn btn-secondary">팔로워순</button>
 					  <button type="button" class="btn btn-secondary">조회순</button>
 					  <button type="button" class="btn btn-secondary">스크랩순</button>
 					</div>
@@ -116,11 +120,12 @@
 						<li class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-3">
 							<span class="ranking-num fs-4 fw-semibold">1</span>
 							<div class="profile-zone">
-								<img alt="프사" src="" class="profile-photo">
+								<img alt="프사" src="https://placehold.co/100x100" class="profile-photo">
 							</div>
 							<div class="desc-zone">
 								<div class="name-zone">
 									<span>김말자</span>
+									<button class="btn btn-primary rounded-pill">팔로우 +</button>
 								</div>
 								<div class="intro-zone">
 									<p>
