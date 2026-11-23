@@ -23,68 +23,7 @@
 <link rel="stylesheet" type="text/css" th:href="@{/css/kimkc/recipe/recipe_classify.css}"> 
 
 <style type="text/css">
-    /* 라벨 고정 너비로 세로 줄맞춤 */
-    .cf-label {
-        width: 100px;
-        min-width: 100px;
-        font-weight: 700;
-        padding-top: 6px;
-    }
-
-    /* 분류 옵션 버튼 기본 스타일 (투명 배경 -> 체크 시 어두운 박스) */
-    .cf-list .btn {
-        border: none;
-        background-color: transparent;
-        color: #333;
-        font-weight: 500;
-        padding: 5px 14px;
-        border-radius: 4px;
-    }
-    .cf-list .btn:hover {
-        background-color: #f1f3f5;
-    }
-    .btn-check:checked + .btn.cf-btn {
-        background-color: #495057;
-        color: #fff;
-        font-weight: 600;
-    }
-
-    /* 정렬 탭 버튼 스타일 */
-    .sort-list .btn {
-        border: none;
-        background-color: transparent;
-        color: #555;
-        padding: 4px 12px;
-        border-radius: 4px;
-    }
-    .btn-check:checked + .btn.sort-btn {
-        background-color: #495057;
-        color: #fff;
-        font-weight: 600;
-    }
-
-    /* 썸네일 정사각형 비율 유지 및 라운드 처리 */
-    .recipe-thumb {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        background-color: #b0b0b0;
-        border-radius: 16px;
-        overflow: hidden;
-    }
-    .recipe-thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* 작성자 프로필 원형 이미지 */
-    .writer-avatar {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: #ccc;
-        object-fit: cover;
-    }
+    
 </style>
 
 <!--/* 
@@ -96,32 +35,50 @@
 /*<![CDATA[*/
 	$(function(){
 		
-		// 처음 화면 로딩하기(레시피 불러오기)
-		goSearch('전체', '전체', '전체', '전체', '전체', '전체', '전체', '전체');
+		// 검색 버튼 클릭 시
+		$('button#btn-search').on('click', function() {
+			goSearch(1);	
+		})
 		
 		
+		
+		
+		/*
 		// 검색 버튼 클릭 시
 		$('button#btn-search').on("click", function() {
-			const type = $('input:radio[name=cf_type]').val();
-			const main = $('input:radio[name=cf_main]').val();
-			const situation = $('input:radio[name=cf_situation]').val();
-			const how = $('input:radio[name=cf_how]').val();
+			const type = $('input:radio[name=cf_type]:checked').val();
+			const main = $('input:radio[name=cf_main]:checked').val();
+			const situation = $('input:radio[name=cf_situation]:checked').val();
+			const how = $('input:radio[name=cf_how]:checked').val();
 			const time = $('select#time').val();
 			const difficulty = $('select#difficulty').val();
 			const membercnt = $('select#membercnt').val();
-			const membership = $('input:radio[name="cf_membership"]').val();
+			const membership = $('input:radio[name="cf_membership"]:checked').val();
 			
 			
 			goSearch(type, main, situation, how, time, difficulty, membercnt, membership);
 			// 값 다른 방식으로 갖고오기
 		});
 		
+		*/
+		
+		
 		
 	});
 	
+	// =============================================================================================================================
+	
+	
 	// 검색 조건에 맞는 레시피 불러오기
-	function goSearch(type, main, situation, how, time, difficulty, membercnt, membership) {
-		console.log(`종류별 : ${type}, 주재료별 : ${main}, 상황별 : ${situation}, 방법별 : ${how}, 소요시간 : ${time}, 난이도 : ${difficulty}, 인원수 : ${membercnt}, 멤버십 : ${membership}`);
+	function goSearch(currentShowPageNo) {
+		//console.log(`종류별 : ${type}, 주재료별 : ${main}, 상황별 : ${situation}, 방법별 : ${how}, 소요시간 : ${time}, 난이도 : ${difficulty}, 인원수 : ${membercnt}, 멤버십 : ${membership}`);
+		
+		const frm = $('form[name="classifyFrm"]');
+		frm.find('input[name="currentShowPageNo"]').val(currentShowPageNo);
+		frm.attr('method', 'get');
+		frm.attr('action', /*[[@{/classify/list}]]*/ '');
+		frm.submit();
+
 	}
 	
 /*]]>*/   
@@ -138,166 +95,177 @@
     	<!--/* 분류 선택란 */-->
     	<div class="classify-wrap">
     	
-    		<!--/* 1. 종류별 */-->
-    		<div class="cf-row d-flex align-items-start mb-3">
-    			<div class="cf-label">종류별</div>
-	    		<div class="cf-list d-flex flex-wrap gap-2">
-	    			<input type="radio" class="btn-check" id="r1_option1" name="cf_type" value="전체" checked>
-  					<label class="btn cf-btn" for="r1_option1">전체</label>
-
-	    			<input type="radio" class="btn-check" id="r1_option2" name="cf_type" value="밥/죽/면">
-  					<label class="btn cf-btn" for="r1_option2">밥/죽/면</label>
-
-  					<input type="radio" class="btn-check" id="r1_option3" name="cf_type" value="국/탕/찌개">
-  					<label class="btn cf-btn" for="r1_option3">국/탕/찌개</label>
-
-  					<input type="radio" class="btn-check" id="r1_option4" name="cf_type" value="메인반찬">
-  					<label class="btn cf-btn" for="r1_option4">메인반찬</label>
-
-  					<input type="radio" class="btn-check" id="r1_option5" name="cf_type" value="밑반찬">
-  					<label class="btn cf-btn" for="r1_option5">밑반찬</label>
-
-  					<input type="radio" class="btn-check" id="r1_option6" name="cf_type" value="전/적/튀김">
-  					<label class="btn cf-btn" for="r1_option6">전/적/튀김</label>
-
-  					<input type="radio" class="btn-check" id="r1_option7" name="cf_type" value="김치/젓갈/장아찌">
-  					<label class="btn cf-btn" for="r1_option7">김치/젓갈/장아찌</label>
-
-  					<input type="radio" class="btn-check" id="r1_option8" name="cf_type" value="안주/야식/간식">
-  					<label class="btn cf-btn" for="r1_option8">안주/야식/간식</label>
-				</div>	    	
-    		</div>
-    		
-    		<!--/* 2. 주재료별 */-->
-    		<div class="cf-row d-flex align-items-start mb-3">
-    			<div class="cf-label">주재료별</div>
-    			<div class="cf-list d-flex flex-wrap gap-2">
-    				<input type="radio" class="btn-check" id="r2_option1" name="cf_main" value="전체" checked>
-  					<label class="btn cf-btn" for="r2_option1">전체</label>
-
-	    			<input type="radio" class="btn-check" id="r2_option2" name="cf_main" value="육류">
-  					<label class="btn cf-btn" for="r2_option2">육류</label>
-
-  					<input type="radio" class="btn-check" id="r2_option3" name="cf_main" value="해산물/건어물">
-  					<label class="btn cf-btn" for="r2_option3">해산물/건어물</label>
-
-  					<input type="radio" class="btn-check" id="r2_option4" name="cf_main" value="채소/버섯류">
-  					<label class="btn cf-btn" for="r2_option4">채소/버섯류</label>
-
-  					<input type="radio" class="btn-check" id="r2_option5" name="cf_main" value="달걀/유제품">
-  					<label class="btn cf-btn" for="r2_option5">달걀/유제품</label>
-
-  					<input type="radio" class="btn-check" id="r2_option6" name="cf_main" value="가공식품/기타">
-  					<label class="btn cf-btn" for="r2_option6">가공식품/기타</label>
-    			</div>
-    		</div>
-    		
-    		<!--/* 3. 상황별 */-->
-    		<div class="cf-row d-flex align-items-start mb-3">
-    			<div class="cf-label">상황별</div>
-    			<div class="cf-list d-flex flex-wrap gap-2">
-    				<input type="radio" class="btn-check" id="r3_option1" name="cf_situation" value="전체" checked>
-  					<label class="btn cf-btn" for="r3_option1">전체</label>
-
-	    			<input type="radio" class="btn-check" id="r3_option2" name="cf_situation" value="혼밥/자취요리">
-  					<label class="btn cf-btn" for="r3_option2">혼밥/자취요리</label>
-
-  					<input type="radio" class="btn-check" id="r3_option3" name="cf_situation" value="손님초대/생일상">
-  					<label class="btn cf-btn" for="r3_option3">손님초대/생일상</label>
-
-  					<input type="radio" class="btn-check" id="r3_option4" name="cf_situation" value="술안주/해장">
-  					<label class="btn cf-btn" for="r3_option4">술안주/해장</label>
-
-  					<input type="radio" class="btn-check" id="r3_option5" name="cf_situation" value="다이어트/건강식">
-  					<label class="btn cf-btn" for="r3_option5">다이어트/건강식</label>
-
-  					<input type="radio" class="btn-check" id="r3_option6" name="cf_situation" value="도시락/밀키트">
-  					<label class="btn cf-btn" for="r3_option6">도시락/밀키트</label>
-    			</div>
-    		</div>
-    		
-    		<!--/* 4. 방법별 */-->
-    		<div class="cf-row d-flex align-items-start mb-3">
-    			<div class="cf-label">방법별</div>
-    			<div class="cf-list d-flex flex-wrap gap-2">
-    				<input type="radio" class="btn-check" id="r4_option1" name="cf_how" value="전체" checked>
-  					<label class="btn cf-btn" for="r4_option1">전체</label>
-
-	    			<input type="radio" class="btn-check" id="r4_option2" name="cf_how" value="볶음/조림/찜">
-  					<label class="btn cf-btn" for="r4_option2">볶음/조림/찜</label>
-
-  					<input type="radio" class="btn-check" id="r4_option3" name="cf_how" value="끓이기">
-  					<label class="btn cf-btn" for="r4_option3">끓이기</label>
-
-  					<input type="radio" class="btn-check" id="r4_option4" name="cf_how" value="전/구이/튀김">
-  					<label class="btn cf-btn" for="r4_option4">전/구이/튀김</label>
-
-  					<input type="radio" class="btn-check" id="r4_option5" name="cf_how" value="무침/회">
-  					<label class="btn cf-btn" for="r4_option5">무침/회</label>
-
-  					<input type="radio" class="btn-check" id="r4_option6" name="cf_how" value="에어프라이어/전자레인지">
-  					<label class="btn cf-btn" for="r4_option6">에어프라이어/전자레인지</label>
-    			</div>
-    		</div>
-    		
-    		<!--/* 5. 조리시간 / 난이도 / 인원수 */-->
-    		<div class="row g-3 mb-3 align-items-center">
-    			<div class="col-md-4 d-flex align-items-center">
-    				<div class="cf-label pt-0">조리시간</div>
-    				<select id="time" class="form-select form-select-sm w-auto" style="min-width: 130px;">
-	    				<option value="전체" selected>전체</option>
-	    				<option value="5분 이내">5분 이내</option>
-	    				<option value="10분 이내">10분 이내</option>
-	    				<option value="15분 이내">15분 이내</option>
-	    				<option value="20분 이내">20분 이내</option>
-	    				<option value="30분 이내">30분 이내</option>
-	    				<option value="1시간 이내">1시간 이내</option>
-	    				<option value="1시간 이상">1시간 이상</option>
-	    			</select>
-    			</div>
-    			
-    			<div class="col-md-4 d-flex align-items-center">
-    				<div class="cf-label pt-0">난이도</div>
-    				<select id="difficulty" class="form-select form-select-sm w-auto" style="min-width: 130px;">
-	    				<option value="전체" selected>전체</option>
-	    				<option value="초급(요린이)">초급(요린이)</option>
-	    				<option value="중급">중급</option>
-	    				<option value="상급">상급</option>
-	    			</select>
-    			</div>
-    			
-    			<div class="col-md-4 d-flex align-items-center">
-    				<div class="cf-label pt-0">인원수</div>
-    				<select id="membercnt" class="form-select form-select-sm w-auto" style="min-width: 130px;">
-	    				<option value="전체" selected>전체</option>
-	    				<option value="1인분">1인분</option>
-	    				<option value="2인분">2인분</option>
-	    				<option value="3인분">3인분</option>
-	    				<option value="4인분">4인분</option>
-	    				<option value="4인분 이상">4인분 이상</option>
-	    			</select>
-    			</div>
-    		</div>
-    		
-    		<!--/* 6. 멤버십 */-->
-    		<div class="cf-row d-flex align-items-start mb-4">
-    			<div class="cf-label">멤버십</div>
-    			<div class="cf-list d-flex flex-wrap gap-2">
-    				<input type="radio" class="btn-check" id="r5_option1" name="cf_membership" value="전체" checked>
-  					<label class="btn cf-btn" for="r5_option1">전체</label>
-
-	    			<input type="radio" class="btn-check" id="r5_option2" name="cf_membership" value="유료">
-  					<label class="btn cf-btn" for="r5_option2">유료</label>
-
-  					<input type="radio" class="btn-check" id="r5_option3" name="cf_membership" value="무료">
-  					<label class="btn cf-btn" for="r5_option3">무료</label>
-    			</div>
-    		</div>
+    		<form name="classifyFrm">
     	
-    		<!--/* 검색 버튼 */-->
-    		<div class="d-grid mb-4">
-    			<button type="button" id="btn-search" class="btn btn-dark rounded-pill py-2 fw-bold fs-5">검색</button>
-    		</div>
+	    		<!--/* 1. 종류별 */-->
+	    		<div class="cf-row d-flex align-items-start mb-3">
+	    			<div class="cf-label">종류별</div>
+		    		<div class="cf-list d-flex flex-wrap gap-2">
+		    			<input type="radio" class="btn-check" id="r1_option1" name="cf_type" value="전체" checked>
+	  					<label class="btn cf-btn" for="r1_option1">전체</label>
+	
+		    			<input type="radio" class="btn-check" id="r1_option2" name="cf_type" value="밥/죽/면">
+	  					<label class="btn cf-btn" for="r1_option2">밥/죽/면</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option3" name="cf_type" value="국/탕/찌개">
+	  					<label class="btn cf-btn" for="r1_option3">국/탕/찌개</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option4" name="cf_type" value="메인반찬">
+	  					<label class="btn cf-btn" for="r1_option4">메인반찬</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option5" name="cf_type" value="밑반찬">
+	  					<label class="btn cf-btn" for="r1_option5">밑반찬</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option6" name="cf_type" value="전/적/튀김">
+	  					<label class="btn cf-btn" for="r1_option6">전/적/튀김</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option7" name="cf_type" value="김치/젓갈/장아찌">
+	  					<label class="btn cf-btn" for="r1_option7">김치/젓갈/장아찌</label>
+	
+	  					<input type="radio" class="btn-check" id="r1_option8" name="cf_type" value="안주/야식/간식">
+	  					<label class="btn cf-btn" for="r1_option8">안주/야식/간식</label>
+					</div>	    	
+	    		</div>
+	    		
+	    		<!--/* 2. 주재료별 */-->
+	    		<div class="cf-row d-flex align-items-start mb-3">
+	    			<div class="cf-label">주재료별</div>
+	    			<div class="cf-list d-flex flex-wrap gap-2">
+	    				<input type="radio" class="btn-check" id="r2_option1" name="cf_main" value="전체" checked>
+	  					<label class="btn cf-btn" for="r2_option1">전체</label>
+	
+		    			<input type="radio" class="btn-check" id="r2_option2" name="cf_main" value="육류">
+	  					<label class="btn cf-btn" for="r2_option2">육류</label>
+	
+	  					<input type="radio" class="btn-check" id="r2_option3" name="cf_main" value="해산물/건어물">
+	  					<label class="btn cf-btn" for="r2_option3">해산물/건어물</label>
+	
+	  					<input type="radio" class="btn-check" id="r2_option4" name="cf_main" value="채소/버섯류">
+	  					<label class="btn cf-btn" for="r2_option4">채소/버섯류</label>
+	
+	  					<input type="radio" class="btn-check" id="r2_option5" name="cf_main" value="달걀/유제품">
+	  					<label class="btn cf-btn" for="r2_option5">달걀/유제품</label>
+	
+	  					<input type="radio" class="btn-check" id="r2_option6" name="cf_main" value="가공식품/기타">
+	  					<label class="btn cf-btn" for="r2_option6">가공식품/기타</label>
+	    			</div>
+	    		</div>
+	    		
+	    		<!--/* 3. 상황별 */-->
+	    		<div class="cf-row d-flex align-items-start mb-3">
+	    			<div class="cf-label">상황별</div>
+	    			<div class="cf-list d-flex flex-wrap gap-2">
+	    				<input type="radio" class="btn-check" id="r3_option1" name="cf_situation" value="전체" checked>
+	  					<label class="btn cf-btn" for="r3_option1">전체</label>
+	
+		    			<input type="radio" class="btn-check" id="r3_option2" name="cf_situation" value="혼밥/자취요리">
+	  					<label class="btn cf-btn" for="r3_option2">혼밥/자취요리</label>
+	
+	  					<input type="radio" class="btn-check" id="r3_option3" name="cf_situation" value="손님초대/생일상">
+	  					<label class="btn cf-btn" for="r3_option3">손님초대/생일상</label>
+	
+	  					<input type="radio" class="btn-check" id="r3_option4" name="cf_situation" value="술안주/해장">
+	  					<label class="btn cf-btn" for="r3_option4">술안주/해장</label>
+	
+	  					<input type="radio" class="btn-check" id="r3_option5" name="cf_situation" value="다이어트/건강식">
+	  					<label class="btn cf-btn" for="r3_option5">다이어트/건강식</label>
+	
+	  					<input type="radio" class="btn-check" id="r3_option6" name="cf_situation" value="도시락/밀키트">
+	  					<label class="btn cf-btn" for="r3_option6">도시락/밀키트</label>
+	    			</div>
+	    		</div>
+	    		
+	    		<!--/* 4. 방법별 */-->
+	    		<div class="cf-row d-flex align-items-start mb-3">
+	    			<div class="cf-label">방법별</div>
+	    			<div class="cf-list d-flex flex-wrap gap-2">
+	    				<input type="radio" class="btn-check" id="r4_option1" name="cf_how" value="전체" checked>
+	  					<label class="btn cf-btn" for="r4_option1">전체</label>
+	
+		    			<input type="radio" class="btn-check" id="r4_option2" name="cf_how" value="볶음/조림/찜">
+	  					<label class="btn cf-btn" for="r4_option2">볶음/조림/찜</label>
+	
+	  					<input type="radio" class="btn-check" id="r4_option3" name="cf_how" value="끓이기">
+	  					<label class="btn cf-btn" for="r4_option3">끓이기</label>
+	
+	  					<input type="radio" class="btn-check" id="r4_option4" name="cf_how" value="전/구이/튀김">
+	  					<label class="btn cf-btn" for="r4_option4">전/구이/튀김</label>
+	
+	  					<input type="radio" class="btn-check" id="r4_option5" name="cf_how" value="무침/회">
+	  					<label class="btn cf-btn" for="r4_option5">무침/회</label>
+	
+	  					<input type="radio" class="btn-check" id="r4_option6" name="cf_how" value="에어프라이어/전자레인지">
+	  					<label class="btn cf-btn" for="r4_option6">에어프라이어/전자레인지</label>
+	    			</div>
+	    		</div>
+	    		
+	    		<!--/* 5. 조리시간 / 난이도 / 인원수 */-->
+	    		<div class="row g-3 mb-3 align-items-center">
+	    			<div class="col-md-4 d-flex align-items-center">
+	    				<div class="cf-label pt-0">조리시간</div>
+	    				<select id="time" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+		    				<option value="전체" selected>전체</option>
+		    				<option value="5분 이내">5분 이내</option>
+		    				<option value="10분 이내">10분 이내</option>
+		    				<option value="15분 이내">15분 이내</option>
+		    				<option value="20분 이내">20분 이내</option>
+		    				<option value="30분 이내">30분 이내</option>
+		    				<option value="1시간 이내">1시간 이내</option>
+		    				<option value="1시간 이상">1시간 이상</option>
+		    			</select>
+	    			</div>
+	    			
+	    			<div class="col-md-4 d-flex align-items-center">
+	    				<div class="cf-label pt-0">난이도</div>
+	    				<select id="difficulty" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+		    				<option value="전체" selected>전체</option>
+		    				<option value="초급(요린이)">초급(요린이)</option>
+		    				<option value="중급">중급</option>
+		    				<option value="상급">상급</option>
+		    			</select>
+	    			</div>
+	    			
+	    			<div class="col-md-4 d-flex align-items-center">
+	    				<div class="cf-label pt-0">인원수</div>
+	    				<select id="membercnt" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+		    				<option value="전체" selected>전체</option>
+		    				<option value="1인분">1인분</option>
+		    				<option value="2인분">2인분</option>
+		    				<option value="3인분">3인분</option>
+		    				<option value="4인분">4인분</option>
+		    				<option value="4인분 이상">4인분 이상</option>
+		    			</select>
+	    			</div>
+	    		</div>
+	    		
+	    		<!--/* 6. 멤버십 */-->
+	    		<div class="cf-row d-flex align-items-start mb-4">
+	    			<div class="cf-label">멤버십</div>
+	    			<div class="cf-list d-flex flex-wrap gap-2">
+	    				<input type="radio" class="btn-check" id="r5_option1" name="cf_membership" value="전체" checked>
+	  					<label class="btn cf-btn" for="r5_option1">전체</label>
+	
+		    			<input type="radio" class="btn-check" id="r5_option2" name="cf_membership" value="유료">
+	  					<label class="btn cf-btn" for="r5_option2">유료</label>
+	
+	  					<input type="radio" class="btn-check" id="r5_option3" name="cf_membership" value="무료">
+	  					<label class="btn cf-btn" for="r5_option3">무료</label>
+	    			</div>
+	    		</div>
+	    	
+	    		
+	    		<!--/* 페이지 번호 저장용 */-->
+	    		<input type="hidden" name="currentShowPageNo"/>  
+	    	
+	    	
+	    		<!--/* 검색 버튼 */-->
+	    		<div class="d-grid mb-4">
+	    			<button type="button" id="btn-search" class="btn btn-dark rounded-pill py-2 fw-bold fs-5">검색</button>
+	    		</div>
+    		
+    		
+    		</form>
+    		
     		
     	</div>
     	

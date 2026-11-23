@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="classify">
+
+	<!-- 공통 검색 조건 정의 -->
+	<sql id="recipeFilter">
+	    <where>
+	        A.view_check = '공개'
+	
+	        <if test="type_ca != null and type_ca != '' and type_ca != '전체'">
+	            AND A.type_ca = #{type_ca}
+	        </if>
+	
+	        <if test="main_ca != null and main_ca != '' and main_ca != '전체'">
+	            AND A.main_ca = #{main_ca}
+	        </if>
+	
+	        <if test="situation_ca != null and situation_ca != '' and situation_ca != '전체'">
+	            AND A.situation_ca = #{situation_ca}
+	        </if>
+	
+	        <if test="recipe_ca != null and recipe_ca != '' and recipe_ca != '전체'">
+	            AND A.recipe_ca = #{recipe_ca}
+	        </if>
+	
+	        <if test="r_time != null and r_time != '' and r_time != '전체'">
+	            AND A.r_time = #{r_time}
+	        </if>
+	
+	        <if test="r_level != null and r_level != '' and r_level != '전체'">
+	            AND A.r_level = #{r_level}
+	        </if>
+	
+	        <if test="people != null and people != '' and people != '전체'">
+	            AND A.people = #{people}
+	        </if>
+	
+	        <if test="paid_check != null and paid_check != '' and paid_check != '전체'">
+	            AND A.paid_check = #{paid_check}
+	        </if>
+	    </where>
+	</sql>
+
+
+	<!-- ============================================================================== -->
+
+
+	<!-- 검색 조건에 맞는 총 레시피 수 알아오기 --> 
+	<select id="getTotalDataCount" resultType="long" parameterType="HashMap">
+		 SELECT COUNT(*) 
+		 FROM tbl_recipe
+		 <include refid="recipeFilter"/>
+	</select>
+
+	<!-- ============================================================================== -->
+
+	<!-- 해당 페이지의 레시피 목록 갖고오기 -->
+	<select id="getRecipeList" parameterType="HashMap" resultType="kkc_RecipeDTO"> 
+		SELECT
+			A.recipeseq,
+		    A.r_subject,
+		    A.r_imgname,
+		    A.fk_userseq,
+		    B.nickname,
+		    B.profile_sysfilename,
+		    A.r_views,
+		    NVL(C.avg_rating, 0) AS avg_rating,       
+		    A.paid_check
+		FROM
+		    tbl_recipe A JOIN tbl_member B
+		    	ON A.fk_userseq = B.userseq
+		    LEFT JOIN (
+		        SELECT
+		            fk_recipesesq,
+		            ROUND(AVG(review_rating), 1) AS avg_rating, -- 소수점 첫째 자리까지 반올림 (예: 4.5)
+		            COUNT(*) AS review_count
+		        FROM
+		            tbl_recipe_review
+		        GROUP BY
+		            fk_recipesesq
+		    ) C
+		        ON A.recipeseq = C.fk_recipesesq
+		<include refid="recipeFilter"/>
+		
+		
+		
+	</select>
+
+
+</mapper>
+
