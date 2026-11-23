@@ -9,8 +9,8 @@
 <!--/* Required meta tags */-->
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<meta name="_csrf" th:content="${_csrf.token}"/>
-<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<meta name="_csrf" th:content="${_csrf?.token}"/>
+<meta name="_csrf_header" th:content="${_csrf?.headerName}"/>
 
 <!--/* 1. 맨 위의 layout fragment 의 title 내용으로 교체 되어짐 */-->
 <title th:replace="${title}">레이아웃 타이틀</title>

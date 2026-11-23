@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/layout_main :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}" 
+      lang="ko" 
+      xmlns:th="http://www.thymeleaf.org"> 
+<!-- ::title 은   현재 페이지의 title   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 첫번째 파라미터로 전달한다. -->
+<!-- ::link  는   현재 페이지의 link    태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 두번째 파라미터로 전달한다. -->
+<!-- ::style 은   현재 페이지의 style   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 세번째 파라미터로 전달한다. -->
+<!-- ::script 는  현재 페이지의 script  태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 네번째 파라미터로 전달한다. -->
+<!-- ::div.container 은 현재 페이지의 div.container 태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 다섯번째 파라미터로 전달한다. --> 
+<!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
+
+<head>
+	<meta charset="UTF-8">
+	<title>셰프 목록</title>
+	
+	<link rel="stylesheet" href="">
+	
+	<style type="text/css">
+		.chef-wrap {
+			background-color: #ffffff;
+			border:1px solid #efefef;
+		}
+	</style>
+	
+	<!--/* 
+	      자바스크립트 인라인 
+	      th:inline="javascript" 은 스크립트 태그 내에서 Thymeleaf 문법([[...]])을 해석할 수 있게 해주는 설정이다.
+	      JavaScript 안에서 Thymeleaf 값을 넣을 때는 th:inline="javascript" 와 /*[[뭐뭐뭐]]*/ 구문을 사용해야 한다. 
+	*/-->
+	<script th:inline="javascript">
+	 /*<![CDATA[*/
+	 /*]]>*/	
+	</script>
+</head>
+<body>
+  <div class="container chef-wrap rounded p-3">
+  	<!--/* 상단 랩 */-->
+  	<div class="tit-wrap container-fluid row m-auto px-0">
+  		<!--/* 탭 버튼 */-->
+  		<div class="nav-wrap col-12 col-lg-9">  			
+  			<ul class="nav nav-tabs" id="myTab" role="tablist">
+			  <li class="nav-item" role="presentation">
+			    <button class="nav-link active" id="chef" data-bs-toggle="tab" data-bs-target="#chef-pane" type="button" role="tab" aria-controls="chef-pane" aria-selected="true">쉐프</button>
+			  </li>
+			  <li class="nav-item" role="presentation">
+			    <button class="nav-link" id="f-chef" data-bs-toggle="tab" data-bs-target="#f-chef-pane" type="button" role="tab" aria-controls="f-chef-pane" aria-selected="false">팔로잉 쉐프</button>
+			  </li>
+			</ul>
+  		</div>
+  		<!--/* 검색 바 */-->
+  		<div class="search-wrap col-12 col-lg-3">
+  			<div class="input-group">
+			  <input type="search" class="form-control" placeholder="쉐프 닉네임을 입력하세요." aria-label="검색어">
+			  <button class="btn btn-primary" type="submit">검색</button>
+			</div>
+  		</div>		
+  	</div>
+  	
+	<!--/* 쉐프 신청 */-->
+	<div class="chef-apply-wrap">
+		<div class="chef-apply">
+			<a href="#">
+				<img alt="쉐프 신청 배너" src="">
+			</a>
+		</div>
+	</div>
+	
+	
+	<!-- 탭 콘텐츠 영역 -->
+	<div class="tab-content" id="myTabContent">
+	  <div class="tab-pane fade show active p-3" id="chef-pane" role="tabpanel" aria-labelledby="chef-tab" tabindex="0">쉐프 목록입니다.</div>
+	  <div class="tab-pane fade p-3" id="f-chef-pane" role="tabpanel" aria-labelledby="f-chef-tab" tabindex="0">팔로윙 쉐프 목록입니다.</div>
+	</div>
+	
+	
+  </div> 
+  
+</body>
+</html> 
