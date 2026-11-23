@@ -22,7 +22,35 @@
 		from tbl_chef_apply_list
 		where trunc(applicant_date) = trunc(sysdate)
 	</select>
-
+	
+	<resultMap type="HashMap" id="todaymap">
+		<result property="qna_subject" column="qna_subject" javaType="String" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="question_date" column="question_date" javaType="java.time.LocalDateTime" />
+		<result property="qna_status" column="qna_status" javaType="String" />
+	</resultMap>
+	
+	<select id="todayqna" resultMap="todaymap">
+		select qna_subject, nickname, question_date, qna_status
+		from tbl_qna A join tbl_user B
+		on A.fk_userseq = B.userseq
+		where trunc(question_date) = trunc(sysdate)
+		order by question_date desc
+		fetch first 5 rows only
+	</select>
+	
+	<resultMap type="HashMap" id="eventmap">
+		<result property="eventseq" column="eventseq" javaType="Integer" />
+		<result property="event_enddate" column="event_enddate" javaType="java.time.LocalDateTime" />
+		<result property="event_subject" column="event_subject" javaType="String" />
+	</resultMap>
+	
+	<select id="endevent" resultMap="eventmap">
+		select eventseq, trunc(event_enddate), event_subject
+		from tbl_event
+		where trunc(event_enddate) > trunc(sysdate)
+		order by eventseq desc
+	</select>
 
 </mapper>
 

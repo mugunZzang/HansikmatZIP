@@ -12,304 +12,8 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자페이지</title>
-<link rel="stylesheet" href="">
-
+<link rel="stylesheet" type="text/css" th:href="@{/css/km/adminmain.css}">
 <style type="text/css">
-
-body {
-    background-color: #f5f7f9;
-}
-
-/* 전체 대시보드 */
-.admin-dashboard {
-    width: 100%;
-    padding: 40px 50px 0;
-    box-sizing: border-box;
-}
-
-/* TODAY 영역 */
-.today-section {
-    width: calc(100% - 80px);
-    margin: 30px auto 0; /* 위쪽 여백 30px */
-    margin-left: auto;
-    margin-right: auto;
-    padding: 25px 20px 20px;
-    background-color: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.today-title {
-    font-size: 30px;
-    color: #17658a;
-    margin: 0 0 25px 5px;
-    font-weight: bold;
-}
-
-/* 통계 항목 */
-.today-stats {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 20px;
-    width: 100%;
-    align-items: stretch;
-    box-sizing: border-box;
-}
-/* 공통 통계 박스 */
-.today-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-
-    padding: 20px 25px;
-    background-color: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
-
-    min-width: 0;
-    box-sizing: border-box;
-}
-
-.today-info {
-    flex: 1;
-    font-size: 17px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.6;
-    white-space: nowrap;
-}
-
-.today-divider {
-    display: block !important;
-    width: 100% !important;
-    height: 3px !important;
-    background-color: #17658a !important;
-    border: 0 !important;
-    opacity: 1 !important;
-    margin: 30px 0 !important;
-}
-
-/* 원형 아이콘 */
-.today-icon {
-    width: 90px;
-    height: 90px;
-    min-width: 90px;
-
-    border-radius: 50%;
-    background-color: #17658a;
-    border: 1px solid #123f55;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    text-align: center;
-
-    margin-left: auto;
-}
-
-/* 하단 영역 */
-.dashboard-bottom {
-    display: grid;
-    grid-template-columns: 40% minmax(0, 1fr);
-    gap: 20px;
-
-    width: calc(100% - 80px);
-    margin: 30px auto 0;
-    padding: 0;
-
-    box-sizing: border-box;
-}
-
-/* 이벤트 영역 */
-.event-section,
-.recipe-section {
-    background-color: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 5px;
-    padding: 25px 20px;
-    box-sizing: border-box;
-    min-height: 280px;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.more-btn {
-    background-color: white;
-    border: 1px solid #17658a;
-    padding: 7px 16px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.more-btn:hover {
-    background-color: #17658a;
-    color: white;
-}
-
-/* 이벤트 카드 */
-.event-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.event-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #17658a;
-    border: 1px solid #123f55;
-    color: white;
-    padding: 18px 15px;
-    min-height: 75px;
-    box-sizing: border-box;
-    gap: 10px;
-}
-
-.event-name {
-    font-size: 17px;
-    font-weight: bold;
-}
-
-.event-date {
-    font-size: 14px;
-    margin-top: 6px;
-}
-
-.event-detail {
-    background-color: white;
-    color: #17658a;
-    border: 1px solid #123f55;
-    padding: 9px 13px;
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.event-detail:hover {
-    background-color: #e8f2f7;
-}
-
-
-.recipe-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-/* 파이 그래프 임시 영역 */
-.recipe-chart {
-    width: 190px;
-    height: 190px;
-    border-radius: 50%;
-    background-color: #17658a;
-    border: 1px solid #123f55;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    text-align: center;
-    margin-left: 500px
-}
-
-/* 문의사항 영역 */
-.today-qna {
-    width: 100%;
-    min-width: 0;
-    align-items: flex-start;
-}
-.today-qna .today-info {
-    width: 100%;
-    display: block;
-}
-
-.today-qna-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.today-qna-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: center;
-}
-
-.today-qna-table th {
-    background-color: #f1f4f7;
-    padding: 10px 5px;
-    border-bottom: 1px solid #ddd;
-}
-
-.today-qna-table td {
-    padding: 12px 5px;
-    border-bottom: 1px solid #eee;
-}
-
-.today-qna-table td:first-child {
-    text-align: left;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.qna-wait {
-    color: #e05a5a;
-    font-weight: bold;
-}
-
-.qna-complete {
-    color: #258a65;
-    font-weight: bold;
-}
-
-
-/* 반응형 */
-@media (max-width: 1200px) {
-    .today-stats {
-        grid-template-columns: repeat(2, 1fr);
-        row-gap: 25px;
-    }
-
-    .dashboard-bottom {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 550px) {
-    .today-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .today-item {
-        justify-content: space-between;
-    }
-
-    .dashboard-bottom {
-        padding: 25px 15px;
-    }
-
-    .today-info {
-        white-space: normal;
-    }
-}
 
 </style>
 
@@ -461,7 +165,126 @@ body {
   				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
   			  }
             });// end of $.ajax({
+            
+         // 오늘의 문의사항 구하기
+            $.ajax({
+                  url: /*[[@{/km/admin/todayqna}]]*/"",
+                  type: "get",
+           //     headers: {
+           //        "Authorization": `Bearer ${jwttoken}`
+           //     },
+           //     data: $("form[name=addFrm]").serialize(),
+                  dataType: "json",
+                
+                  // ▣ CSRF AJAX 사용시 설정 및 실행하기
+          //        beforeSend: function(xhr) {  
+          //         xhr.setRequestHeader(header, csrftoken);
+                     // 데이터를 전송하기 전에 헤더에 csrf값을 넣어준다.
+          //        },
+                  
+                    success: function(json) {
+                    // console.log(JSON.stringify(json));
+ 				
+    				let v_html = ``;
+    				if(json.length > 0) {
+    					$.each(json, function(index, item){
+    				      const qna_subject = item.qna_subject;
+                          const nickname = item.nickname;
+                          
+                          v_html += `<tr>
+                          			     <td>${qna_subject}</td>
+                          			     <td>${nickname}</td>  
+                          			     <td>${question_date}</td>
+                          			     <td>${qna_status}</td>
+    			                     </tr>`; 
+    		              
+    					}); // end of $.each(json, function(index, item{}))-------------------------------
+    					
+    				} else {
+    					v_html += `<tr>
+    								<td colspan='4' style="text-align:center;">오늘의 문의사항이 없습니다.</td>
+    							   </tr>`
+    				}
+    				
+    				$('tbody#qnabody').html(v_html);      
+                  },
+            /*      error: function(request, status, error){
+                     switch(request.status) {
+                        case 401:
+                            location.href = contextPath+"exception/noAuthentication";
+                           break;
+                        
+                        case 403:
+                            location.href = contextPath+"exception/accessDeny";
+                           break;
+                           
+                        default:
+                           console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);     
+                           break;     
+                     }
+                  } */
+                  error: function(request, status, error){
+    				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+    			  }
+              });// end of $.ajax({
+            	  
+           // 마감임박 이벤트 구하기
+              $.ajax({
+                    url: /*[[@{/km/admin/endevent}]]*/"",
+                    type: "get",
+             //     headers: {
+             //        "Authorization": `Bearer ${jwttoken}`
+             //     },
+             //     data: $("form[name=addFrm]").serialize(),
+                    dataType: "json",
+                  
+                    // ▣ CSRF AJAX 사용시 설정 및 실행하기
+            //        beforeSend: function(xhr) {  
+            //         xhr.setRequestHeader(header, csrftoken);
+                       // 데이터를 전송하기 전에 헤더에 csrf값을 넣어준다.
+            //        },
+                    
+                      success: function(json) {
+                      // console.log(JSON.stringify(json));
+   				
+      				let v_html = ``;
+      				if(json.length > 0) {
+      					$.each(json, function(index, item){
+      				        const eventseq = item.eventseq;
+                            const event_subject = item.event_subject;
+                            const event_enddate = item.event_enddate    
+                            // 여기서부터 할 차례
+                            v_html += ``; 
+      		              
+      					}); // end of $.each(json, function(index, item{}))-------------------------------
+      					
+      				} else {
+      					v_html += `<div>현재 진행중인 이벤트가 없습니다.</div>`
+      				}
+      				
+      				$('tbody#qnabody').html(v_html);      
+                    },
+              /*      error: function(request, status, error){
+                       switch(request.status) {
+                          case 401:
+                              location.href = contextPath+"exception/noAuthentication";
+                             break;
+                          
+                          case 403:
+                              location.href = contextPath+"exception/accessDeny";
+                             break;
+                             
+                          default:
+                             console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);     
+                             break;     
+                       }
+                    } */
+                    error: function(request, status, error){
+      				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+      			  }
+                });// end of $.ajax({
 		
+            	  
 		
 	});// end of $(function(){});
 	
@@ -489,26 +312,13 @@ body {
                         <tr>
                             <th>문의 제목</th>
                             <th>작성자</th>
-                            <th>답변</th>
+                            <th>문의일시</th>
+                            <th>접수상태</th>
                         </tr>
                     </thead>
 
-                    <tbody>
-                        <tr>
-                            <td>로그인이 되지 않습니다.</td>
-                            <td>user01</td>
-                            <td class="qna-wait">미답변</td>
-                        </tr>
-                        <tr>
-                            <td>레시피 등록 관련 문의</td>
-                            <td>user02</td>
-                            <td class="qna-complete">답변완료</td>
-                        </tr>
-                        <tr>
-                            <td>멤버십 결제 문의</td>
-                            <td>user03</td>
-                            <td class="qna-wait">미답변</td>
-                        </tr>
+                    <tbody id="qnabody">
+
                     </tbody>
                 </table>
 
@@ -576,7 +386,7 @@ body {
                         </div>
                     </div>
 
-                    <button type="button" class="event-detail">
+                    <button type="button" class="event-detail">  <!-- 이벤트 페이지 url연결 -->
                         신청현황 보기
                     </button>
                 </div>

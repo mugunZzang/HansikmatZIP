@@ -1,5 +1,8 @@
 package com.spring.app.admin.km.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import com.spring.app.admin.km.model.AdminDAO;
@@ -35,5 +38,20 @@ public class AdminService_imple implements AdminService {
 		
 		return adminDao.todaynewchef();
 	}
+
+	// 문의사항 불러오기 5개만
+	@Override
+	public List<Map<String, String>> todayqna() {
+		
+		return adminDao.todayqna();
+	}
+	
+	// 마감임박 이벤트
+	@Override
+	public List<Map<String, String>> endevent() {
+		
+		return adminDao.endevent();
+	}
+	
 	
 }
