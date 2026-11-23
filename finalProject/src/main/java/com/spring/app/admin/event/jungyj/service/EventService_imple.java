@@ -140,7 +140,7 @@ public class EventService_imple implements EventService {
 			// String today = LocalDate.now().toString();
 
 			if ("ended".equals(status)) {
-	            condition = condition.and(event.eventEnddate.lt(today));
+				condition = condition.and(event.eventDrawingdate.lt(today));
 	        } else {
 	            condition = condition.and(event.eventEnddate.goe(today));
 	        }
@@ -234,12 +234,30 @@ public class EventService_imple implements EventService {
 	
 	// 진행 중인 이벤트 개수
 	public int getOngoingCount() {
-	    return eventRepository.countByEventEnddateGreaterThanEqual(LocalDate.now());
+		return eventRepository.countByEventDrawingdateGreaterThanEqual(LocalDate.now());
 	}
 
 	// 종료된 이벤트 개수
 	public int getEndedCount() {
-	    return eventRepository.countByEventEnddateLessThan(LocalDate.now());
+		return eventRepository.countByEventDrawingdateLessThan(LocalDate.now());
+	}
+	
+	// 상단 고정용: 당첨 선정 대기 목록 조회 (종료일 < 오늘 <= 발표일)
+	@Override
+	public List<EventDTO> getDrawingList() {
+		// 
+	    List<Event> events = eventRepository.findDrawingEvents(LocalDate.now());
+
+	    List<EventDTO> dtoList = events.stream()
+	            .map(EventDTO::new)
+	            .toList();
+
+	    for (EventDTO dto : dtoList) {
+	        long count = entryRepository.countByFkEventseq(dto.getEventseq());
+	        dto.setEntryCount(count);
+	    }
+
+	    return dtoList;
 	}
 		
 	// 이벤트 1건 조회

@@ -161,6 +161,9 @@ public class EventController {
 	    model.addAttribute("sizePerPage", sizePerPage);
 	    // === 페이지바 만들기 끝 === //
 	    
+	    if ("ongoing".equals(status)) {
+	        model.addAttribute("drawingList", eventService.getDrawingList());
+	    }
 		
 		model.addAttribute("status", status);
 		model.addAttribute("ongoingCount", eventService.getOngoingCount());
@@ -192,12 +195,20 @@ public class EventController {
 	                                               .filter(entry -> entry.getChk_win() == 1)
 	                                               .toList();
 		
-	    boolean isDrawingPassed = LocalDate.now().isAfter(eventDto.getEvent_drawingdate());
+	    
+	    LocalDate today = LocalDate.now();
+	    
+	    // 종료일 < 오늘 날짜 <= 발표일
+	    boolean canDraw = today.isAfter(eventDto.getEvent_enddate())
+	                   && !today.isAfter(eventDto.getEvent_drawingdate());
+
+	    mav.addObject("canDraw", canDraw);
 	    
 		mav.addObject("eventDto", eventDto);
 		mav.addObject("entryList", entryList);   // 중단 카드: 참가한 레시피
 	    mav.addObject("winnerList", winnerList); // 하단 카드: 당첨 레시피
-	    mav.addObject("isDrawingPassed", isDrawingPassed); // 발표일이 지났는지 여부
+	    
+	    
 	    
 		mav.setViewName("admin/jungyj/event/eventDetail");
 		//  src/main/resources/templates/admin/jungyj/event/eventDetail.html 페이지를 만들어야 한다.

@@ -1,102 +1,114 @@
 body {
-    background-color: #f4f6f9;
+    background-color: #ffffff;
+    color: #111827;
 }
 
 .event-list-wrapper {
-    max-width: 1140px;
+	max-width: 1040px;
 }
 
-/* 밑줄형 깔끔한 탭 스타일 */
+/* 언더라인 탭 */
 .event-tabs {
-    border-bottom: 2px solid #e2e8f0;
-    gap: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 24px;
 }
-
 .event-tabs .nav-link {
-    padding: 0.75rem 0.25rem;
-    color: #64748b;
-    font-weight: 600;
+    padding: 10px 2px;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border: none;
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: color 0.15s ease;
+    margin-bottom: -1px;
 }
-
 .event-tabs .nav-link:hover {
-    color: #0d6efd;
+    color: #111827;
+}
+.event-tabs .nav-link.active {
+    color: #111827;
+    font-weight: 700;
+    border-bottom-color: #111827;
 }
 
-.event-tabs .nav-link.active {
-    color: #0d6efd;
-    border-bottom-color: #0d6efd;
+.tab-num {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-left: 4px;
+    font-weight: 600;
+}
+.tab-num-alert {
+    color: #dc2626;
 }
 
 /* 이벤트 카드 */
-.event-item-card {
-    border: 1px solid #e9ecef;
-    border-radius: 0.85rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+.event-card {
+    padding: 18px 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
-
-.event-item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+.event-card:hover {
     border-color: #cbd5e1;
+    background-color: #fafafa;
 }
 
-/* 왼쪽 배너 썸네일 (1200x630 비율) */
+/* 썸네일 크기 확대 */
 .event-thumb {
-    width: 240px;
-    height: 126px;
-    border-radius: 0.6rem;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+	width: 280px;
+    height: 175px;
+    border-radius: 8px;
     overflow: hidden;
+    background-color: #f3f4f6;
+    border: 1px solid #f1f5f9;
 }
-
 .event-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.25s ease;
 }
-
-.event-item-card:hover .event-thumb img {
-    transform: scale(1.03); /* 카드에 마우스 올리면 썸네일이 살짝 확대 */
-}
-
-/* 제목 링크 */
-.event-title-link h5 {
-    color: #1e293b;
-    transition: color 0.15s ease;
-}
-
-.event-title-link:hover h5 {
-    color: #0d6efd;
-}
-
-/* 신청현황 버튼 */
-.applicant-btn {
-    background-color: #f8fafc;
-    border: 1px solid #dee2e6;
-    border-radius: 0.6rem;
-    color: #334155;
-    font-size: 0.9rem;
-    transition: all 0.15s ease;
-}
-
-.applicant-btn:hover {
-    background-color: #eff6ff;
-    border-color: #93c5fd;
-    color: #0d6efd;
-}
-
-/* 모바일 화면에서는 썸네일을 가로 꽉 차게 */
 @media (max-width: 767.98px) {
     .event-thumb {
         width: 100%;
-        height: auto;
-        aspect-ratio: 1200 / 630;
+        height: 190px;
     }
 }
+
+/* 상태 태그 */
+.status-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+.tag-drawing {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+.tag-ended {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+/* 제목 & 메타 */
+.event-title-link {
+    color: #111827;
+    text-decoration: none;
+}
+.event-title-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+.meta-dot {
+    margin: 0 6px;
+    color: #d1d5db;
+}
+
+/* 빈 목록 */
+.event-empty {
+    border: 1px dashed #e5e7eb;
+    border-radius: 12px;
+}
+

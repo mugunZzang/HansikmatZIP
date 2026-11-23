@@ -154,7 +154,7 @@
 						      th:text="'총 ' + ${#lists.size(entryList)} + '건'">총 0건</span>
                     </div>
                     <span class="text-muted small"
-                          th:if="${!isDrawingPassed}">
+                          th:if="${canDraw}">
                           당첨 처리할 레시피를 선택하세요.
                      </span>
                 </div>
@@ -189,7 +189,7 @@
 
                 <!-- 우측 하단: 당첨 / 당첨 취소 버튼 (Ajax용) -->
                 <div class="d-flex justify-content-end gap-2 pt-2 border-top"
-                     th:if="${!isDrawingPassed}">
+                     th:if="${canDraw}">
                     <button type="button" class="btn btn-primary px-4 fw-semibold" id="btnWin">
                         <i class="fa-solid fa-check me-1"></i> 당첨
                     </button>

@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
 import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
-import com.spring.app.entity.jungyj.Event;
 
 public interface EventService {
 
@@ -36,6 +35,9 @@ public interface EventService {
 	void winEntries(int eventseq, List<Integer> entryseqs);
 
 	Page<EventDTO> getPageEvent(String status, int currentShowPageNo, int sizePerPage);
+	
+	// 발표 종료된 리스트
+	List<EventDTO> getDrawingList();
 
 
 }
