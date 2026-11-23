@@ -55,7 +55,7 @@ public class Event {
 	
 	@Column(name="event_total_winners", columnDefinition="Number", nullable = false)
 	private int eventTotalWinners;
-	
+		
 	@PrePersist
 	public void prePersist() {
 	    if (this.eventEnddate != null && this.eventDrawingdate == null) {

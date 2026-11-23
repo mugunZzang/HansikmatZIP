@@ -19,4 +19,6 @@ public class EventUser {
 
     @Column(name = "nickname")
     private String nickname;
+    
+
 }

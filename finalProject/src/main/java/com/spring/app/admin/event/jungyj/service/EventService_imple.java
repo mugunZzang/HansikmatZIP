@@ -134,7 +134,21 @@ public class EventService_imple implements EventService {
 	// 이벤트 참가 레시피 목록 조회
 	@Override
 	public List<EventEntryDTO> getEntryList(int eventseq) {
-	    return entryRepository.findEntriesByEventseq(eventseq);
+		List<Entry> entries = entryRepository.findEntriesByEventseq(eventseq);
+
+		List<EventEntryDTO> dtoList = entries.stream()
+		                                     .map(entity -> EventEntryDTO.builder()
+		                                    		                     .entryseq(entity.getEntryseq())
+		                                    		                     .nickname(entity.getEventUser().getNickname())
+		                                    		                     .r_subject(entity.getEventRecipe().getRSubject())
+		                                    		                     .fk_eventseq(entity.getFkEventseq())
+		                                    		                     .fk_userseq(entity.getFkUserseq())
+		                                    		                     .fk_recipeseq(entity.getFkRecipeseq())
+		                                    		                     .chk_win(entity.getChkWin())
+		                                    		                     .build()
+		                                          )
+		                                     .toList();
+	    return dtoList;
 	}
 	
 	// 이벤트 수정하기

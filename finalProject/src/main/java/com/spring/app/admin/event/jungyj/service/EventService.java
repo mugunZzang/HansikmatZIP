@@ -30,6 +30,7 @@ public interface EventService {
 
 	List<EventEntryDTO> getEntryList(int eventseq);
 
+	// 당첨 처리하기
 	void winEntries(int eventseq, List<Integer> entryseqs);
 
 

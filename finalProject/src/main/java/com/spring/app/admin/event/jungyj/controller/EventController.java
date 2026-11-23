@@ -158,8 +158,8 @@ public class EventController {
 	
 	@PostMapping("/win")
 	@ResponseBody
-	public ResponseEntity winEntries(@RequestParam("eventseq") Integer eventseq,
-	                                 @RequestParam("entryseqs") List<Integer> entryseqs) {
+	public ResponseEntity<Map<String, Object>> winEntries(@RequestParam("eventseq") Integer eventseq,
+	                                                      @RequestParam("entryseqs") List<Integer> entryseqs) {
 		Map<String, Object> result = new HashMap<>();
 	    try {
 	        eventService.winEntries(eventseq, entryseqs);

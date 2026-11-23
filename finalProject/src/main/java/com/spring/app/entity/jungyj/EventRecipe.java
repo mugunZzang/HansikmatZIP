@@ -23,4 +23,6 @@ public class EventRecipe {
     @Column(name = "r_imgname")
     private String rImgname;
     
+
+    
 }

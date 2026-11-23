@@ -2,9 +2,12 @@ package com.spring.app.entity.jungyj;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,5 +40,22 @@ public class Entry {
 
     @Column(name = "chk_win", columnDefinition = "NUMBER(1) default 0", nullable = false)
     private int chkWin;
+    
+    
+    // 연관관계 정의
+    // 단방향 연관관계로 정의함
+    // 단방향? 양방향? 두 개가 존재함
+    // 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_eventseq", insertable = false, updatable = false)
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_recipeseq", insertable = false, updatable = false)
+    private EventRecipe eventRecipe;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_userseq", insertable = false, updatable = false)
+    private EventUser eventUser;
 
 }
