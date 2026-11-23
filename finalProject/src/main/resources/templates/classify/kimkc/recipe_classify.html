@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout/layout_main :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}" 
+      lang="ko" 
+      xmlns:th="http://www.thymeleaf.org">
+				
 <!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
 
-<head>
-<meta charset="UTF-8">
-<title>한식맛ZIP</title>
+
 
 
 <!--/* Bootstrap CSS */--> 
@@ -35,33 +36,33 @@
 /*<![CDATA[*/
 	$(function(){
 		
+		// 검색조건 유지하기 
+	    const resultMap = /*[[${resultMap}]]*/ {};
+
+	    if (resultMap) {
+	        if (resultMap.cf_type)       $(`input:radio[name="cf_type"][value="${resultMap.cf_type}"]`).prop('checked', true);
+	        if (resultMap.cf_main)       $(`input:radio[name="cf_main"][value="${resultMap.cf_main}"]`).prop('checked', true);
+	        if (resultMap.cf_situation)  $(`input:radio[name="cf_situation"][value="${resultMap.cf_situation}"]`).prop('checked', true);
+	        if (resultMap.cf_recipe)     $(`input:radio[name="cf_recipe"][value="${resultMap.cf_recipe}"]`).prop('checked', true);
+	        if (resultMap.cf_membership) $(`input:radio[name="cf_membership"][value="${resultMap.cf_membership}"]`).prop('checked', true);
+	        if (resultMap.cf_sort)       $(`input:radio[name="cf_sort"][value="${resultMap.cf_sort}"]`).prop('checked', true);
+
+	        if (resultMap.cf_time)       $('select[name="cf_time"]').val(resultMap.cf_time);
+	        if (resultMap.cf_level)      $('select[name="cf_level"]').val(resultMap.cf_level);
+	        if (resultMap.cf_people)     $('select[name="cf_people"]').val(resultMap.cf_people);
+	    }
+	
+		
+		
 		// 검색 버튼 클릭 시
 		$('button#btn-search').on('click', function() {
 			goSearch(1);	
 		})
 		
-		
-		
-		
-		/*
-		// 검색 버튼 클릭 시
-		$('button#btn-search').on("click", function() {
-			const type = $('input:radio[name=cf_type]:checked').val();
-			const main = $('input:radio[name=cf_main]:checked').val();
-			const situation = $('input:radio[name=cf_situation]:checked').val();
-			const how = $('input:radio[name=cf_how]:checked').val();
-			const time = $('select#time').val();
-			const difficulty = $('select#difficulty').val();
-			const membercnt = $('select#membercnt').val();
-			const membership = $('input:radio[name="cf_membership"]:checked').val();
-			
-			
-			goSearch(type, main, situation, how, time, difficulty, membercnt, membership);
-			// 값 다른 방식으로 갖고오기
+		// 정렬 기준 선택 시
+		$('input:radio[name="cf_sort"]').on('change', function() {
+			goSearch(1);
 		});
-		
-		*/
-		
 		
 		
 	});
@@ -73,8 +74,11 @@
 	function goSearch(currentShowPageNo) {
 		//console.log(`종류별 : ${type}, 주재료별 : ${main}, 상황별 : ${situation}, 방법별 : ${how}, 소요시간 : ${time}, 난이도 : ${difficulty}, 인원수 : ${membercnt}, 멤버십 : ${membership}`);
 		
+		const cf_sort = $('input:radio[name="cf_sort"]:checked').val();
+		
 		const frm = $('form[name="classifyFrm"]');
 		frm.find('input[name="currentShowPageNo"]').val(currentShowPageNo);
+		frm.find('input[name="cf_sort"]').val(cf_sort); 
 		frm.attr('method', 'get');
 		frm.attr('action', /*[[@{/classify/list}]]*/ '');
 		frm.submit();
@@ -179,22 +183,22 @@
 	    		<div class="cf-row d-flex align-items-start mb-3">
 	    			<div class="cf-label">방법별</div>
 	    			<div class="cf-list d-flex flex-wrap gap-2">
-	    				<input type="radio" class="btn-check" id="r4_option1" name="cf_how" value="전체" checked>
+	    				<input type="radio" class="btn-check" id="r4_option1" name="cf_recipe" value="전체" checked>
 	  					<label class="btn cf-btn" for="r4_option1">전체</label>
 	
-		    			<input type="radio" class="btn-check" id="r4_option2" name="cf_how" value="볶음/조림/찜">
+		    			<input type="radio" class="btn-check" id="r4_option2" name="cf_recipe" value="볶음/조림/찜">
 	  					<label class="btn cf-btn" for="r4_option2">볶음/조림/찜</label>
 	
-	  					<input type="radio" class="btn-check" id="r4_option3" name="cf_how" value="끓이기">
+	  					<input type="radio" class="btn-check" id="r4_option3" name="cf_recipe" value="끓이기">
 	  					<label class="btn cf-btn" for="r4_option3">끓이기</label>
 	
-	  					<input type="radio" class="btn-check" id="r4_option4" name="cf_how" value="전/구이/튀김">
+	  					<input type="radio" class="btn-check" id="r4_option4" name="cf_recipe" value="전/구이/튀김">
 	  					<label class="btn cf-btn" for="r4_option4">전/구이/튀김</label>
 	
-	  					<input type="radio" class="btn-check" id="r4_option5" name="cf_how" value="무침/회">
+	  					<input type="radio" class="btn-check" id="r4_option5" name="cf_recipe" value="무침/회">
 	  					<label class="btn cf-btn" for="r4_option5">무침/회</label>
 	
-	  					<input type="radio" class="btn-check" id="r4_option6" name="cf_how" value="에어프라이어/전자레인지">
+	  					<input type="radio" class="btn-check" id="r4_option6" name="cf_recipe" value="에어프라이어/전자레인지">
 	  					<label class="btn cf-btn" for="r4_option6">에어프라이어/전자레인지</label>
 	    			</div>
 	    		</div>
@@ -203,21 +207,21 @@
 	    		<div class="row g-3 mb-3 align-items-center">
 	    			<div class="col-md-4 d-flex align-items-center">
 	    				<div class="cf-label pt-0">조리시간</div>
-	    				<select id="time" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+	    				<select id="time" class="form-select form-select-sm w-auto" name="cf_time" style="min-width: 130px;">
 		    				<option value="전체" selected>전체</option>
-		    				<option value="5분 이내">5분 이내</option>
-		    				<option value="10분 이내">10분 이내</option>
-		    				<option value="15분 이내">15분 이내</option>
-		    				<option value="20분 이내">20분 이내</option>
-		    				<option value="30분 이내">30분 이내</option>
-		    				<option value="1시간 이내">1시간 이내</option>
-		    				<option value="1시간 이상">1시간 이상</option>
+		    				<option value="5분이내">5분 이내</option>
+		    				<option value="10분이내">10분 이내</option>
+		    				<option value="15분이내">15분 이내</option>
+		    				<option value="20분이내">20분 이내</option>
+		    				<option value="30분이내">30분 이내</option>
+		    				<option value="1시간이내">1시간 이내</option>
+		    				<option value="1시간이상">1시간 이상</option>
 		    			</select>
 	    			</div>
 	    			
 	    			<div class="col-md-4 d-flex align-items-center">
 	    				<div class="cf-label pt-0">난이도</div>
-	    				<select id="difficulty" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+	    				<select id="level" class="form-select form-select-sm w-auto" name="cf_level" style="min-width: 130px;">
 		    				<option value="전체" selected>전체</option>
 		    				<option value="초급(요린이)">초급(요린이)</option>
 		    				<option value="중급">중급</option>
@@ -227,7 +231,7 @@
 	    			
 	    			<div class="col-md-4 d-flex align-items-center">
 	    				<div class="cf-label pt-0">인원수</div>
-	    				<select id="membercnt" class="form-select form-select-sm w-auto" style="min-width: 130px;">
+	    				<select id="people" class="form-select form-select-sm w-auto" name="cf_people" style="min-width: 130px;">
 		    				<option value="전체" selected>전체</option>
 		    				<option value="1인분">1인분</option>
 		    				<option value="2인분">2인분</option>
@@ -257,10 +261,14 @@
 	    		<!--/* 페이지 번호 저장용 */-->
 	    		<input type="hidden" name="currentShowPageNo"/>  
 	    	
+	    		<!--/* 정렬기준 저장용 */-->
+	    		<input type="hidden" name="cf_sort"/>
+	    		
 	    	
 	    		<!--/* 검색 버튼 */-->
 	    		<div class="d-grid mb-4">
 	    			<button type="button" id="btn-search" class="btn btn-dark rounded-pill py-2 fw-bold fs-5">검색</button>
+	    			
 	    		</div>
     		
     		
@@ -277,7 +285,7 @@
     		<!--/* 총 개수 & 정렬 탭 */-->
     		<div class="recipe-tab-wrap d-flex justify-content-between align-items-center mb-4">
     			<div class="fs-6">
-    				총 <span id="total-count" class="fw-bold fs-3">100,000</span>개의 한식 레시피가 있습니다.
+    				총 <span id="total-count" class="fw-bold fs-3" th:text="${totalDataCount}"></span>개의 한식 레시피가 있습니다.
     			</div>
     			
     			<div class="sort-list d-flex gap-2">
@@ -293,36 +301,51 @@
     		<div class="recipe-content-wrap">
     			<div id="recipe-list" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
     				
-    				<!--/* 카드 1개 샘플 */-->
-    				<div class="col">
-    					<div class="recipe-content">
-    						<div class="recipe-thumb mb-2">
-    							<!--/* 이미지 없을 때 회색 배경으로 */-->
-    							<img src="" alt="" onerror="this.style.display='none'"/>
-    						</div>
-    						
-    						<div class="recipe-caption px-1">
-    							<div class="recipe-caption-title fw-bold mb-2 text-truncate">
-    								<a href="#" class="text-decoration-none text-dark">요리 제목</a>
-    							</div>
-    							
-    							<div class="recipe-caption-writer mb-2">
-    								<a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-secondary small">
-    									<img class="writer-avatar" src="" alt="" onerror="this.style.visibility='hidden'"/>
-    									<span>작성자 닉네임</span>
-    								</a>
-    							</div>
-    							
-    							<div class="recipe-caption-rating d-flex align-items-center gap-3 small">
-    								<span class="rating fw-semibold text-dark">
-    									<i class="fa-solid fa-star text-secondary me-1"></i>5.0
-    								</span>
-    								<span class="view-cnt text-muted">조회수 100</span>
-    							</div>
-    						</div>
-    					</div>
-    				</div>
-    				<!--/* 카드 1개 샘플 끝 */-->
+    				<!--/* 검색 결과가 없다면 */-->		
+    				<th:block th:if="${resultMap} == null">
+    					검색 결과가 없습니다.
+    				</th:block>
+    				
+    				<!--/* 검색 결과가 있다면	 */-->
+    				<th:block th:if="${resultMap} != null">
+    				
+    					<!--/* 카드 1개 샘플 */-->
+    					
+	    				<div class="col" th:each="recipe : ${recipeList	}">
+	    					<div class="recipe-content">
+	    						<div class="recipe-thumb mb-2">
+	    							<!--/* 이미지 없을 때 회색 배경으로 */-->
+	    							<img src="" alt="" onerror="this.style.display='none'"/>
+	    						</div>
+	    						
+	    						<div class="recipe-caption px-1">
+	    							<div class="recipe-caption-title fw-bold mb-2 text-truncate">
+	    								<a href="#" class="text-decoration-none text-dark"
+	    											th:text="${recipe.r_subject}">요리 제목</a>
+	    							</div>
+	    							
+	    							<div class="recipe-caption-writer mb-2">
+	    								<a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-secondary small">
+	    									<img class="writer-avatar" src="" alt="" onerror="this.style.visibility='hidden'"/>
+	    									<span th:text=${recipe.nickname}>작성자 닉네임</span>
+	    								</a>
+	    							</div>
+	    							
+	    							<div class="recipe-caption-rating d-flex align-items-center gap-3 small">
+	    								<span class="rating fw-semibold text-dark">
+	    									<i class="fa-solid fa-star text-secondary me-1" ></i><span th:text="${recipe.avg_rating}"></span>
+	    								</span>
+	    								<span class="view-cnt text-muted" th:text="${recipe.r_views}">조회수 100</span>
+	    							</div>
+	    						</div>
+	    					</div>
+	    				</div>
+	    				<!--/* 카드 1개 샘플 끝 */-->
+    					
+    					
+    				</th:block>
+    				
+    				
     				
     			</div>
     		</div>

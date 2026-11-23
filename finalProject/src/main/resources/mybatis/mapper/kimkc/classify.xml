@@ -10,36 +10,36 @@
 	    <where>
 	        A.view_check = '공개'
 	
-	        <if test="type_ca != null and type_ca != '' and type_ca != '전체'">
-	            AND A.type_ca = #{type_ca}
+	        <if test="cf_type != null and cf_type != '' and cf_type != '전체'">
+	            AND A.type_ca = #{cf_type}
 	        </if>
 	
-	        <if test="main_ca != null and main_ca != '' and main_ca != '전체'">
-	            AND A.main_ca = #{main_ca}
+	        <if test="cf_main != null and cf_main != '' and cf_main != '전체'">
+	            AND A.main_ca = #{cf_main}
 	        </if>
 	
-	        <if test="situation_ca != null and situation_ca != '' and situation_ca != '전체'">
-	            AND A.situation_ca = #{situation_ca}
+	        <if test="cf_situation != null and cf_situation != '' and cf_situation != '전체'">
+	            AND A.situation_ca = #{cf_situation}
 	        </if>
 	
-	        <if test="recipe_ca != null and recipe_ca != '' and recipe_ca != '전체'">
-	            AND A.recipe_ca = #{recipe_ca}
+	        <if test="cf_recipe != null and cf_recipe != '' and cf_recipe != '전체'">
+	            AND A.recipe_ca = #{cf_recipe}
 	        </if>
 	
-	        <if test="r_time != null and r_time != '' and r_time != '전체'">
-	            AND A.r_time = #{r_time}
+	        <if test="cf_time != null and cf_time != '' and cf_time != '전체'">
+	            AND A.r_time = #{cf_time}
 	        </if>
 	
-	        <if test="r_level != null and r_level != '' and r_level != '전체'">
-	            AND A.r_level = #{r_level}
+	        <if test="cf_level != null and cf_level != '' and cf_level != '전체'">
+	            AND A.r_level = #{cf_level}
 	        </if>
 	
-	        <if test="people != null and people != '' and people != '전체'">
-	            AND A.people = #{people}
+	        <if test="cf_people != null and cf_people != '' and cf_people != '전체'">
+	            AND A.people = #{cf_people}
 	        </if>
 	
-	        <if test="paid_check != null and paid_check != '' and paid_check != '전체'">
-	            AND A.paid_check = #{paid_check}
+	        <if test="cf_membership != null and cf_membership != '' and cf_membership != '전체'">
+	            AND A.paid_check = #{cf_membership}
 	        </if>
 	    </where>
 	</sql>
@@ -51,7 +51,7 @@
 	<!-- 검색 조건에 맞는 총 레시피 수 알아오기 --> 
 	<select id="getTotalDataCount" resultType="long" parameterType="HashMap">
 		 SELECT COUNT(*) 
-		 FROM tbl_recipe
+		 FROM tbl_recipe A
 		 <include refid="recipeFilter"/>
 	</select>
 
@@ -70,7 +70,7 @@
 		    NVL(C.avg_rating, 0) AS avg_rating,       
 		    A.paid_check
 		FROM
-		    tbl_recipe A JOIN tbl_member B
+		    tbl_recipe A JOIN tbl_user B
 		    	ON A.fk_userseq = B.userseq
 		    LEFT JOIN (
 		        SELECT
@@ -84,9 +84,14 @@
 		    ) C
 		        ON A.recipeseq = C.fk_recipesesq
 		<include refid="recipeFilter"/>
-		
-		
-		
+		<if test="cf_sort == '조회순'">
+			ORDER BY A.r_views DESC
+		</if>
+		<if test="cf_sort == '최신순'">
+			ORDER BY A.r_writedate DESC
+		</if>
+		OFFSET ( TO_NUMBER(#{currentShowPageNo}) - 1)*20 ROW
+		FETCH NEXT 20 ROW ONLY
 	</select>
 
 

@@ -6,9 +6,12 @@ import org.hibernate.annotations.ColumnDefault;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -29,15 +32,17 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "recipe_seq_gen")
     @SequenceGenerator(
             name = "recipe_seq_gen",
-            sequenceName = "seq_recipeseq", // 실제 오라클에 생성한 시퀀스명으로 변경하세요
+            sequenceName = "seq_recipeseq", 
             allocationSize = 1
     )
     @Column(name = "recipeseq")
     private Long recipeSeq;
 
     // 연관관계 매핑 (@ManyToOne)을 쓰실 경우 User 엔티티로 교체 가능
-    @Column(name = "fk_userseq", nullable = false)
-    private Long fkUserSeq;
+ // 연관관계 매핑으로 교체
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_userseq", nullable = false, updatable=false)
+    private User user;
 
     @Column(name = "r_subject", nullable = false, length = 100)
     private String rSubject;

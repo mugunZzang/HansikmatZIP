@@ -406,13 +406,19 @@ create table tbl_search_rank
 ,constraint FK_tbl_search_rank_fk_searchseq foreign key (fk_searchseq) references tbl_searchname(searchseq)
 );
 
+insert into tbl_user(userseq, userid, passwd, name, nickname, email, mobile, email_checked, summary, profile_orgfilename, profile_sysfilename)
+values(SEQ_USERSEQ.nextval, 'admin_knowhow', '1234', '관리자', '장금이의 비법', 'admin1@test.com', '010-1234-1234', 1, null, null, 'default.png');
+commit;
+
+
 
 select * from tab;
 select * from user_sequences;
 select * from EMBEDDING_TEXT_RECIPE;
 
+admin_knowhow
 
+select * from tbl_user;
+SELECT * FROM  TBL_RECIPE;
 
-
-
-
+nickname, profile_sysfilename
