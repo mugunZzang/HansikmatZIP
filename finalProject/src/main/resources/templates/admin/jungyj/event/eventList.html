@@ -138,15 +138,11 @@
         -->
 
         <!-- 페이지네이션 -->
-        <nav class="mt-5" aria-label="이벤트 페이지네이션">
-            <ul class="pagination justify-content-center gap-1">
-                <li class="page-item disabled"><a class="page-link rounded" href="#">이전</a></li>
-                <li class="page-item active"><a class="page-link rounded" href="#">1</a></li>
-                <li class="page-item"><a class="page-link rounded" href="#">2</a></li>
-                <li class="page-item"><a class="page-link rounded" href="#">3</a></li>
-                <li class="page-item"><a class="page-link rounded" href="#">다음</a></li>
-            </ul>
-        </nav>
+       <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">  
+           <!--/* [(${pageBar})] */--> <!--/* Model 에 들어있는 pageBar 는 태그가 들어간 경우이므로 [[${}]] 이 아닌 [(${})] 으로 해야 한다. */-->
+           <!--/* 또는 */-->
+           <span th:utext="${pageBar}"></span>
+      </div>
 
     </div>
 </div>

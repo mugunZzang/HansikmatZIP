@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
 import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
+import com.spring.app.entity.jungyj.Event;
 
 public interface EventService {
 
@@ -32,6 +34,8 @@ public interface EventService {
 
 	// 당첨 처리하기
 	void winEntries(int eventseq, List<Integer> entryseqs);
+
+	Page<EventDTO> getPageEvent(String status, int currentShowPageNo, int sizePerPage);
 
 
 }

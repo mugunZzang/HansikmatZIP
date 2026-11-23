@@ -1,16 +1,16 @@
 package com.spring.app.admin.event.jungyj.controller;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -84,7 +84,8 @@ public class EventController {
 	
 	@GetMapping("/list")
 	public String list(@RequestParam(name = "status", defaultValue = "ongoing") String status,     // 탭 조건,
-					   HttpServletRequest request,
+			           @RequestParam(value="pageno",    defaultValue="1") int currentShowPageNo, /* 현재 페이지번호 */   
+			           HttpServletRequest request,
 					   Model model) {
 		
 		// GET 방식인데 검색어가 있으므로 사용자가 URL 주소에 검색어를 직접 입력하여 장난칠 수 있으므로 
@@ -96,26 +97,71 @@ public class EventController {
 		}
 */
 		
-//		System.out.println("~~~확인용 status: " + status);
-		// ~~~확인용 status: ended
+		// 페이징 처리 시작
+		int sizePerPage = 5;     // 한 페이지당 보여질 행의 개수
+		int totalPage = 0;       // 전체 페이지 개수
+		long totalDataCount = 0; // 전체 데이터의 개수
+		String pageBar = "";     // 페이지바
 		
-		List<EventDTO> eventList = new ArrayList<>();
+		if(currentShowPageNo < 1) {
+			currentShowPageNo = 1;
+		}
 		
-		// 탭 조건
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("status", status);
+		Page<EventDTO> pageEvent = eventService.getPageEvent(status, currentShowPageNo, sizePerPage);
 		
-		eventList = eventService.list(paraMap);
+		totalPage = pageEvent.getTotalPages();    // 전체 페이지 개수
 		
-//		System.out.println(eventList.toString());
-/*
-	[
-		EventDTO(eventseq=2, event_subject=이벤트 등록 테스트 첫 번째 제목, event_startdate=2026-11-11, event_enddate=2026-11-26, event_drawingdate=2026-11-28, event_image_org_filename=디저트1.PNG, event_image_filename=20261120163017_02465249a1284dd68c1086c61c282dfa.PNG, event_contents=이벤트 등록 테스트 첫 번째 내용, event_total_winners=2, fileSize=null), 
-		EventDTO(eventseq=1, event_subject=이벤트 등록 테스트 첫 번째 제목, event_startdate=2026-11-11, event_enddate=2026-11-26, event_drawingdate=2026-11-28, event_image_org_filename=디저트1.PNG, event_image_filename=20261120161635_2088a64bc18d4ef982998f8551627bd9.PNG, event_contents=이벤트 등록 테스트 첫 번째 내용, event_total_winners=2, fileSize=null)
-	]
+		if(totalPage > 0 && currentShowPageNo > totalPage) {
+			currentShowPageNo = totalPage;
+			pageEvent = eventService.getPageEvent(status, currentShowPageNo, sizePerPage);
+		}
+		
+		totalDataCount = pageEvent.getTotalElements(); // 전체 데이터의 개수
+		
+		// 현재 페이지의 데이터 목록인 List<Event> 를 List<EventDTO> 로 변환
+		List<EventDTO> eventList = pageEvent.getContent();
 
-*/
-		model.addAttribute("eventList", eventList);
+	    model.addAttribute("eventList", eventList);
+	 // === 페이지바 만들기 시작 === //
+	    int blockSize = 10;
+	    int loop = 1;
+	    int pageno = ((currentShowPageNo - 1) / blockSize) * blockSize + 1;
+
+	    pageBar = "<ul class='pagination justify-content-center'>";
+	    String url = request.getRequestURI();
+
+	    // === [맨처음][이전] 만들기 === //
+	    if (pageno != 1) {
+	        pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?status=" + status + "&pageno=1'>&laquo;</a></li>";
+	        pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?status=" + status + "&pageno=" + (pageno - 1) + "'>&lsaquo;</a></li>";
+	    }
+
+	    while (!(loop > blockSize || pageno > totalPage)) {
+	        if (pageno == currentShowPageNo) {
+	            pageBar += "<li class='page-item active'><span class='page-link'>" + pageno + "</span></li>";
+	        } else {
+	            pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?status=" + status + "&pageno=" + pageno + "'>" + pageno + "</a></li>";
+	        }
+	        loop++;
+	        pageno++;
+	    }
+
+	    // === [다음][마지막] 만들기 === //
+	    if (pageno <= totalPage) {
+	        pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?status=" + status + "&pageno=" + pageno + "'>&rsaquo;</a></li>";
+	        pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?status=" + status + "&pageno=" + totalPage + "'>&raquo;</a></li>";
+	    }
+
+	    pageBar += "</ul>";
+	    
+	    
+	    model.addAttribute("pageBar", pageBar);
+	    model.addAttribute("totalDataCount", totalDataCount);
+	    model.addAttribute("currentShowPageNo", currentShowPageNo);
+	    model.addAttribute("sizePerPage", sizePerPage);
+	    // === 페이지바 만들기 끝 === //
+	    
+		
 		model.addAttribute("status", status);
 		model.addAttribute("ongoingCount", eventService.getOngoingCount());
 		model.addAttribute("endedCount", eventService.getEndedCount());
@@ -146,11 +192,13 @@ public class EventController {
 	                                               .filter(entry -> entry.getChk_win() == 1)
 	                                               .toList();
 		
-		
+	    boolean isDrawingPassed = LocalDate.now().isAfter(eventDto.getEvent_drawingdate());
+	    
 		mav.addObject("eventDto", eventDto);
 		mav.addObject("entryList", entryList);   // 중단 카드: 참가한 레시피
 	    mav.addObject("winnerList", winnerList); // 하단 카드: 당첨 레시피
-		
+	    mav.addObject("isDrawingPassed", isDrawingPassed); // 발표일이 지났는지 여부
+	    
 		mav.setViewName("admin/jungyj/event/eventDetail");
 		//  src/main/resources/templates/admin/jungyj/event/eventDetail.html 페이지를 만들어야 한다.
 		return mav;

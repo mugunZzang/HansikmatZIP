@@ -1,14 +1,24 @@
 package com.spring.app.admin.event.jungyj.service;
 
 
+import static com.spring.app.entity.jungyj.QEvent.event;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.app.admin.event.jungyj.domain.EventDTO;
 import com.spring.app.admin.event.jungyj.domain.EventEntryDTO;
 import com.spring.app.admin.event.jungyj.repository.EntryRepository;
@@ -29,6 +39,8 @@ public class EventService_imple implements EventService {
 
 	private final EventRepository eventRepository;
 	private final EntryRepository entryRepository;
+	
+	private final JPAQueryFactory jPAQueryFactory;
 	
 	// === 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) === 
 	private final FileManager fileManager;
@@ -84,6 +96,141 @@ public class EventService_imple implements EventService {
 		
 		return dtoList;
 	}
+	
+	// 페이징 처리
+	@Override
+	public Page<EventDTO> getPageEvent(String status, int currentShowPageNo, int sizePerPage) {
+		Page<EventDTO> page = Page.empty();      // 기본값으로 내용이 없는 빈 페이지. null이 아니기에 안전함
+		try {
+			// 1. Spring Data (spring-data-commons 라이브러리)에서 제공하는 인터페이스인 Pageable 객체 생성하기
+			
+			
+			Pageable pageable = PageRequest.of(currentShowPageNo-1, sizePerPage, Sort.by(Sort.Direction.DESC, "eventseq"));
+	/*
+	        Spring Data (spring-data-commons 라이브러리)에서 제공하는 인터페이스인 Pageable 은 
+	        "데이터를 페이지 단위로 검색"하고 제어하는 "인터페이스" 이다.
+	        
+	                                                                          1페이지 = 0 이기때문에 항상 -1로 해야함
+	        Pageable 을 구현한 클래스인 PageRequest 의 static 메서드인 PageRequest.of(페이지번호, 한 페이지당 보여줄 행개수, 정렬기준); 메서드를 사용하여 객체를 생성하고,
+	        이 객체를 Pageable 로 받아온다.
+	        
+	        생성된 Pageable pageable 객체에는 원하는 해당 페이지의 데이터들이 들어있다.   
+	        그런데 '페이지 번호' 의 시작은 0 부터 시작한다.!!
+	          
+	        그리고 한 페이지당 보여줄 행개수(각 페이지별 보여질 목록의 개수)인 sizePerPage 만 알려주면 
+	        Spring Data (spring-data-commons 라이브러리)에서 제공하는 인터페이스인 Pageable 은 
+	        (OFFSET 행개수 ROW FETCH NEXT 행개수 ROW ONLY) 가 자동으로 적용되어 DB에서 데이터를 가져온다.
+	        
+	        짧게 말하면 "페이지번호, 한 페이지당 보여줄 행개수, 정렬기준" 설정을 통해 원하는 해당 페이지의 데이터를 가져온다.          
+	*/
+			
+			
+			// 2. Repository의 조회 메서드에 파라미터로 Pageable 객체를 넣어서 페이징된 데이터를 가져오기
+	        
+	        //   >>> BooleanExpression은 QueryDSL 에서 제공해주는 클래스 이다.
+	        //       BooleanExpression 클래스는 QueryDSL 전용의 SQL의 WHERE 조건 표현 객체로서 QueryDSL의 .where(), .and(), .or() 에만 사용된다. <<<
+			
+			BooleanExpression condition = Expressions.TRUE; 
+	        // Expressions.TRUE 라고 준것은 기본 조건 (항상 참)으로 시작해서 조건을 점진적으로 추가한다. 마치 WHERE 1=1 과 같은 뜻이다.
+
+			
+			// 진행 중 / 종료됨 필터 (※ Event 엔티티의 날짜 필드 타입에 맞춰 사용)
+			LocalDate today = LocalDate.now();
+			// 만약 Event 엔티티의 event_enddate가 String("yyyy-MM-dd") 타입이면:
+			// String today = LocalDate.now().toString();
+
+			if ("ended".equals(status)) {
+	            condition = condition.and(event.eventEnddate.lt(today));
+	        } else {
+	            condition = condition.and(event.eventEnddate.goe(today));
+	        }
+			
+			
+			List<Event> events = jPAQueryFactory
+									.selectFrom(event)                       // Event 엔티티를 기준으로 조회
+									.where(condition)                        // 조건절 (BooleanExpression 을 사용하여 동적 조건 처리)  
+									.offset(pageable.getOffset())            // 페이지 시작 위치 (예: 0, 10, 20...).  pageable.getOffset() 은 Spring Data JPA에서 페이징 처리 시 데이터베이스에서 조회를 시작할 위치를 말하는 것이다.
+									.limit(pageable.getPageSize())           // 한 페이지당 데이터 수
+									.orderBy(event.eventseq.desc())          // 정렬 기준 지정: eventseq 컬럼 기준 내림차순 
+									.fetch();                                // 최종적으로 리스트 형태로 결과 반환
+	/*
+	        pageable 은 위에서 만든 Pageable pageable = PageRequest.of(currentShowPageNo-1, sizePerPage, Sort.by(Sort.Direction.DESC, "num")); 이다. 
+	        pageable.getOffset(); 의 계산방식  offset = (currentShowPageNo-1) * sizePerPage; 이다.
+	        예를 들어, sizePerPage 가 10 일때
+	        currentShowPageNo 가 1 이면 offset 은 0, 
+	        currentShowPageNo 가 2 이면 offset 은 10, 
+	        currentShowPageNo 가 3 이면 offset 은 20 이 된다. 
+	*/
+			
+			
+			// 특정 조건에 맞는 게시글의 총 개수를 조회
+	        Long total = jPAQueryFactory
+			                .select(event.count())
+			                .from(event)
+			                .where(condition)
+			                .fetchOne(); // 단일 결과를 반환한다. count 는 하나의 숫자만 반환되므로 fetchOne()을 사용한다.
+	        /*
+	          SQL 로 설명하면
+	          
+	          SELECT COUNT(*)
+	            FROM board JOIN member 
+	            ON board.fk_user_id = member.user_id
+	            WHERE [condition] 
+	            
+	            이다.
+	         */
+				
+	        List<EventDTO> dtoList = events.stream()
+	                .map(EventDTO::new)
+	                .toList();
+	        
+	        for (EventDTO dto : dtoList) {
+	            long count = entryRepository.countByFkEventseq(dto.getEventseq());
+	            dto.setEntryCount(count);
+	        }
+
+				
+	/*
+	            join(board.member, member) 와  join(board.member, member).fetchJoin() 의 차이점
+	            
+	            --------------------------------------------------------------------------------------
+	             join(board.member, member)    VS   join(board.member, member).fetchJoin()
+	            --------------------------------------------------------------------------------------
+	             1. 주 엔티티만 영속화                        1. 주 엔티티 + 연관 엔티티 모두 영속화
+	             2. LAZY(지연) 로딩 (추가 쿼리 발생)           2. EAGER(즉시) 로딩 (추가 쿼리 없음)
+	             3. Board 는 영속성 컨텍스트에 저장됨           3. Board 와 Member 모두 영속성 컨텍스트에 저장됨
+	                Member 는 프록시 객체로 남아 있음             Member 는 즉시 로딩됨 → 추가 쿼리 없이 바로 접근 가능   
+	                board.getMember().getName() 호출 시 
+	                추가 쿼리 발생
+	      
+	             **영속화(Persistence)**란? 엔티티 객체가 JPA의 영속성 컨텍스트에 등록되어 "관리되는 상태"를 말한다.
+	             "영속성 컨텍스트" 는 DB와 애플리케이션 사이에서 객체의 상태를 추적하고 관리하는 논리적인 영역이다.
+	                
+	             !!! 언제 fetchJoin() 을 사용해야 하는가? ==> 연관 엔티티의 데이터를 즉시 사용해야 할 때 !!!
+	*/
+	        long totalCount = (total != null) ? total : 0L;
+	        page = new PageImpl<>(dtoList, pageable, totalCount);
+	        // Long total 값이 null 이 될 수 있으므로 total != null ? total : 0 으로 해주었다.
+	        
+	        /*
+	            PageImpl 이란? 
+	            Spring Data 에서 제공하는 "페이징 처리 결과" 를 담는 기본 구현 클래스이다.
+	              Page<T> 인터페이스를 구현하며, 페이징된 데이터와 관련 정보를 함께 제공해준다. 
+	              간단히 말하자면 페이징된 결과를 담기 위한 용도로 쓰이는 객체이다.
+	              
+	              생성자는 new PageImpl<>(contentList, pageable, totalCount); 이며
+	              첫번째 파라미터인 contentList 는 현재 페이지에 해당하는 데이터 목록이 들어오며,
+	              두번째 파라미터인 pageable 에는 요청된 페이지 정보(page, size, sort 등)가 들어오며,
+	              세번째 파라미터인 totalCount 에는 조건에 따른 전체 데이터 개수가 들어온다. 
+	         */
+			
+		} catch(Exception e) {
+        	e.printStackTrace();
+        }
+		return page;
+
+	}
+
 	
 	// 진행 중인 이벤트 개수
 	public int getOngoingCount() {
@@ -224,7 +371,10 @@ public class EventService_imple implements EventService {
 				e.printStackTrace();
 			}
     	}
-	} // end of private void deleteFile(String fileName, String filePath)--------------------------
+	}
+
+
+
 
 	
 }
