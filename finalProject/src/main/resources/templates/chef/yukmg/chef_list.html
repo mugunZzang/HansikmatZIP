@@ -20,6 +20,30 @@
 			background-color: #ffffff;
 			border:1px solid #efefef;
 		}
+		
+			
+		.chef-apply a {
+			display:flex;
+			overflow:hidden;
+			height:100px;
+			justify-content:center;
+			align-items:center;
+		}
+		
+		.chef-apply a img {
+			width:100%;
+		}
+		
+		ul.ranking-list {
+			list-style:none;
+			margin:0;
+			padding:0;
+		}
+		
+		ul.ranking-list li .ranking-num{
+			margin:0 24px;
+			
+		}
 	</style>
 	
 	<!--/* 
@@ -38,38 +62,89 @@
   	<div class="tit-wrap container-fluid row m-auto px-0">
   		<!--/* 탭 버튼 */-->
   		<div class="nav-wrap col-12 col-lg-9">  			
-  			<ul class="nav nav-tabs" id="myTab" role="tablist">
+  			<ul class="nav nav-tabs" id="chefTop" role="tablist">
 			  <li class="nav-item" role="presentation">
 			    <button class="nav-link active" id="chef" data-bs-toggle="tab" data-bs-target="#chef-pane" type="button" role="tab" aria-controls="chef-pane" aria-selected="true">쉐프</button>
 			  </li>
 			  <li class="nav-item" role="presentation">
-			    <button class="nav-link" id="f-chef" data-bs-toggle="tab" data-bs-target="#f-chef-pane" type="button" role="tab" aria-controls="f-chef-pane" aria-selected="false">팔로잉 쉐프</button>
+			    <button class="nav-link" id="following-chef" data-bs-toggle="tab" data-bs-target="#following-chef-pane" type="button" role="tab" aria-controls="following-chef-pane" aria-selected="false">팔로잉 쉐프</button>
 			  </li>
 			</ul>
   		</div>
   		<!--/* 검색 바 */-->
   		<div class="search-wrap col-12 col-lg-3">
   			<div class="input-group">
-			  <input type="search" class="form-control" placeholder="쉐프 닉네임을 입력하세요." aria-label="검색어">
+			  <input type="search" class="form-control" placeholder="쉐프 닉네임을 입력해 주세요." aria-label="검색어">
 			  <button class="btn btn-primary" type="submit">검색</button>
 			</div>
   		</div>		
   	</div>
   	
 	<!--/* 쉐프 신청 */-->
-	<div class="chef-apply-wrap">
+	<div class="chef-apply-wrap p-3">
 		<div class="chef-apply">
-			<a href="#">
-				<img alt="쉐프 신청 배너" src="">
+			<a href="#" class="rounded-3">
+				<img alt="쉐프 신청 배너" src="https://placehold.co/1920x200" class="">
 			</a>
 		</div>
 	</div>
 	
 	
 	<!-- 탭 콘텐츠 영역 -->
-	<div class="tab-content" id="myTabContent">
-	  <div class="tab-pane fade show active p-3" id="chef-pane" role="tabpanel" aria-labelledby="chef-tab" tabindex="0">쉐프 목록입니다.</div>
-	  <div class="tab-pane fade p-3" id="f-chef-pane" role="tabpanel" aria-labelledby="f-chef-tab" tabindex="0">팔로윙 쉐프 목록입니다.</div>
+	<div class="tab-content" id="chefTopContent">
+	
+		<!--/* 쉐프 영역 */-->
+		<div class="tab-pane fade show active p-3" id="chef-pane" role="tabpanel" aria-labelledby="chef-tab" tabindex="0">
+			<ul class="nav nav-tabs" id="chefTab" role="tablist">
+			  <li class="nav-item" role="presentation">
+			    <button class="nav-link active" id="ranking" data-bs-toggle="tab" data-bs-target="#ranking-pane" type="button" role="tab" aria-controls="ranking-pane" aria-selected="true">랭킹</button>
+			  </li>
+			  <li class="nav-item" role="presentation">
+			    <button class="nav-link" id="new-chef" data-bs-toggle="tab" data-bs-target="#new-chef-pane" type="button" role="tab" aria-controls="new-chef-pane" aria-selected="false">새로운 쉐프</button>
+			  </li>
+			</ul>
+			
+			<div class="tab-content" id="chefTabContent">
+				<div class="tab-pane fade show active p-3 clearfix pt-6" id="ranking-pane" role="tabpanel" aria-labelledby="ranking-tab" tabindex="0">
+					<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
+					  <button type="button" class="btn btn-secondary active">팔로워순</button>
+					  <button type="button" class="btn btn-secondary">조회순</button>
+					  <button type="button" class="btn btn-secondary">스크랩순</button>
+					</div>
+					
+					<ul class="pt-5 ranking-list">
+						<li class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-3">
+							<span class="ranking-num fs-4 fw-semibold">1</span>
+							<div class="profile-zone">
+								<img alt="프사" src="" class="profile-photo">
+							</div>
+							<div class="desc-zone">
+								<div class="name-zone">
+									<span>김말자</span>
+								</div>
+								<div class="intro-zone">
+									<p>
+										안녕하세요. 한식을 사랑하는 김말자입니다.
+									</p>								
+								</div>
+								<div class="stat-zone">
+									스펙 적는 란
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="tab-pane fade p-3" id="new-chef-pane" role="tabpanel" aria-labelledby="new-chef-tab" tabindex="0">
+					쉐로운 쉐프 목록
+				</div>
+			</div>
+		</div>
+	  
+		<!--/* 팔로윙 쉐프 영역 */-->
+		<div class="tab-pane fade p-3" id="following-chef-pane" role="tabpanel" aria-labelledby="following-chef-tab" tabindex="0">
+			팔로윙 쉐프 목록입니다.
+		</div>
+		
 	</div>
 	
 	
