@@ -1,0 +1,15 @@
+package com.spring.app.admin.km.service;
+
+public interface AdminService {
+
+	// 오늘자 멤버쉽수
+	int todaymembership();
+
+	// 오늘자 신규 레시피 수
+	int todaywriterecipe();
+
+	// 오늘자 신규 쉐프 수
+	int todaynewchef();
+
+
+}

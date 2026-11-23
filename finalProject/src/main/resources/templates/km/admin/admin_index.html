@@ -50,18 +50,20 @@ body {
 /* 통계 항목 */
 .today-stats {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 15px;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
     width: 100%;
+    align-items: stretch;
     box-sizing: border-box;
 }
+/* 공통 통계 박스 */
 .today-item {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 10px;
 
-    padding: 20px 15px;
+    padding: 20px 25px;
     background-color: white;
     border: 1px solid #e5e5e5;
     border-radius: 4px;
@@ -71,11 +73,12 @@ body {
 }
 
 .today-info {
+    flex: 1;
     font-size: 17px;
     font-weight: 600;
     text-align: center;
-    white-space: nowrap;
     line-height: 1.6;
+    white-space: nowrap;
 }
 
 .today-divider {
@@ -90,19 +93,24 @@ body {
 
 /* 원형 아이콘 */
 .today-icon {
-    width: 115px;
-    height: 115px;
-    min-width: 115px;
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
+
     border-radius: 50%;
     background-color: #17658a;
     border: 1px solid #123f55;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     color: white;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
     text-align: center;
+
+    margin-left: auto;
 }
 
 /* 하단 영역 */
@@ -219,6 +227,60 @@ body {
     margin-left: 500px
 }
 
+/* 문의사항 영역 */
+.today-qna {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+}
+.today-qna .today-info {
+    width: 100%;
+    display: block;
+}
+
+.today-qna-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.today-qna-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: center;
+}
+
+.today-qna-table th {
+    background-color: #f1f4f7;
+    padding: 10px 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.today-qna-table td {
+    padding: 12px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.today-qna-table td:first-child {
+    text-align: left;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.qna-wait {
+    color: #e05a5a;
+    font-weight: bold;
+}
+
+.qna-complete {
+    color: #258a65;
+    font-weight: bold;
+}
+
+
 /* 반응형 */
 @media (max-width: 1200px) {
     .today-stats {
@@ -251,7 +313,160 @@ body {
 
 </style>
 
-<script th:inline="javascript"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	
+	// ================= 로그인한 경우 로그인 되어진 회원명 출력해주기 =================== //
+	// const JWT = JSON.parse(localStorage.getItem("JWT")) || {};// JWT 토큰이 저장된 곳 
+	// const name = JWT.name??'';
+		
+	
+    
+	$(function(){
+		const contextPath = /*[[@{/}]]*/ '';
+		
+		// ▣ CSRF AJAX 사용시 설정 및 실행하기 
+	    // templates/layout/layout_main.html 파일의 meta 태그 안에있는 content를 가져와서 AJAX  beforeSend(데이터를 전송하기전) 에 HTTP Header 를 SET 해야 한다.
+	    // const token = $("meta[name='_csrf']").attr("content");
+	    // const header = $("meta[name='_csrf_header']").attr("content");
+	    
+		// const JWT = JSON.parse(localStorage.getItem("JWT")) || {}; // JWT 토큰이 저장된 곳
+	    // const jwttoken = JWT.accessToken;
+		
+		// 오늘 멤버쉽 수 읽어오기
+		$.ajax({
+              url: /*[[@{/km/admin/todaymembership}]]*/"",
+              type: "get",
+       //     headers: {
+       //        "Authorization": `Bearer ${jwttoken}`
+       //     },
+       //     data: $("form[name=addFrm]").serialize(),
+              dataType: "json",
+            
+              // ▣ CSRF AJAX 사용시 설정 및 실행하기
+      //        beforeSend: function(xhr) {  
+      //         xhr.setRequestHeader(header, csrftoken);
+                 // 데이터를 전송하기 전에 헤더에 csrf값을 넣어준다.
+      //        },
+              
+                success: function(json) {
+                 //  console.log(JSON.stringify(json));
+                  
+                  
+       			   $('span[id="newmembershipcount"]').text(json.count);
+                  
+              },
+        /*      error: function(request, status, error){
+                 switch(request.status) {
+                    case 401:
+                        location.href = contextPath+"exception/noAuthentication";
+                       break;
+                    
+                    case 403:
+                        location.href = contextPath+"exception/accessDeny";
+                       break;
+                       
+                    default:
+                       console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);     
+                       break;     
+                 }
+              } */
+              error: function(request, status, error){
+				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+          });// end of $.ajax({
+		
+        // 레시피 작성 수 구하기
+        $.ajax({
+              url: /*[[@{/km/admin/todaywriterecipe}]]*/"",
+              type: "get",
+       //     headers: {
+       //        "Authorization": `Bearer ${jwttoken}`
+       //     },
+       //     data: $("form[name=addFrm]").serialize(),
+              dataType: "json",
+            
+              // ▣ CSRF AJAX 사용시 설정 및 실행하기
+      //        beforeSend: function(xhr) {  
+      //         xhr.setRequestHeader(header, csrftoken);
+                 // 데이터를 전송하기 전에 헤더에 csrf값을 넣어준다.
+      //        },
+              
+                success: function(json) {
+                  // console.log(JSON.stringify(json));
+                  
+                  
+       			   $('span[id="newrecipecount"]').text(json.count);
+                  
+              },
+        /*      error: function(request, status, error){
+                 switch(request.status) {
+                    case 401:
+                        location.href = contextPath+"exception/noAuthentication";
+                       break;
+                    
+                    case 403:
+                        location.href = contextPath+"exception/accessDeny";
+                       break;
+                       
+                    default:
+                       console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);     
+                       break;     
+                 }
+              } */
+              error: function(request, status, error){
+				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+          });// end of $.ajax({
+        	  
+       // 신규 쉐프 수 구하기
+          $.ajax({
+                url: /*[[@{/km/admin/todaynewchef}]]*/"",
+                type: "get",
+         //     headers: {
+         //        "Authorization": `Bearer ${jwttoken}`
+         //     },
+         //     data: $("form[name=addFrm]").serialize(),
+                dataType: "json",
+              
+                // ▣ CSRF AJAX 사용시 설정 및 실행하기
+        //        beforeSend: function(xhr) {  
+        //         xhr.setRequestHeader(header, csrftoken);
+                   // 데이터를 전송하기 전에 헤더에 csrf값을 넣어준다.
+        //        },
+                
+                  success: function(json) {
+                    // console.log(JSON.stringify(json));
+                    
+                    
+         			   $('span[id="newshefcount"]').text(json.count);
+                    
+                },
+          /*      error: function(request, status, error){
+                   switch(request.status) {
+                      case 401:
+                          location.href = contextPath+"exception/noAuthentication";
+                         break;
+                      
+                      case 403:
+                          location.href = contextPath+"exception/accessDeny";
+                         break;
+                         
+                      default:
+                         console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);     
+                         break;     
+                   }
+                } */
+                error: function(request, status, error){
+  				   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+  			  }
+            });// end of $.ajax({
+		
+		
+	});// end of $(function(){});
+	
+/*]]>*/
+</script>
 
 </head>
 <body>
@@ -259,32 +474,85 @@ body {
     <!-- TODAY 통계 영역 -->
     <section class="today-section">
 
-        <div class="today-title">TODAY</div>
+    <div class="today-title">TODAY</div>
 
-        <div class="today-stats">
+    <div class="today-stats">
+
+        <!-- 왼쪽 : 오늘의 문의사항 -->
+        <div class="today-item today-qna">
+            <div class="today-info">
+
+                <div class="today-qna-title">오늘의 문의사항</div>
+
+                <table class="today-qna-table">
+                    <thead>
+                        <tr>
+                            <th>문의 제목</th>
+                            <th>작성자</th>
+                            <th>답변</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>로그인이 되지 않습니다.</td>
+                            <td>user01</td>
+                            <td class="qna-wait">미답변</td>
+                        </tr>
+                        <tr>
+                            <td>레시피 등록 관련 문의</td>
+                            <td>user02</td>
+                            <td class="qna-complete">답변완료</td>
+                        </tr>
+                        <tr>
+                            <td>멤버십 결제 문의</td>
+                            <td>user03</td>
+                            <td class="qna-wait">미답변</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <!-- 오른쪽 : 통계 영역 -->
+        <div class="today-right">
 
             <div class="today-item">
-                <div class="today-info">오늘 접속자수 : 몇 명</div> <!-- select로 불러올것 -->
-                <div class="today-icon">사용자<br>아이콘</div>
+                <div class="today-info">
+                    멤버십 신규 가입 수<br>
+                    : <span id="newmembershipcount"></span> 명
+                </div>
+                <div class="today-icon">
+                    멤버십<br>아이콘
+                </div>
             </div>
 
             <div class="today-item">
-                <div class="today-info">멤버십 신규 가입 수<br>: 몇 명</div> <!-- select로 불러올것 -->
-                <div class="today-icon">멤버십<br>아이콘</div>
+                <div class="today-info">
+                    레시피 신규 등록 수<br>
+                    : <span id="newrecipecount"></span> 개
+                </div>
+                <div class="today-icon">
+                    레시피<br>아이콘
+                </div>
             </div>
 
             <div class="today-item">
-                <div class="today-info">레시피 신규 등록 수<br>: 몇 개</div> <!-- select로 불러올것 -->
-                <div class="today-icon">레시피<br>아이콘</div>
-            </div>
-
-            <div class="today-item">
-                <div class="today-info">메모장 신규 신청자수</div> <!-- select로 불러올것 -->
-                <div class="today-icon">메모장<br>아이콘</div>
+                <div class="today-info">
+                    쉐프 신규 신청자 수<br>
+                    : <span id="newshefcount"></span> 명
+                </div>
+                <div class="today-icon">
+                    쉐프<br>아이콘
+                </div>
             </div>
 
         </div>
-    </section>
+
+    </div>
+
+</section>
 
 	<hr class="today-divider">
     <!-- 하단 대시보드 영역 -->
