@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tbl_user")
 @Getter
 @NoArgsConstructor
-public class EventUser {
+public class AppUser {
 
 	@Id
 	@Column(name = "userseq")

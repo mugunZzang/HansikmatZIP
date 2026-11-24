@@ -3,7 +3,7 @@ package com.spring.app.admin.event.jungyj.repository;
 
 import static com.spring.app.entity.jungyj.QEntry.entry;
 import static com.spring.app.entity.jungyj.QEventRecipe.eventRecipe;
-import static com.spring.app.entity.jungyj.QEventUser.eventUser;
+import static com.spring.app.entity.jungyj.QAppUser.appUser;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class EntryRepositoryImpl implements EntryRepositoryCustom {
 		
 		return queryFactory
 	            .selectFrom(entry)
-	            .join(entry.eventUser, eventUser).fetchJoin()
+	            .join(entry.eventUser, appUser).fetchJoin()
 	            .join(entry.eventRecipe, eventRecipe).fetchJoin()
 	            .where(entry.event.eventseq.eq(fkEventseq))
 	            .orderBy(entry.entryseq.asc())

@@ -56,6 +56,6 @@ public class Entry {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_userseq", insertable = false, updatable = false)
-    private EventUser eventUser;
+    private AppUser eventUser;
 
 }
