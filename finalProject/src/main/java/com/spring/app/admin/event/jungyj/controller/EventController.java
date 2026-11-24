@@ -88,8 +88,6 @@ public class EventController {
 			           HttpServletRequest request,
 					   Model model) {
 		
-		// GET 방식인데 검색어가 있으므로 사용자가 URL 주소에 검색어를 직접 입력하여 장난칠 수 있으므로 
-		// 이것을 방지하고자 Referer 를 사용하도록 한다.
 /*
 		String referer = request.getHeader("Referer");
 		if(referer == null) {
@@ -118,7 +116,7 @@ public class EventController {
 		
 		totalDataCount = pageEvent.getTotalElements(); // 전체 데이터의 개수
 		
-		// 현재 페이지의 데이터 목록인 List<Event> 를 List<EventDTO> 로 변환
+		// Service에서는 Entity를 이미 DTO로 반환하여 줌
 		List<EventDTO> eventList = pageEvent.getContent();
 
 	    model.addAttribute("eventList", eventList);
@@ -161,8 +159,10 @@ public class EventController {
 	    model.addAttribute("sizePerPage", sizePerPage);
 	    // === 페이지바 만들기 끝 === //
 	    
+	    
 	    if ("ongoing".equals(status)) {
-	        model.addAttribute("drawingList", eventService.getDrawingList());
+	    	// 상단 고정용: 당첨 선정 대기 목록 조회 (종료일 < 오늘 <= 발표일)
+	    	model.addAttribute("drawingList", eventService.getDrawingList());
 	    }
 		
 		model.addAttribute("status", status);
@@ -202,6 +202,7 @@ public class EventController {
 	    boolean canDraw = today.isAfter(eventDto.getEvent_enddate())
 	                   && !today.isAfter(eventDto.getEvent_drawingdate());
 
+	    // 당첨 버튼 표기를 위한 boolean 변수
 	    mav.addObject("canDraw", canDraw);
 	    
 		mav.addObject("eventDto", eventDto);
@@ -215,6 +216,7 @@ public class EventController {
 		return mav;
 	}
 	
+	// 당첨 레시피 등록 메서드
 	@PostMapping("/win")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> winEntries(@RequestParam("eventseq") Integer eventseq,

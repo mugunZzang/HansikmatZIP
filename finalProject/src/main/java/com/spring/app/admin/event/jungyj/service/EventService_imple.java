@@ -5,7 +5,6 @@ import static com.spring.app.entity.jungyj.QEvent.event;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -27,16 +27,26 @@ import com.spring.app.common.FileManager;
 import com.spring.app.entity.jungyj.Entry;
 import com.spring.app.entity.jungyj.Event;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 
 //==== Service 선언 ==== //
 //트랜잭션 처리를 담당하는 곳, 업무를 처리하는 곳, 비지니스(Business)단
 
+/*
+    이벤트 등록
+    - 고아 파일을 삭제하기 위한 스케줄링 배치하기
+	- 이미지는 업로드 되었지만 만약 DB에 저장되지 않았더라면 해당 파일들은 삭제해야 한다.
+	
+	
+
+*/
+
+
 @Service
 @RequiredArgsConstructor
 public class EventService_imple implements EventService {
-
+	
 	private final EventRepository eventRepository;
 	private final EntryRepository entryRepository;
 	
@@ -51,6 +61,8 @@ public class EventService_imple implements EventService {
 	
 	
 	//============================================= 이벤트 등록 ==================================================
+	
+	
 	
 	@Override
 	@Transactional
@@ -67,37 +79,13 @@ public class EventService_imple implements EventService {
 	    eventRepository.save(event);
 		
 	}
+
 	
-	// 이벤트 리스트 조회
-	@Override
-	public List<EventDTO> list(Map<String, String> paraMap) {
-		
-		String status = paraMap.get("status");
-		LocalDate today = LocalDate.now();
-		
-		List<Event> eventList;
-		if("ended".equals(status)) {
-			eventList = eventRepository.findByEventEnddateLessThanOrderByEventseqDesc(today);
-		} else {
-			eventList = eventRepository.findByEventEnddateGreaterThanEqualOrderByEventseqDesc(today);
-		}
-		
-		// 먼저 DTO 리스트로 변환해서 변수에 담기
-		List<EventDTO> dtoList = eventList.stream()
-		        .map(event -> new EventDTO(event))
-		        .toList();
-		
-		// EventDTO 안에 신청현황 필드를 추가
-		// 이러면 추후 HTML에 보여줄 때 편하게 보여줄 수 있음
-		for (EventDTO dto : dtoList) {
-		    long count = entryRepository.countByFkEventseq(dto.getEventseq());
-		    dto.setEntryCount(count);
-		}
-		
-		return dtoList;
-	}
+	//============================================= 이벤트 목록 조회 ===============================================
 	
-	// 페이징 처리
+	
+	
+	// 이벤트 List 조회(페이징 처리)
 	@Override
 	public Page<EventDTO> getPageEvent(String status, int currentShowPageNo, int sizePerPage) {
 		Page<EventDTO> page = Page.empty();      // 기본값으로 내용이 없는 빈 페이지. null이 아니기에 안전함
@@ -106,11 +94,11 @@ public class EventService_imple implements EventService {
 			
 			
 			Pageable pageable = PageRequest.of(currentShowPageNo-1, sizePerPage, Sort.by(Sort.Direction.DESC, "eventseq"));
-	/*
+	/*                                         1페이지 = 0 이기때문에 항상 -1로 해야함
 	        Spring Data (spring-data-commons 라이브러리)에서 제공하는 인터페이스인 Pageable 은 
 	        "데이터를 페이지 단위로 검색"하고 제어하는 "인터페이스" 이다.
 	        
-	                                                                          1페이지 = 0 이기때문에 항상 -1로 해야함
+	                                                                          
 	        Pageable 을 구현한 클래스인 PageRequest 의 static 메서드인 PageRequest.of(페이지번호, 한 페이지당 보여줄 행개수, 정렬기준); 메서드를 사용하여 객체를 생성하고,
 	        이 객체를 Pageable 로 받아온다.
 	        
@@ -134,14 +122,14 @@ public class EventService_imple implements EventService {
 	        // Expressions.TRUE 라고 준것은 기본 조건 (항상 참)으로 시작해서 조건을 점진적으로 추가한다. 마치 WHERE 1=1 과 같은 뜻이다.
 
 			
-			// 진행 중 / 종료됨 필터 (※ Event 엔티티의 날짜 필드 타입에 맞춰 사용)
+			// 진행 중 / 종료됨 필터 
 			LocalDate today = LocalDate.now();
-			// 만약 Event 엔티티의 event_enddate가 String("yyyy-MM-dd") 타입이면:
-			// String today = LocalDate.now().toString();
 
 			if ("ended".equals(status)) {
 				condition = condition.and(event.eventDrawingdate.lt(today));
 	        } else {
+	        	// 오늘 일자보다 종료일이 더 큰가
+	        	// ex) 오늘일자  (2026-11-24) <= 종료일 (2026-11-27) 아직 진행중이라는 뜻
 	            condition = condition.and(event.eventEnddate.goe(today));
 	        }
 			
@@ -180,14 +168,16 @@ public class EventService_imple implements EventService {
 	            이다.
 	         */
 				
-	        List<EventDTO> dtoList = events.stream()
+	        List<EventDTO> eventdtoList = events.stream()
 	                .map(EventDTO::new)
 	                .toList();
 	        
-	        for (EventDTO dto : dtoList) {
+	        // 신청건수 dto에 저장하기 위한 반복문
+	        for (EventDTO dto : eventdtoList) {
 	            long count = entryRepository.countByFkEventseq(dto.getEventseq());
 	            dto.setEntryCount(count);
-	        }
+	        } // end of for-----------------------------------------------------------
+	        
 
 				
 	/*
@@ -209,7 +199,7 @@ public class EventService_imple implements EventService {
 	             !!! 언제 fetchJoin() 을 사용해야 하는가? ==> 연관 엔티티의 데이터를 즉시 사용해야 할 때 !!!
 	*/
 	        long totalCount = (total != null) ? total : 0L;
-	        page = new PageImpl<>(dtoList, pageable, totalCount);
+	        page = new PageImpl<>(eventdtoList, pageable, totalCount);
 	        // Long total 값이 null 이 될 수 있으므로 total != null ? total : 0 으로 해주었다.
 	        
 	        /*
@@ -259,7 +249,12 @@ public class EventService_imple implements EventService {
 
 	    return dtoList;
 	}
-		
+	
+	
+	//============================================== 이벤트 상세 페이지 =============================================
+
+	
+	
 	// 이벤트 1건 조회
 	@Override
 	public EventDTO detail(int eventseq) {
@@ -269,31 +264,29 @@ public class EventService_imple implements EventService {
 	@Transactional
 	@Override
 	public void winEntries(int eventseq, List<Integer> entryseqs) {
-
 	    Event event = getEventEntity(eventseq);
 
 	    // 이미 당첨된 인원 + 이번에 선택한 인원이 당첨 정원을 초과하는지 체크
 	    long currentWinners = entryRepository.countByFkEventseqAndChkWin(eventseq, 1);
-	    List<Entry> targetEntries = entryRepository.findByEntryseqInAndFkEventseq(entryseqs, eventseq);
+	    
+	    // 아직 미당첨(chkWin == 0)인 항목을 추려낸 이유
+	    // 여러명의 관리자가 한 페이지를 보고있을 때
+	    // 누군가 먼저 당첨처리를 하고 다른 관리자가 새로고침을 하지 않고 이벤트를 발생시켰을 때
+	    // 문제가 발생할 수 있음
+	    List<Entry> targetEntries = entryRepository.findByEntryseqInAndFkEventseqAndChkWin(entryseqs, eventseq, 0);
 
-	    // 아직 미당첨(chkWin == 0)인 항목만 추려내기
-	    List<Entry> newWinners = targetEntries.stream()
-	                                          .filter(entry -> entry.getChkWin() == 0)
-	                                          .toList();
-
-	    if (currentWinners + newWinners.size() > event.getEventTotalWinners()) {
+	    
+	    if (currentWinners + targetEntries.size() > event.getEventTotalWinners()) {
 	        throw new IllegalArgumentException(
 	            "당첨 정원(" + event.getEventTotalWinners() + "명)을 초과할 수 없습니다. (현재 당첨: " + currentWinners + "명)"
 	        );
 	    }
 
 	    // 당첨 처리 (@Transactional 변경 감지로 자동 UPDATE)
-	    for (Entry entry : newWinners) {
+	    for (Entry entry : targetEntries) {
 	        entry.setChkWin(1);
 	    }
 	}
-	
-	
 	
 	
 	// 이벤트 참가 레시피 목록 조회
@@ -316,26 +309,35 @@ public class EventService_imple implements EventService {
 	    return dtoList;
 	}
 	
+	
+	//================================================ 이벤트 수정 =================================================
+
+	
+	
 	// 이벤트 수정하기
 	// JPA의 영속상태를 이용한 Dirty Checking
 	@Override
 	@Transactional
 	public void eventEdit(EventDTO eventDto, MultipartFile multipartFile) throws Exception{
 		Event originEvent = getEventEntity(eventDto.getEventseq());  // 영속성 객체 조회
+
+		// 삭제 예정인 파일명 저장
+		final String oldServerFilename = originEvent.getEventImageFilename();
+		boolean isFileChanged = false; // 파일이 실제로 교체되었는지 체크
 		
 		// 1. 파일이 사용자가 올린 파일과 동일한지 다른지 검증
 		if (multipartFile != null && !multipartFile.isEmpty()) {
 			String newOrgFilename = multipartFile.getOriginalFilename();
 			
-			// 1-1. 파일명이 다르다면 기존 파일 삭제 후 저장
+			
+			// 1-1. 파일명이 다르다면 기존 파일 먼저 저장
 			if ( !newOrgFilename.equals(originEvent.getEventImageOrgFilename()) ) {
-				deleteFile(originEvent.getEventImageFilename(), eventimageimageDir);
-				
 		        String serverFileName = updateFile(multipartFile.getBytes(), multipartFile.getOriginalFilename(), eventimageimageDir);
 		        
 		        
 		        originEvent.setEventImageOrgFilename(newOrgFilename);  // 객체 필드 변화
 		        originEvent.setEventImageFilename(serverFileName);     // 객체 필드 변화
+		        isFileChanged = true;
 			}
 			
 			// 1-2 동일한 파일의 경우 저장 과정 Skip
@@ -350,6 +352,14 @@ public class EventService_imple implements EventService {
 	    originEvent.setEventTotalWinners(eventDto.getEvent_total_winners()); // 객체 필드 변화
 	    originEvent.setEventContents(eventDto.getEvent_contents()); // 객체 필드 변화
 	    
+	    // 3. 실제 DB UPDATE를 여기서 즉시 반영 (오류 시 아래 deleteFile이 실행되지 않음)
+	    eventRepository.flush();
+	    
+	    // 4. 파일이 실제로 교체되었고 DB 반영까지 성공했을 때만 기존 파일 삭제
+	    if (isFileChanged && oldServerFilename != null) {
+	        deleteFile(oldServerFilename, eventimageimageDir);
+	    }
+		
 	    // eventEdit 함수가 종료되면서 @Transaction이 사용자가 조회한 기존 영속성 객체와 필드를 비교함 
 	    // 만약 필드가 달라졌다면 달라진 것들은 DB에서 UPDATE 진행
 	    // 이것을 Dirty Checking 이라 부름
@@ -357,9 +367,10 @@ public class EventService_imple implements EventService {
 
 	
 	
-	//============================================= 이벤트 목록 조회 ===============================================
 	
-	// 공통 조회 메서드 (Service 내부용)
+	// =========================== 공통 조회 메서드 (Service 내부용) =======================================
+	
+	
 	private Event getEventEntity(int eventseq) {
 	    return eventRepository.findById(eventseq)
 	            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다. eventseq=" + eventseq));
@@ -389,7 +400,7 @@ public class EventService_imple implements EventService {
 				e.printStackTrace();
 			}
     	}
-	}
+	} // end of private void deleteFile(String fileName, String filePath)-----------------------------
 
 
 

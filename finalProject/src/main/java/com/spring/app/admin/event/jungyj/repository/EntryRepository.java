@@ -10,7 +10,7 @@ public interface EntryRepository extends JpaRepository<Entry, Integer>, EntryRep
 
 	long countByFkEventseq(Integer fkEventseq);
 
-	List<Entry> findByEntryseqInAndFkEventseq(List<Integer> entryseqs, int eventseq);
+	List<Entry> findByEntryseqInAndFkEventseqAndChkWin(List<Integer> entryseqs, int eventseq, int chkwin);
 
 	long countByFkEventseqAndChkWin(int eventseq, int i);
 
