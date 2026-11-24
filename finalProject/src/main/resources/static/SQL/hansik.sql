@@ -422,3 +422,7 @@ select * from tbl_user;
 SELECT * FROM  TBL_RECIPE;
 
 nickname, profile_sysfilename
+
+
+select * from tbl_event;
+select * from tbl_entry;

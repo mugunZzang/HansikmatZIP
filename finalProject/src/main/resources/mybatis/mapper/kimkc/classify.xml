@@ -90,8 +90,8 @@
 		<if test="cf_sort == '최신순'">
 			ORDER BY A.r_writedate DESC
 		</if>
-		OFFSET ( TO_NUMBER(#{currentShowPageNo}) - 1)*20 ROW
-		FETCH NEXT 20 ROW ONLY
+		OFFSET ( TO_NUMBER(#{currentShowPageNo}) - 1)* TO_NUMBER(#{sizePerPage}) ROW
+		FETCH NEXT TO_NUMBER(#{sizePerPage}) ROW ONLY
 	</select>
 
 

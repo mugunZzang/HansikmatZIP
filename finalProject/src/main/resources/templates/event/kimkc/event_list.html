@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout/layout_main :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}" 
+      lang="ko" 
+      xmlns:th="http://www.thymeleaf.org">
 <!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
 
 <head>
@@ -28,13 +30,68 @@
       JavaScript 안에서 Thymeleaf 값을 넣을 때는 th:inline="javascript" 와 /*[[뭐뭐뭐]]*/ 구문을 사용해야 한다. 
 */-->
 <script th:inline="javascript">
- /*<![CDATA[*/
-	 
- /*]]>*/   
+/*<![CDATA[*/
+	$(function(){
+		
+		// 탭 메뉴 전환 버튼
+		$(document).on('click', 'button.event-tab-btn',  function(e) {
+			
+			// 진행중 or 종료된 이벤트 구분
+			const status = $(e.target).data('status');
+			
+			// 버튼 전환
+			$('button.event-tab-btn').removeClass('active');
+			$(e.target).addClass('active');
+			
+			// 탭 콘텐츠 영역 전환
+	        $('.event-tab-pane').addClass('d-none');
+	        const $targetPane = $(`#tab-content-${status}`);
+	        $targetPane.removeClass('d-none');
+			
+			
+		});
+		
+	}); 
+		 
+/*]]>*/   
 </script>
 
 </head>
 <body>
-    <div class="container"></div>
+    <div class="container my-5">
+    
+    	<!-- 상단 타이틀 -->
+    	<h3 class="fw-bold mb-3">이벤트</h3>
+    	<hr class="mb-4">
+    
+    	<!-- 탭 메뉴 영역 -->
+	    <div class="row g-0 text-center event-tab-wrapper mb-4" id="eventTab">
+	        <div class="col-6">
+	            <button type="button" class="event-tab-btn active" data-status="ongoing">
+	                진행중인 이벤트
+	            </button>
+	        </div>
+	        <div class="col-6">
+	            <button type="button" class="event-tab-btn" data-status="ended">
+	                종료된 이벤트
+	            </button>
+	        </div>
+	    </div>
+    
+	    <!-- 탭 콘텐츠 영역 (각 탭이 독립된 영역을 가짐) -->
+	    <div id="tab-content-ongoing" class="event-tab-pane">
+	        <!-- 초기 로딩 시 '진행중인 이벤트' 1페이지 조각 끼워넣기 -->
+	        <div th:replace="~{event/kimkc/event_fragment :: eventListFragment(
+	                            eventList=${ongoingList}, 
+	                            pageBar=${ongoingPageBar}, 
+	                            status='ongoing')}">
+	        </div>
+	    </div>
+	
+	    <div id="tab-content-ended" class="event-tab-pane d-none">
+	        <!-- 종료된 이벤트 탭 클릭 시 Ajax로 채워질 빈 상자 -->
+	    </div>
+    
+    </div>
 </body>
 </html>
