@@ -14,5 +14,4 @@ public interface EntryRepository extends JpaRepository<Entry, Integer>, EntryRep
 
 	long countByFkEventseqAndChkWin(int eventseq, int i);
 
-	
 }

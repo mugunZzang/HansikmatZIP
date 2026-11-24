@@ -29,4 +29,15 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 	            .fetch();
 	}
 
+    // 서버에 저장되어있는 파일명 조회(스케줄링을 위한 것)
+	@Override
+	public List<String> findAllUsedImageFilenames() {
+		return jPAQueryFactory
+	            .select(event.eventImageFilename)
+	            .distinct()
+	            .from(event)
+	            .where(event.eventImageFilename.isNotNull())
+	            .fetch();
+	}
+
 }

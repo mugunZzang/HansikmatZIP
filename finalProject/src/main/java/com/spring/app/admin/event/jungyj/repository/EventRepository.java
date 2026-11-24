@@ -34,4 +34,5 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
 
     // 종료됨 (당첨 발표일이 오늘보다 이전) 개수
     int countByEventDrawingdateLessThan(LocalDate today);
+
 }
