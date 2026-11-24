@@ -1,17 +1,7 @@
 @charset "UTF-8";
 
 body {
-    background-color: #f5f7f9;
-    animation: pageFadeIn 0.7s ease-out;
-}
-
-@keyframes pageFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    background-color: #f5f7f9;  
 }
 
 /* 전체 대시보드 */
@@ -129,6 +119,7 @@ body {
     padding: 25px 20px;
     box-sizing: border-box;
     min-height: 280px;
+    margin-bottom: 40px;
 }
 
 .section-header {
@@ -204,22 +195,6 @@ body {
     margin-bottom: 15px;
 }
 
-/* 파이 그래프 임시 영역 */
-.recipe-chart {
-    width: 190px;
-    height: 190px;
-    border-radius: 50%;
-    background-color: #17658a;
-    border: 1px solid #123f55;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    text-align: center;
-    margin-left: 500px
-}
 
 /* 문의사항 영역 */
 .today-qna {

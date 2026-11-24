@@ -56,7 +56,21 @@
 		<!--/* 자바스크립트 인라인 */-->
         <script th:inline="javascript">
         /*<![CDATA[*/
- 
+ 			$(function() {
+
+		        let currentUrl = window.location.pathname;
+		
+		        $(".admin-menu").each(function() {
+		
+		            let menuUrl = new URL($(this).attr("href"), window.location.origin).pathname;
+		
+		            if (currentUrl === menuUrl) {
+		                $(this).addClass("active");
+		            }
+
+        });
+
+    });
 		/*]]>*/   
         </script>
 	</div>

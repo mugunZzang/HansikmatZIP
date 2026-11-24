@@ -41,16 +41,30 @@ public class AdminService_imple implements AdminService {
 
 	// 문의사항 불러오기 5개만
 	@Override
-	public List<Map<String, String>> todayqna() {
+	public List<Map<String, Object>> todayqna() {
 		
 		return adminDao.todayqna();
 	}
 	
 	// 마감임박 이벤트
 	@Override
-	public List<Map<String, String>> endevent() {
+	public List<Map<String, Object>> endevent() {
 		
 		return adminDao.endevent();
+	}
+
+	// 검수 할 레시피 보여주기
+	@Override
+	public List<Map<String, Object>> revealrecipe(String currentShowPageNo) {
+		
+		return adminDao.revealrecipe(currentShowPageNo);
+	}
+
+	// 총 검수 할 레시피 건수 (totalCount)
+	@Override
+	public int getTotalCount() {
+		
+		return adminDao.getTotalCount();
 	}
 	
 	

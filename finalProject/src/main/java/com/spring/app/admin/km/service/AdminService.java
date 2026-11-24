@@ -15,10 +15,16 @@ public interface AdminService {
 	int todaynewchef();
 
 	// 오늘자 문의사항 
-	List<Map<String, String>> todayqna();
+	List<Map<String, Object>> todayqna();
 
 	// 마감임박 이벤트
-	List<Map<String, String>> endevent();
+	List<Map<String, Object>> endevent();
+
+	// 검수 할 레시피 보여주기
+	List<Map<String, Object>> revealrecipe(String currentShowPageNo);
+
+	// 총 검수 할 레시피 건수 (totalCount)
+	int getTotalCount();
 
 
 }
