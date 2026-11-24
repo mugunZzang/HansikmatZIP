@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(value = "/security/")
-public class MemberController {
+public class UserController {
 
 	// 누구나 접근 가능한 URL
     // 조건이 없으므로, 로그인을 하지 않은 상태이거나 또는 로그인을 성공한 상태 모두 메뉴가 보여지는 것이다 

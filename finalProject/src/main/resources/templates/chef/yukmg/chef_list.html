@@ -16,6 +16,17 @@
 	<link rel="stylesheet" href="">
 	
 	<style type="text/css">
+	
+		*{
+			margin:0;
+			padding:0;
+		}
+		
+		a {
+			text-decoration:none;
+			
+		}
+		
 		.chef-wrap {
 			background-color: #ffffff;
 			border:1px solid #efefef;
@@ -34,6 +45,33 @@
 			width:100%;
 		}
 		
+		/* 쉐프 하위 탭 메뉴 */
+		.chef-tab-second button{
+			color:var(--bs-secondary);
+			border:none;
+			border-bottom:4px solid transparent;
+			transition: border-color .4s ease-out,
+						color .4s ease-out;						
+			border-radius:unset;
+		}
+			
+		.chef-tab-second button:hover {
+			color:var(--bs-success);
+			border-bottom-color:var(--bs-success);
+		}	
+		
+		.chef-tab-second button.active{
+			color:var(--bs-success);
+			border-bottom-color:var(--bs-success);
+		}
+		
+		
+		/* 랭킹 리스트 */
+		.ranking-wrap {
+			border-top:1px solid var(--bs-gray-300);
+		}
+		
+		
 		ul.ranking-list {
 			list-style:none;
 			margin:0;
@@ -45,8 +83,60 @@
 			
 		}
 		
-		.profile-photo {
+		ul.ranking-list li {
+			transition:background-color .4s ease-out;
+		}
+		
+		ul.ranking-list li:hover {
+			background-color: #F8F9FA;
+		}
+		
+		.profile-zone {
 			border-radius:50%;
+			overflow:hidden;
+			width: 100px;
+			height:100px;
+			border:3px solid transparent;
+			position:relative;
+			transition: border-color .4s ease-out;
+			flex-shrink: 0;
+		}
+		
+		.profile-zone:hover {
+			border-color: #1E3A8A;
+		}
+		
+		.profile-zone .profile-photo {
+			 width: 100%;
+			 height: 100%;
+			 object-fit: cover;
+			 transition: transform .4s ease-out;
+		}
+		
+		.profile-zone:hover .profile-photo {
+			transform: scale(1.1);
+		}
+		
+		.chef-name:hover {
+			text-decoration:underline;
+		}
+		
+		.intro-zone p {
+			max-width:800px;
+			overflow:hidden;
+			white-space:nowrap;
+			text-overflow:ellipsis;
+		}
+		
+		.stat-zone ul {
+			list-style:none;
+			margin:0;
+			padding:0;
+		}
+		
+		.stat-zone ul li {
+			color:var(--bs-gray-700);
+			font-size:14px;
 		}
 	</style>
 	
@@ -66,7 +156,7 @@
   	<div class="tit-wrap container-fluid row m-auto px-0">
   		<!--/* 탭 버튼 */-->
   		<div class="nav-wrap col-12 col-lg-9">  			
-  			<ul class="nav nav-tabs" id="chefTop" role="tablist">
+  			<ul class="nav nav-tabs fw-bold" id="chefTop" role="tablist">
 			  <li class="nav-item" role="presentation">
 			    <button class="nav-link active" id="chef" data-bs-toggle="tab" data-bs-target="#chef-pane" type="button" role="tab" aria-controls="chef-pane" aria-selected="true">쉐프</button>
 			  </li>
@@ -99,50 +189,68 @@
 	
 		<!--/* 쉐프 영역 */-->
 		<div class="tab-pane fade show active p-3" id="chef-pane" role="tabpanel" aria-labelledby="chef-tab" tabindex="0">
-			<ul class="nav nav-tabs" id="chefTab" role="tablist">
-			  <li class="nav-item" role="presentation">
-			    <button class="nav-link active" id="ranking" data-bs-toggle="tab" data-bs-target="#ranking-pane" type="button" role="tab" aria-controls="ranking-pane" aria-selected="true">랭킹</button>
-			  </li>
-			  <li class="nav-item" role="presentation">
-			    <button class="nav-link" id="new-chef" data-bs-toggle="tab" data-bs-target="#new-chef-pane" type="button" role="tab" aria-controls="new-chef-pane" aria-selected="false">새로운 쉐프</button>
-			  </li>
-			</ul>
-			
-			<div class="tab-content" id="chefTabContent">
-				<div class="tab-pane fade show active p-3 clearfix pt-6" id="ranking-pane" role="tabpanel" aria-labelledby="ranking-tab" tabindex="0">
-					<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
-					  <button type="button" class="btn btn-secondary">팔로워순</button>
-					  <button type="button" class="btn btn-secondary">조회순</button>
-					  <button type="button" class="btn btn-secondary">스크랩순</button>
-					</div>
-					
-					<ul class="pt-5 ranking-list">
-						<li class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-3">
-							<span class="ranking-num fs-4 fw-semibold">1</span>
-							<div class="profile-zone">
-								<img alt="프사" src="https://placehold.co/100x100" class="profile-photo">
-							</div>
-							<div class="desc-zone">
-								<div class="name-zone">
-									<span>김말자</span>
-									<button class="btn btn-primary rounded-pill">팔로우 +</button>
-								</div>
-								<div class="intro-zone">
-									<p>
-										안녕하세요. 한식을 사랑하는 김말자입니다.
-									</p>								
-								</div>
-								<div class="stat-zone">
-									스펙 적는 란
-								</div>
-							</div>
-						</li>
-					</ul>
-				</div>
-				<div class="tab-pane fade p-3" id="new-chef-pane" role="tabpanel" aria-labelledby="new-chef-tab" tabindex="0">
-					쉐로운 쉐프 목록
-				</div>
+		
+			<div class="btn-group w-100 chef-tab-second" role="group" aria-label="쉐프 탭메뉴">
+			  <button type="button" class="btn fs-5 fw-bold active">랭킹</button>
+			  <button type="button" class="btn fs-5 fw-bold">새로운 쉐프</button>
 			</div>
+			
+			<div class="ranking-wrap p-3">
+				<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
+				  <button type="button" class="btn btn-sm btn-outline-secondary active">팔로워순</button>
+				  <button type="button" class="btn btn-sm btn-outline-secondary">조회순</button>
+				  <button type="button" class="btn btn-sm btn-outline-secondary">스크랩순</button>
+				</div>
+				
+				<ul class="pt-5 ranking-list">
+				
+					<!-- /* 쉐프 카드 */ -->
+					<li class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
+						<span class="ranking-num fs-3 fw-semibold">1</span>
+						<div class="profile-zone">
+							<a href="#">
+								<img alt="프사" src="https://placehold.co/200x200" class="profile-photo">
+							</a>								
+						</div>
+						<div class="desc-zone">
+							<div class="name-zone d-flex justify-content-start flex-row align-items-center gap-4">
+								<a href="#" class="chef-name">
+									<p class="p-0 m-0 fs-4 fw-bold">요리사11</p>
+								</a>
+								<button class="btn btn-sm btn-primary rounded-pill">팔로우 +</button>
+							</div>
+							<div class="intro-zone">
+								<p class="p-0 m-0 my-2">
+									선선한 가을바람이 불어오는 공원에서 따뜻한 커피 한 잔을 마시며 잠시 숨을 고릅니다. 바쁜 일상 속에서 놓치고 있던 소소한 행복과 여유를 되찾는 이 시간이 참 소중하게 느껴집니다.
+								</p>								
+							</div>
+							<div class="stat-zone">
+								<ul class="d-flex justify-content-start gap-3">
+									<li>
+										<i class="fa-solid fa-utensils"></i>
+										<span>10</span>
+									</li>
+									<li>
+										<i class="fa-solid fa-scissors"></i>
+										<span>1528</span>
+									</li>
+									<li>
+										<i class="fa-solid fa-user-plus"></i>
+										<span>13</span>
+									</li>
+									<li>
+										<i class="fa-solid fa-eye"></i>
+										<span>10999</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					
+					
+				</ul>
+			</div>			
+				
 		</div>
 	  
 		<!--/* 팔로윙 쉐프 영역 */-->
