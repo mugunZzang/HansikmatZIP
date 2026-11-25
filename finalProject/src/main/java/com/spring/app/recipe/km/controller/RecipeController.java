@@ -23,12 +23,12 @@ public class RecipeController {
 
 	private final RecipeService service;
 	
-	// @PreAuthorize("hasRole('ADMIN')")         // 로그인한 사람만 접근할 수 있음
-	@GetMapping("admin_index")   
-    public String index() {
+	// @PreAuthorize("isAuthenticated()")      // 로그인한 사람만 접근할 수 있음
+	@GetMapping("recipeRegister")   
+    public String recipeRegister() {
     	
     	
-		return "km/admin/admin_index";
-    }// end of public String index() {}
+		return "km/recipe/recipeRegister";
+    }// end of public String recipeRegister() {
 	
 }

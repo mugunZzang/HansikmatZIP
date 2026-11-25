@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html 
+      lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--/* ::title 은   현재 페이지의 title   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 첫번째 파라미터로 전달한다. */-->
+<!--/* ::link  는   현재 페이지의 link    태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 두번째 파라미터로 전달한다. */--> 
+<!--/* ::style 은   현재 페이지의 style   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 세번째 파라미터로 전달한다. */-->
+<!--/* ::script 는  현재 페이지의 script  태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 네번째 파라미터로 전달한다. */-->
+<!--/* ::section 은 현재 페이지의 section 태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 다섯번째 파라미터로 전달한다. */-->
+<!--/* 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. */-->
+
+<head>
+<meta charset="UTF-8">
+<title>레시피 작성</title>
+<link rel="stylesheet" href="">
+
+<style type="text/css">
+
+</style>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+	
+	
+	
+/*]]>*/
+</script>
+
+</head>
+<body>
+
+    <div class="container">
+
+<h2>레시피 등록하기</h2>
+
+	<form id="recipeForm">
+	
+	<!-- 사진 업로드 -->
+	<div class="section">
+	    <div class="section-title">📷 레시피 사진</div>
+	
+	    <label for="photoInput" class="upload-box">
+	        <strong>+ 사진 업로드</strong>
+	        <p>여러 장의 사진을 선택할 수 있습니다.</p>
+	    </label>
+	
+	    <input type="file" id="photoInput" accept="image/*" multiple>
+	
+	    <div class="preview" id="preview"></div>
+	</div>
+	
+	<!-- 기본 정보 -->
+	<div class="section">
+	    <div class="section-title">레시피 기본 정보</div>
+	
+	    <label>레시피 제목</label>
+	    <input type="text" placeholder="예) 맛있는 김치볶음밥" required>
+	    <br><br>
+	
+	    <label>레시피 소개</label>
+	    <textarea placeholder="레시피를 간단하게 소개해주세요."></textarea>
+	    <br><br>
+	
+	    <label>요리 종류</label>
+	    <select required>
+	        <option value="">선택해주세요</option>
+	        <option>밥/죽</option>
+	        <option>국/탕</option>
+	        <option>찌개</option>
+	        <option>반찬</option>
+	        <option>면/파스타</option>
+	        <option>디저트</option>
+	        <option>기타</option>
+	    </select>
+	</div>
+	
+	<!-- 요리 정보 -->
+	<div class="section">
+	    <div class="section-title">요리 정보</div>
+	
+	    <div class="row">
+	        <div>
+	            <label>조리 시간</label>
+	            <select>
+	                <option>5분 이내</option>
+	                <option>10분 이내</option>
+	                <option>20분 이내</option>
+	                <option>30분 이내</option>
+	                <option>1시간 이내</option>
+	                <option>1시간 이상</option>
+	            </select>
+	        </div>
+	
+	        <div>
+	            <label>난이도</label>
+	            <select>
+	                <option>쉬움</option>
+	                <option>보통</option>
+	                <option>어려움</option>
+	            </select>
+	        </div>
+	
+	        <div>
+	            <label>인분</label>
+	            <select>
+	                <option>1인분</option>
+	                <option>2인분</option>
+	                <option>3인분</option>
+	                <option>4인분</option>
+	                <option>5인분 이상</option>
+	            </select>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- 재료 -->
+	<div class="section">
+	    <div class="section-title">🥕 재료 입력</div>
+	
+	    <div id="ingredients">
+	        <div class="ingredient">
+	            <input type="text" placeholder="재료명" required>
+	            <input type="text" placeholder="수량 (예: 1개)">
+	            <button type="button" class="delete-btn"
+	                onclick="removeIngredient(this)">삭제</button>
+	        </div>
+	    </div>
+	
+	    <button type="button" class="add-btn" onclick="addIngredient()">
+	        + 재료 추가하기
+	    </button>
+	</div>
+	
+	<!-- 조리 순서 -->
+	<div class="section">
+	    <div class="section-title">🍳 조리 순서</div>
+	
+	    <div id="steps">
+	        <div class="step">
+	            <h3>STEP 1</h3>
+	            <textarea placeholder="첫 번째 조리 과정을 입력해주세요." required></textarea>
+	        </div>
+	    </div>
+	
+	    <button type="button" class="add-btn" onclick="addStep()">
+	        + 조리 순서 추가하기
+	    </button>
+	</div>
+	
+	<!-- 요리 팁 -->
+	<div class="section">
+	    <div class="section-title">💡 요리 팁</div>
+	    <textarea placeholder="요리 팁을 입력해주세요."></textarea>
+	</div>
+	
+	<button type="submit" class="submit-btn">
+	    레시피 등록하기
+	</button>
+	
+	</form>
+</div>
+
+</body>
+</html>
