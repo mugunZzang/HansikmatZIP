@@ -205,7 +205,7 @@
 				<ul class="pt-5 ranking-list">
 				
 					<!-- /* 쉐프 카드 */ -->
-					<li class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
+					<li th:each="dto, status: ${userDTOList}" class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
 						<span class="ranking-num fs-3 fw-semibold">1</span>
 						<div class="profile-zone">
 							<a href="#">
@@ -215,7 +215,7 @@
 						<div class="desc-zone">
 							<div class="name-zone d-flex justify-content-start flex-row align-items-center gap-4">
 								<a href="#" class="chef-name">
-									<p class="p-0 m-0 fs-4 fw-bold">요리사11</p>
+									<p th:text="${dto.nickname}" class="p-0 m-0 fs-4 fw-bold"></p>
 								</a>
 								<button class="btn btn-sm btn-primary rounded-pill">팔로우 +</button>
 							</div>
