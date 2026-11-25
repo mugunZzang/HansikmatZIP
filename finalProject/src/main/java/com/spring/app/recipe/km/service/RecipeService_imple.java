@@ -13,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 //트랜잭션 처리를 담당하는 곳, 업무를 처리하는 곳, 비지니스(Business)단
 
 @Service
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class RecipeService_imple implements RecipeService {
 
-	private final RecipeDAO recipeDao;
+	// private final RecipeDAO recipeDao;
 
 	
 	
