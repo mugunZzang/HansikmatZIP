@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.event.kimkc.domain.EntryDTO;
 import com.spring.app.event.kimkc.domain.EventListDTO;
 import com.spring.app.event.kimkc.service.EventListService;
 import com.spring.app.kimkc.entity.Event;
@@ -198,6 +199,16 @@ public class EventListController {
 	public ModelAndView detail(ModelAndView mav,
 							@PathVariable(name="seq") String seq) {
 		
+		// 이벤트 내용은 mybatis로?
+		int eventseq = Integer.parseInt(seq);
+				
+		// 이벤트 상세 정보 가져오기
+		EventListDTO eventDto = service.getEventDetail(eventseq);
+		mav.addObject("event", eventDto);
+		
+		
+		// 이벤트 참여자 정보 가져오기
+		List<EntryDTO> entryDtoList = service.getEntryList(eventseq);
 		
 		
 		mav.setViewName("event/kimkc/event_detail");

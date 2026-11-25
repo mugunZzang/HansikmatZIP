@@ -5,7 +5,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title th:text="${event != null ? event.title + ' - 한식맛ZIP' : '제 199회 한식맛ZIP 공모전 - 한식맛ZIP'}">한식맛ZIP</title>
+<title th:text="${event != null ? event.event_subject + ' - 한식맛ZIP' : '제 199회 한식맛ZIP 공모전 - 한식맛ZIP'}">한식맛ZIP</title>
 
 <!--/* Bootstrap CSS */--> 
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
@@ -91,30 +91,56 @@ $(function() {
             <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-secondary">홈</a></li>
             <li class="breadcrumb-item"><a th:href="@{/event/list}" class="text-decoration-none text-secondary">이벤트</a></li>
             <li class="breadcrumb-item active text-secondary" aria-current="page"
-                th:text="${event != null ? event.title : '이벤트 제목'}">이벤트 제목</li>
+                th:text="${event != null ? event.event_subject : '이벤트 제목'}">이벤트 제목</li>
         </ol>
     </nav>
 
     <!-- 2. 상단 메인 배너 영역 -->
     <div class="event-banner-wrap d-flex flex-column justify-content-center align-items-center text-center mb-5 position-relative">
-        <img th:if="${event != null and event.bannerImg != null}"
-             th:src="@{'/images/event/' + ${event.bannerImg}}"
+        <img th:if="${event != null and event.event_image_filename != null}"
+             th:src="@{'/images/event/' + ${event.event_image_filename}}"
              alt="이벤트 배너">
         <!-- 이미지가 없을 경우 플레이스홀더 -->
-        <div th:if="${event == null or event.bannerImg == null}" class="p-5 text-white">
-            <p class="fs-5 mb-2 opacity-90" th:text="${event != null ? event.subTitle : '제 199회 한식맛ZIP 공모전'}">제 199회 한식맛ZIP 공모전</p>
-            <h1 class="display-5 fw-bold mb-0" th:text="${event != null ? event.title : '겨울 호빵 레시피를 알려주세요!'}">겨울 호빵 레시피를 알려주세요!</h1>
+        <div th:if="${event == null or event.event_image_filename == null}" class="p-5 text-white">
+            <p class="fs-5 mb-2 opacity-90">한식맛ZIP 공모전</p>
+            <h1 class="display-5 fw-bold mb-0" th:text="${event != null ? event.event_subject : '겨울 호빵 레시피를 알려주세요!'}">겨울 호빵 레시피를 알려주세요!</h1>
         </div>
     </div>
 
+	<!-- 
+	
+	◎기간
+	- 응모 : 2026년 11월 03일 ~ 2026년 12월 03일 목요일 오후 3시
+	- 발표 : 2026년 12월 10일 목요일  (DB 참조해서 대체하기)
+	
+	◎ 당첨자 선정
+	- 당첨인원 : 총 6명 (DB 참조해서 대체하기)
+	
+	이벤트 내용 (DB 참조해서 대체하기)
+	다음에
+	
+	
+	- 주제에 맞는 레시피의 리뷰와 의견, 스크랩 수, 재료계량, 과정 설명, 과정 이미지가 잘 된 레시피와 아이디어가 돋보이는 레시피 대상으로 취합하여 선정 합니다.
+
+	※ 이벤트 주제에 맞는 레시피만 참여로 인정됩니다.
+	
+	◎ 안내사항
+	- 공모전 요리 주제에 맞는 레시피를 등록해주세요.
+	- 전문레시피(직접등록/블로그 편집)만 응모 가능합니다
+	- 응모일 이전에 등록된 레시피는 선발 대상에서 제외될 수 있습니다.
+	- 주제와 맞지 않는 레시피는 수상 목록에서 제외될 수 있습니다.
+	- 공모전에 응모한 레시피는 재가공하여 만개의레시피 영상 컨텐츠로 제작될 수 있습니다.
+	- 당첨자 발표는 따로 SMS를 전송하지 않습니다. 당첨자 발표일과 알림을 확인하시고 이벤트 페이지에서 확인하시기 바랍니다.
+	- 공모전 주제로 좋은 아이디어가 있으시면 [☞여기]를 통해 알려주세요.  (>> [여기] 이걸 문의사항이랑 연계하기?)
+	- 본 공모전의 당첨 상품은 기타 소득세 신고 대상입니다.
+	
+	
+	이 만큼을 고정 양식으로 받을 예정.
+	 -->
+
     <!-- 3. 이벤트 상세 본문 (DB 데이터 바인딩 영역) -->
     <section class="event-content px-2 px-md-3 mb-5 lh-lg text-dark">
-        <!-- 인사말 및 주제 안내 -->
-        <div class="mb-4" th:utext="${event != null ? event.introHtml : ''}">
-            <p class="mb-2">안녕하세요. 한식맛ZIP 입니다.</p>
-            <p class="mb-0">겨울 호빵 레시피를 응모해주세요.</p>
-        </div>
-
+      
         <!-- ◎ 기간 -->
         <div class="mb-4">
             <h6 class="fw-bold mb-1">◎ 기간</h6>
@@ -122,16 +148,16 @@ $(function() {
                 <li>
                     - 응모 :
                     <span th:if="${event != null}"
-                          th:text="${#temporals.format(event.startDate, 'yyyy년 MM월 dd일') + ' ~ ' + #temporals.format(event.endDate, 'yyyy년 MM월 dd일 E요일 a h시')}">
+                          th:text="${#temporals.format(event.event_startdate, 'yyyy년 MM월 dd일') + ' ~ ' + #temporals.format(event.event_enddate, 'yyyy년 MM월 dd일 E요일 a h시')}">
                     </span>
                     <span th:if="${event == null}">2026년 11월 03일 ~ 2026년 12월 03일 목요일 오후 3시</span>
                 </li>
                 <li>
                     - 발표 :
-                    <span th:if="${event != null and event.announceDate != null}"
-                          th:text="${#temporals.format(event.announceDate, 'yyyy년 MM월 dd일 E요일')}">
+                    <span th:if="${event != null and event.event_drawingdate != null}"
+                          th:text="${#temporals.format(event.event_drawingdate, 'yyyy년 MM월 dd일 E요일')}">
                     </span>
-                    <span th:if="${event == null or event.announceDate == null}">2026년 12월 10일 목요일</span>
+                    <span th:if="${event == null or event.event_drawingdate == null}">2026년 12월 10일 목요일</span>
                 </li>
             </ul>
         </div>
@@ -140,27 +166,35 @@ $(function() {
         <div class="mb-4">
             <h6 class="fw-bold mb-1">◎ 당첨자 선정</h6>
             <ul class="list-unstyled ps-2 mb-0">
-                <li>- 경 품 : <span th:text="${event != null ? event.prize : '신세계 상품권 50,000원권'}">신세계 상품권 50,000원권</span></li>
-                <li>- 당첨인원 : <span th:text="${event != null ? '총 ' + event.winnerCount + '명' : '총 6명'}">총 6명</span></li>
+                <li>- 당첨인원 : <span th:text="${event != null ? '총 ' + event.event_total_winners + '명' : '총 6명'}">총 6명</span></li>
             </ul>
         </div>
 
+
+
+  		<!-- 이벤트 내용 -->
+        <div class="mb-4" th:utext="${event != null ? event.event_contents : ''}">
+            <p class="mb-2">안녕하세요. 한식맛ZIP 입니다.</p>
+            <p class="mb-0">겨울 호빵 레시피를 응모해주세요.</p>
+        </div>
+        
+
         <!-- 상세 선정 기준 및 주의사항 -->
-        <div class="mb-4" th:utext="${event != null ? event.content : ''}">
-            <p class="mb-3">- 주제에 맞는 레시피의 리뷰와 의견, 스크랩 수, 재료계량, 과정 설명, 과정 이미지가 잘 된 레시피와 아이디어가 돋보이는 레시피 대상으로 취합하여 선정 합니다.</p>
-            <p class="mb-3">※ 레시피 제목에 [고구마] 또는 [제철 고구마] 라는 연상 문구 포함 되어야 참여 인정.</p>
+        <div class="mb-4">
+            <p class="mb-3">※ 주제에 맞는 레시피의 리뷰와 의견, 스크랩 수, 재료계량, 과정 설명, 과정 이미지가 잘 된 레시피와 아이디어가 돋보이는 레시피 대상으로 취합하여 선정 합니다.</p>
+            <p class="mb-3">※ 주제에 맞는 레시피의 리뷰와 의견, 스크랩 수, 재료계량, 과정 설명, 과정 이미지가 잘 된 레시피와 아이디어가 돋보이는 레시피 대상으로 취합하여 선정 합니다.</p>
             <p class="mb-4">※ 해당 월에 수상하신 경우, 해당 월에 진행하는 모든 공모전의 수상 대상에서 제외되며, 해당 월 다음 월에 진행하는 공모전부터 수상대상에 포함됩니다.</p>
 
             <h6 class="fw-bold mb-1">◎ 안내사항</h6>
             <ul class="list-unstyled ps-2 mb-0">
                 <li>- 공모전 요리 주제에 맞는 레시피를 등록해주세요.</li>
                 <li>- 전문레시피(직접등록/블로그 편집)만 응모 가능합니다<br>(※ 응모일 이전에 등록된 레시피는 제외)</li>
+                <li>- 응모일 이전에 등록된 레시피는 선발 대상에서 제외될 수 있습니다.</li>
                 <li>- 주제와 맞지 않는 레시피는 수상 목록에서 제외될 수 있습니다.</li>
-                <li>- 공모전에 응모한 레시피는 재가공하여 한식맛ZIP 영상 컨텐츠로 제작될 수 있습니다.</li>
-                <li>- 당첨자 발표는 따로 SMS를 전송하지 않습니다. 당첨자 발표일을 확인하시고 이벤트 페이지에서 확인하시기 바랍니다.</li>
+                <li>- 당첨자 발표는 따로 SMS를 전송하지 않습니다. 당첨자 발표일 및 알림을 확인하시고 이벤트 페이지에서 확인하시기 바랍니다.</li>
                 <li>- 공모전 아이디어가 있으시면 [<a href="#" class="text-dark fw-semibold">☞여기</a>]를 통해 알려주세요.</li>
-                <li>- TV레시피는 수상대상에서 제외됩니다.</li>
                 <li>- 본 공모전의 당첨 상품은 기타 소득세 신고 대상입니다.</li>
+
             </ul>
         </div>
     </section>
@@ -177,19 +211,20 @@ $(function() {
     </div>
 
     <!-- 5. 당첨자 목록 섹션 -->
-    <section class="winner-section my-5 pt-4 border-top" th:if="${winners == null or !winners.isEmpty()}">
+    <section class="winner-section my-5 pt-4 border-top" >
+    <!-- th:if="${winners == null or !winners.isEmpty()}" -->
         <div class="px-2 px-md-3">
             <h6 class="fw-bold mb-1">◎ 당첨자 목록</h6>
             <p class="small text-secondary mb-3">주제에 맞는 레시피의 리뷰와 의견, 스크랩수를 종합적으로 취합하여 선정</p>
 
             <div class="bg-light border rounded-4 p-4 p-md-5 mb-3">
                 <ul class="list-unstyled mb-0 d-flex flex-column gap-3 fs-5">
-                    <li th:each="win : ${winners}" class="d-flex flex-wrap align-items-center gap-3">
+                   <!--  <li th:each="win : ${winners}" class="d-flex flex-wrap align-items-center gap-3">
                         <a th:href="@{'/recipe/detail/' + ${win.recipeId}}"
                            class="fw-bold text-dark text-decoration-underline"
                            th:text="'- ' + ${win.recipeTitle}">- 마라맛 호빵 만들기</a>
                         <span class="fs-6 text-secondary" th:text="'By ' + ${win.nickname}">By 마라러버</span>
-                    </li>
+                    </li> -->
 
                     <!-- 더미 데이터 -->
                     <th:block th:if="${winners == null}">
@@ -263,6 +298,9 @@ $(function() {
     <!-- ===================================================================== -->
     <!-- 7. 레시피 응모하기 모달 (layout_main의 ~{::div.container}에 포함되도록 내부 배치) -->
     <!-- ===================================================================== -->
+    
+    <!--  
+    
     <div class="modal fade" id="entryModal" tabindex="-1" aria-labelledby="entryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 border-0 shadow-lg p-3 p-md-4">
@@ -273,7 +311,7 @@ $(function() {
                 </div>
 
                 <div class="modal-body pt-2">
-                    <!-- 내 레시피 검색 영역 -->
+                    <!-- 내 레시피 검색 영역 
                     <div class="mx-auto mb-4" style="max-width: 520px;">
                         <div class="modal-search-box d-flex align-items-center pb-2">
                             <input type="text"
@@ -286,7 +324,7 @@ $(function() {
                         </div>
                     </div>
 
-                    <!-- 내가 작성한 레시피 목록 (3열 그리드) -->
+                    <!-- 내가 작성한 레시피 목록 (3열 그리드) 
                     <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden;" class="px-1">
                         <div class="row row-cols-2 row-cols-md-3 g-3" id="myRecipeListContainer">
 
@@ -307,7 +345,7 @@ $(function() {
                                 </div>
                             </div>
 
-                            <!-- 더미 데이터 -->
+                            <!-- 더미 데이터 
                             <th:block th:if="${myRecipeList == null}">
                                 <div class="col my-recipe-item" th:each="idx : ${#numbers.sequence(1, 3)}"
                                      th:data-recipe-id="${idx}"
@@ -329,7 +367,7 @@ $(function() {
                     </div>
                 </div>
 
-                <!-- 모달 푸터 -->
+                <!-- 모달 푸터 
                 <div class="modal-footer border-0 justify-content-center gap-3 pt-4 pb-2">
                     <form id="eventEntryForm" th:action="@{/event/entry}" method="post" class="m-0">
                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
@@ -355,7 +393,7 @@ $(function() {
             </div>
         </div>
     </div>
-
+	-->
 </div>
 </body>
 </html>

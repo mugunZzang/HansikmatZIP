@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="com.spring.app.event.kimkc.model.EventListDAO">
+
+	<select id="getEventDetail" parameterType="int" resultType="kkc_EventListDTO">
+		SELECT
+			eventseq, event_subject, event_startdate, event_enddate,
+			event_drawingdate, event_image_org_filename, event_image_filename,
+			event_contents, event_total_winners
+		FROM tbl_event
+		WHERE eventseq = #{eventseq}
+	</select>
+
+
+	<select id="getEntryList" parameterType="int" resultType="kkc_EntryDTO"></select>
+
+</mapper>
+
