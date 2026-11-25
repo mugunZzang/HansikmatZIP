@@ -20,7 +20,6 @@
 
 <!--/* Font Awesome 6 Icons */-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
 <!-- /* 초기화 CSS */ -->
 <link rel="stylesheet" th:href="@{/css/reset.css}">
 
@@ -50,8 +49,9 @@
 
 		<div id="mycontent" th:insert="${content}"></div>
 		
-
+		
 		<div id="myfooter" th:insert="~{fragment/footer :: footer}"></div>
+		
 		
 		<!--/* 자바스크립트 인라인 */-->
         <script th:inline="javascript">

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html th:fragment="layout(title, link, css, script, content)"
+      lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/* 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. */-->
+
+<head>
+<meta charset="UTF-8">
+<!--/* Required meta tags */-->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--/* <meta name="_csrf" th:content="${_csrf.token}"/> */-->
+<!--/* <meta name="_csrf_header" th:content="${_csrf.headerName}"/> */-->
+
+<!--/* 1. 맨 위의 layout fragment 의 title 내용으로 교체 되어짐 */-->
+<title th:replace="${title}">레이아웃 타이틀</title>
+
+<!--/* Bootstrap CSS */--> 
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+
+<!--/* Font Awesome 6 Icons */-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!-- /* 초기화 CSS */ -->
+<link rel="stylesheet" th:href="@{/css/reset.css}">
+
+<!--/* 2. 맨 위의 layout fragment 의 link 내용으로 교체 되어짐 */-->
+<link th:replace="${link}" rel="stylesheet" href="">
+
+<link rel="stylesheet" type="text/css" th:href="@{/css/km/adminheader.css}">
+      
+<!--/* 3. 맨 위의 layout fragment 의 css 내용으로 교체 되어짐 */-->
+<style th:replace="${css}" type="text/css"></style>
+
+<!--/* Optional JavaScript */-->
+<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+  
+<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+<!--/* 4. 맨 위의 layout fragment 의 script 내용으로 교체 되어짐 */-->
+<script th:replace="${script}" th:inline="javascript"></script>
+
+
+</head>
+<body>
+
+	<div id="mycontainer">
+		
+
+		<div id="myheader" th:insert="~{fragment/adminheader :: adminheader}"></div>
+		
+
+		<div id="mycontent" th:insert="${content}"></div>
+	
+		
+		<!--/* 자바스크립트 인라인 */-->
+        <script th:inline="javascript">
+        /*<![CDATA[*/
+ 			$(function() {
+
+		        let currentUrl = window.location.pathname;
+		
+		        $(".admin-menu").each(function() {
+		
+		            let menuUrl = new URL($(this).attr("href"), window.location.origin).pathname;
+		
+		            if (currentUrl === menuUrl) {
+		                $(this).addClass("active");
+		            }
+
+        });
+
+    });
+		/*]]>*/   
+        </script>
+	</div>
+
+</body>
+</html>
