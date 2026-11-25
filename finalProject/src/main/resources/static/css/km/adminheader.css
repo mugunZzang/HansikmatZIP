@@ -1,0 +1,101 @@
+@charset "UTF-8";
+
+body {
+	animation: pageFadeIn 0.7s ease-out;
+}
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.admin-header {
+    width: 100%;
+    background-color: white;
+    padding: 30px 40px 0;
+    box-sizing: border-box;
+}
+
+.admin-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0 0 30px 15px;
+    color: #222;
+}
+
+.admin-menu.active {
+    background-color: #17658a;
+    color: white;
+    font-weight: bold;
+}
+
+/* 네비게이션 전체 */
+.admin-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 45px;
+    padding: 0 8px;
+    border-bottom: 1px solid #17658a;
+}
+
+/* 왼쪽 메뉴 */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+/* 왼쪽 메뉴 링크 */
+.nav-left a,
+.nav-right a {
+    text-decoration: none;
+    color: #222;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 12px 15px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+/* 메뉴 마우스 올렸을 때 */
+.nav-left a:hover{
+    background-color: #17658a;
+    color: white;
+}
+.nav-right a:hover {
+	background-color: #F5F5F5;
+    color: black;
+}
+
+/* 클릭 후 선택된 메뉴 */
+.nav-left a.active {
+    background-color: #17658a;
+    color: white;
+}
+
+/* 오른쪽 로그인 영역 */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 로그아웃 버튼 */
+.logout-btn {
+    background-color: #17658a;
+    color: white;
+    border: 1px solid #164d69;
+    padding: 9px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #10445f;
+}
