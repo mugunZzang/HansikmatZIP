@@ -20,7 +20,8 @@
 
 <!--/* Font Awesome 6 Icons */-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+<!-- /* 초기화 CSS */ -->
+<link rel="stylesheet" th:href="@{/css/reset.css}">
 
 <!--/* 2. 맨 위의 layout fragment 의 link 내용으로 교체 되어짐 */-->
 <link th:replace="${link}" rel="stylesheet" href="">
@@ -43,13 +44,14 @@
 	<div id="mycontainer">
 		
 
-		<div id="myheader" th:insert="~{fragment/header :: main_header}"></div>
+		<div id="myheader" th:insert="~{fragment/header :: adminheader}"></div>
 		
 
 		<div id="mycontent" th:insert="${content}"></div>
 		
-
+		
 		<div id="myfooter" th:insert="~{fragment/footer :: footer}"></div>
+		
 		
 		<!--/* 자바스크립트 인라인 */-->
         <script th:inline="javascript">
