@@ -48,8 +48,13 @@
 	        const $targetPane = $(`#tab-content-${status}`);
 	        $targetPane.removeClass('d-none');
 			
+	        
 			
 		});
+		
+		
+		
+		// 
 		
 	}); 
 		 
@@ -82,7 +87,7 @@
 	    <div id="tab-content-ongoing" class="event-tab-pane">
 	        <!-- 초기 로딩 시 '진행중인 이벤트' 1페이지 조각 끼워넣기 -->
 	        <div th:replace="~{event/kimkc/event_fragment :: eventListFragment(
-	                            eventList=${ongoingList}, 
+	                            eventList=${eventDtoList}, 
 	                            pageBar=${ongoingPageBar}, 
 	                            status='ongoing')}">
 	        </div>

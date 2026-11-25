@@ -1,17 +1,24 @@
 package com.spring.app.event.kimkc.controller;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.event.kimkc.domain.EventListDTO;
 import com.spring.app.event.kimkc.service.EventListService;
 import com.spring.app.kimkc.entity.Event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -21,9 +28,9 @@ public class EventListController {
 
 	private final EventListService service;
 	
-	// 분류 화면 
+	// 이벤트 리스트 불러오기 
 	@GetMapping("list")
-	public ModelAndView list(ModelAndView mav) {
+	public ModelAndView list(ModelAndView mav, HttpServletRequest request) {
 		
 		
 		
@@ -56,7 +63,9 @@ public class EventListController {
 						.event_subject(entity.getEventSubject())
 						.event_startdate(entity.getEventStartdate())
 						.event_enddate(entity.getEventEnddate())
+						
 						.event_image_filename(entity.getEventImageFilename())
+						.dDay(ChronoUnit.DAYS.between(LocalDate.now(), entity.getEventEnddate()))
 						.build() )
 				.toList();
 		
@@ -64,6 +73,13 @@ public class EventListController {
 		
 		
 		mav.addObject("eventDtoList", eventDtoList);
+		
+		
+		// 페이지바 만들기
+		String ctxPath = request.getContextPath();
+		String pageBar = makePageBar(currentShowPageNo, sizePerPage, totalPage, status, ctxPath);
+		mav.addObject("ongoingPageBar", pageBar);
+		
 		
 		
 		
@@ -75,16 +91,98 @@ public class EventListController {
 	
 	// ===============================================================================================================================================================
 	
-	// ajax 랑 놀기
+	// 이벤트 탭 별로 리스트 가져오기(Ajax)
+	@GetMapping("/tablist")
+	public String tablist(@RequestParam(name="pageno") String currentShowPageNo,
+							@RequestParam(name="status") String status,
+							Model model,
+							HttpServletRequest request) {
+		
+		int sizePerPage = 5;
+		int pageno = Integer.parseInt(currentShowPageNo);
+		int totalPage = 0;
+		Page<Event> pageEvent = service.getPageEvent(pageno, sizePerPage, status);
+		
+		totalPage = pageEvent.getTotalPages(); // 전체 페이지 개수
+		//System.out.println("전체 페이지 수: " + totalPage);
+		
+		if(totalPage > 0 && pageno > totalPage) {
+			pageno = totalPage;
+			pageEvent = service.getPageEvent(pageno, sizePerPage, status);
+		}
+		
+		
+		List<Event> eventList = pageEvent.getContent();
+		
+		// 엔티티를 DTO로 변환
+		List<EventListDTO> eventDtoList = eventList.stream()
+				.map(entity -> EventListDTO.builder()
+						.eventseq(entity.getEventSeq())
+						.event_subject(entity.getEventSubject())
+						.event_startdate(entity.getEventStartdate())
+						.event_enddate(entity.getEventEnddate())
+						
+						.event_image_filename(entity.getEventImageFilename())
+						.dDay(ChronoUnit.DAYS.between(LocalDate.now(), entity.getEventEnddate()))
+						.build() )
+				.toList();
+		
+		model.addAttribute(eventDtoList);
+		
+		String ctxPath = request.getContextPath();
+		String pageBar = makePageBar(pageno, sizePerPage, totalPage, status, ctxPath);
+		model.addAttribute("pageBar", pageBar);
+		
+		model.addAttribute("status", status);
+		
+		
+		return "";
+	}
+	
 	
 	
 	// ===============================================================================================================================================================
 	
-	
-	private String makePageBar(int currentShowPageNo, int sizePerPage, String status) {
+	// 페이지바 만드는 메소드
+	private String makePageBar(int currentShowPageNo, int sizePerPage, int totalPage , String status, String ctxPath) {
+		
+		String pageBar = "";
+		int blockSize = 10;
+		int loop = 1;
+		int pageno = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		pageBar = "<ul style='list-style:none;'>";
+		String url = ctxPath + "/event/tablist?status=" + status;
 		
 		
-		return "";
+		// === [맨처음][이전] 만들기 === //	
+        if(pageno != 1) {
+           pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&pageno=1'>[맨처음]</a></li>";
+           pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&pageno="+(pageno-1)+"'>[이전]</a></li>"; 
+        }
+        
+        while( !(loop > blockSize || pageno > totalPage) ) {
+           
+           if(pageno == currentShowPageNo) {
+              pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageno+"</li>";
+           }
+           else {
+              pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"&pageno="+pageno+"'>"+pageno+"</a></li>"; 
+           }
+           
+           loop++;
+           pageno++;
+        }// end of while------------------------
+        
+        // === [다음][마지막] 만들기 === //
+        if(pageno <= totalPage) {
+           pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&pageno="+pageno+"'>[다음]</a></li>";
+           pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&pageno="+totalPage+"'>[마지막]</a></li>"; 
+        }
+        
+        pageBar += "</ul>";
+		
+		return pageBar;
 	}
 	
 	

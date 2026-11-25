@@ -44,7 +44,7 @@ public class EventListService_imple implements EventListService {
 		LocalDate today = LocalDate.now();
 		BooleanExpression condition = Expressions.TRUE;
 		if(status.equals("ongoing")) {
-			// status 가 ongoing 이면 진행중인것만
+			// status 가 ongoing 이면 "진행중"인것만
 			condition = condition.and(event.eventEnddate.goe(today));
 		}
 		else {
