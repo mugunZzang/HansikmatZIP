@@ -28,11 +28,12 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
 
     // 2. 종료된 이벤트 목록 (종료일 < 오늘, 최신순)
     List<Event> findByEventEnddateLessThanOrderByEventseqDesc(LocalDate today);
+    
+	// 진행 중인 이벤트 개수 (응모 중 + 당첨 선정 대기 = 발표일이 오늘보다 미래인 것)
+	int countByEventDrawingdateGreaterThan(LocalDate now);
 
-    // 진행 중 (당첨 발표일이 오늘 이상: ongoing + 당첨 선정 대기 포함) 개수
-    int countByEventDrawingdateGreaterThanEqual(LocalDate today);
+	// 종료된 이벤트 개수 (발표일이 오늘이거나 이미 지난 것)
+	int countByEventDrawingdateLessThanEqual(LocalDate now);
 
-    // 종료됨 (당첨 발표일이 오늘보다 이전) 개수
-    int countByEventDrawingdateLessThan(LocalDate today);
 
 }

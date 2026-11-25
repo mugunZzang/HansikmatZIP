@@ -90,8 +90,8 @@
                 <div class="border-bottom pb-3 mb-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1"
-                                  th:classappend="${eventDto.ddayBadgeClass}"
+							<span class="badge rounded-pill px-2 py-1"
+							      th:classappend="${eventDto.ddayBadgeClass}"
 							      th:text="${eventDto.ddayText}">D-2</span>
                             <span class="text-muted small">
                                 <i class="fa-solid fa-trophy text-warning me-1"></i>당첨 인원 <strong th:text="${eventDto.event_total_winners}">5</strong>명
@@ -122,9 +122,9 @@
 
                 <!-- 하단 버튼 -->
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                    <a th:href="@{/admin/event/list}" class="btn btn-light border px-3">
-                        <i class="fa-solid fa-arrow-left me-1"></i> 목록으로
-                    </a>
+					<a th:href="@{/admin/event/list}" class="btn btn-outline-secondary px-3">
+					    <i class="fa-solid fa-arrow-left me-1"></i> 목록으로
+					</a>
                     <div class="d-flex gap-2">
                         <a th:href="@{/admin/event/edit(eventseq=${eventDto.eventseq})}" class="btn btn-primary px-4 fw-semibold">수정</a>
                         <button type="button" class="btn btn-outline-danger px-4" id="btnDeleteEvent">삭제</button>
@@ -144,7 +144,7 @@
                     <div class="d-flex align-items-center gap-2">
                         <h5 class="fw-bold mb-0">참가한 레시피</h5>
 						<!-- 건수 뱃지 -->
-						<span class="badge rounded-pill bg-primary-subtle text-primary"
+						<span class="badge rounded-pill badge-brand"
 						      id="participantCount"
 						      th:text="'총 ' + ${#lists.size(entryList)} + '건'">총 0건</span>
                     </div>
@@ -208,10 +208,9 @@
                             <i class="fa-solid fa-trophy text-warning me-1"></i> 당첨 레시피
                         </h5>
                         <input type="hidden" id ="totalWinner" th:value="${eventDto.event_total_winners}">
-                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis"
+						<span class="badge rounded-pill badge-winner-count"
 						      id="winnerCountBadge"
-						      th:text="|총 ${#lists.size(winnerList)} / ${eventDto.event_total_winners}명|">총 0 / 5명</span>
-                    </div>
+						      th:text="|총 ${#lists.size(winnerList)} / ${eventDto.event_total_winners}명|">총 0 / 5명</span>                    </div>
                 </div>
 		        <!-- 비어있을 때 안내 -->
 				<div th:if="${#lists.isEmpty(winnerList)}" class="text-center py-4 text-muted">
@@ -224,7 +223,7 @@
                     <!-- 당첨 카드 1 -->
 					<div class="col" th:each="winner : ${winnerList}">
 					    <label class="card recipe-select-card winner-card h-100">
-					         <span class="badge bg-warning text-dark winner-badge">당첨</span>
+					         <span class="badge winner-badge">당첨</span>
 					         <div class="recipe-card-img">
 					             <img th:src="@{/recipeimage/{filename}(img=${winner.r_imgname})}" alt="당첨 레시피">
 					             

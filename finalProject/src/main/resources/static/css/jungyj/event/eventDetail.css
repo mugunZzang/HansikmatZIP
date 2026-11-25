@@ -5,13 +5,27 @@ body {
 }
 
 .event-detail-wrapper {
-    max-width: 1140px;
+    max-width: 1280px;
 }
 
 .admin-card {
-    border: 1px solid #e9ecef;
+    border: 1px solid #e2e8f0;
     border-radius: 0.85rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* 참가 건수 뱃지 */
+.badge-brand {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+/* 당첨 인원 뱃지 */
+.badge-winner-count {
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #b45309;
+    font-weight: 600;
 }
 
 /* 상세 배너 이미지 (최대 800px, 1200x630 비율 유지) */
@@ -50,13 +64,8 @@ body {
 
 .recipe-select-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-/* 체크박스 선택 시 카드 전체 테두리 파랗게 강조 (순수 CSS :has 사용) */
-.recipe-select-card:has(input:checked) {
-    border-color: #0d6efd;
-    background-color: #eff6ff;
+    border-color: rgba(var(--bs-primary-rgb), 0.4);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.08);
 }
 
 .recipe-select-card .form-check-input {
@@ -65,6 +74,19 @@ body {
     left: 8px;
     z-index: 2;
     cursor: pointer;
+}
+.recipe-select-card .form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.recipe-select-card .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.2);
+}
+
+/* 체크박스 선택 시 카드 전체 테두리 네이비 강조 */
+.recipe-select-card:has(input:checked) {
+    border-color: var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
 
 .recipe-card-img {
@@ -83,8 +105,14 @@ body {
 
 /* 당첨 레시피 카드 강조 */
 .winner-card {
-    border-color: #fde68a;
-    background-color: #fffbeb;
+    cursor: default;
+    border-color: rgba(245, 158, 11, 0.55);
+    background-color: rgba(245, 158, 11, 0.04);
+}
+.winner-card:hover {
+    transform: none;
+    border-color: #F59E0B;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
 }
 
 .winner-badge {
@@ -92,4 +120,7 @@ body {
     top: 8px;
     right: 8px;
     z-index: 2;
+    background-color: #F59E0B; 
+    color: #ffffff;
+    font-weight: 600;
 }

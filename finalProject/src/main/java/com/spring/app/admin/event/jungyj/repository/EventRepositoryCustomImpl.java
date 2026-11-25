@@ -22,13 +22,14 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 	    return jPAQueryFactory
 	            .selectFrom(event)
 	            .where(
-	                event.eventEnddate.lt(today)
-	                .and(event.eventDrawingdate.goe(today))
+	                event.eventEnddate.loe(today)       // 종료일 <= 오늘
+	                .and(event.eventDrawingdate.gt(today)) // 발표일 > 오늘 (즉, 오늘 < 발표일)
 	            )
 	            .orderBy(event.eventseq.desc())
 	            .fetch();
 	}
-
+	
+	
     // 서버에 저장되어있는 파일명 조회(스케줄링을 위한 것)
 	@Override
 	public List<String> findAllUsedImageFilenames() {

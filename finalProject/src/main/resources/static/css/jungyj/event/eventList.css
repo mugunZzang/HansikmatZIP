@@ -1,20 +1,22 @@
+@charset "UTF-8";
+
 body {
-    background-color: #ffffff;
+    background-color: #f4f6f9; /* Q&A 페이지와 배경색 통일 */
     color: #111827;
 }
 
 .event-list-wrapper {
-	max-width: 1040px;
+    max-width: 1280px;
 }
 
 /* 언더라인 탭 */
 .event-tabs {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e2e8f0;
     gap: 24px;
 }
 .event-tabs .nav-link {
     padding: 10px 2px;
-    color: #6b7280;
+    color: var(--bs-secondary); 
     font-weight: 500;
     font-size: 0.95rem;
     border: none;
@@ -22,40 +24,43 @@ body {
     margin-bottom: -1px;
 }
 .event-tabs .nav-link:hover {
-    color: #111827;
+    color: var(--bs-primary); 
 }
 .event-tabs .nav-link.active {
-    color: #111827;
+    color: var(--bs-primary); 
     font-weight: 700;
-    border-bottom-color: #111827;
+    border-bottom-color: var(--bs-primary);
 }
 
 .tab-num {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--bs-secondary);
     margin-left: 4px;
     font-weight: 600;
 }
+.event-tabs .nav-link.active .tab-num {
+    color: var(--bs-primary);
+}
 .tab-num-alert {
-    color: #dc2626;
+    color: #DC3545; 
 }
 
 /* 이벤트 카드 */
 .event-card {
     padding: 18px 20px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     background-color: #ffffff;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .event-card:hover {
-    border-color: #cbd5e1;
-    background-color: #fafafa;
+    border-color: rgba(var(--bs-primary-rgb), 0.35);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05);
 }
 
 /* 썸네일 크기 확대 */
 .event-thumb {
-	width: 280px;
+    width: 280px;
     height: 175px;
     border-radius: 8px;
     overflow: hidden;
@@ -83,32 +88,50 @@ body {
     padding: 3px 8px;
     border-radius: 6px;
 }
+
+/* 당첨 선정 필요 */
 .tag-drawing {
     background-color: #fef2f2;
-    color: #dc2626;
+    color: #DC3545;
 }
+
+/* 마감 임박 등 강조용 */
+.tag-urgent {
+    background-color: rgba(var(--bs-success-rgb), 0.12);
+    color: var(--bs-success);
+}
+
+/* 일반 진행 중*/
+.tag-ongoing {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+}
+
+/* 종료됨*/
 .tag-ended {
-    background-color: #f3f4f6;
-    color: #6b7280;
+    background-color: rgba(var(--bs-secondary-rgb), 0.12);
+    color: var(--bs-secondary);
 }
 
 /* 제목 & 메타 */
 .event-title-link {
     color: #111827;
     text-decoration: none;
+    transition: color 0.15s ease;
 }
 .event-title-link:hover {
+    color: var(--bs-primary);
     text-decoration: underline;
     text-underline-offset: 4px;
 }
 .meta-dot {
     margin: 0 6px;
-    color: #d1d5db;
+    color: #cbd5e1;
 }
 
 /* 빈 목록 */
 .event-empty {
-    border: 1px dashed #e5e7eb;
+    background-color: #ffffff;
+    border: 1px dashed #cbd5e1;
     border-radius: 12px;
 }
-

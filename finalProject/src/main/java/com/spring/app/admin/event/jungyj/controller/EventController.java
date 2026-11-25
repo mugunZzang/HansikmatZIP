@@ -198,9 +198,9 @@ public class EventController {
 	    
 	    LocalDate today = LocalDate.now();
 	    
-	    // 종료일 < 오늘 날짜 <= 발표일
-	    boolean canDraw = today.isAfter(eventDto.getEvent_enddate())
-	                   && !today.isAfter(eventDto.getEvent_drawingdate());
+	    // 종료일 <= 오늘 날짜 < 발표일
+	    boolean canDraw = !today.isBefore(eventDto.getEvent_enddate())
+	                   && today.isBefore(eventDto.getEvent_drawingdate());
 
 	    // 당첨 버튼 표기를 위한 boolean 변수
 	    mav.addObject("canDraw", canDraw);

@@ -30,7 +30,7 @@
                     <h4 class="fw-bold mb-1">이벤트 수정</h4>
                     <p class="text-muted small mb-0">대표 이미지와 진행 기간, 상세 내용을 입력해 주세요.</p>
                 </div>
-                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">이벤트 관리</span>
+				<span class="badge badge-brand px-3 py-2 rounded-pill">이벤트 관리</span>
             </div>
 
             <form th:action="@{/admin/event/edit}" method="post" enctype="multipart/form-data">
@@ -45,7 +45,7 @@
                         <label for="eventImage" class="image-upload-box position-relative overflow-hidden w-100 d-flex flex-column justify-content-center align-items-center text-center p-3">
 							
 							<img th:if="${not #strings.isEmpty(eventDto.event_image_filename)}"
-					             th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
+					             th:src="@{/eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
 					             alt="기존 대표 이미지"
 					             class="mb-2 rounded"
 								 style="width: 100%; max-height: 160px; object-fit: cover;">
@@ -116,7 +116,7 @@
 
                 <!-- 하단: 액션 버튼 바 -->
                 <div class="d-flex justify-content-between align-items-center pt-4 border-top">
-                    <a th:href="@{/admin/event/list}" class="btn btn-light border px-3">목록으로</a>
+                    <a th:href="@{/admin/event/list}" class="btn btn-outline-secondary px-3">목록으로</a>
                     <div class="d-flex gap-2">
                         <button type="button" id = "eventEdit" class="btn btn-primary px-4 fw-semibold">수정하기</button>
                         <button type="button" class="btn btn-outline-danger px-4" id="btnDelete">삭제</button>

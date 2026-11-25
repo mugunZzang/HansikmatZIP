@@ -126,11 +126,11 @@ public class EventService_imple implements EventService {
 			LocalDate today = LocalDate.now();
 
 			if ("ended".equals(status)) {
-				condition = condition.and(event.eventDrawingdate.lt(today));
+				// 종료됨: 발표일 <= 오늘
+				condition = condition.and(event.eventDrawingdate.loe(today));
 	        } else {
-	        	// 오늘 일자보다 종료일이 더 큰가
-	        	// ex) 오늘일자  (2026-11-24) <= 종료일 (2026-11-27) 아직 진행중이라는 뜻
-	            condition = condition.and(event.eventEnddate.goe(today));
+	        	// 진행 중(하단 일반 목록): 종료일 > 오늘 (오늘 == 종료일이면 상단 drawingList로 올라감)
+	        	condition = condition.and(event.eventEnddate.gt(today));
 	        }
 			
 			
@@ -222,17 +222,17 @@ public class EventService_imple implements EventService {
 	}
 
 	
-	// 진행 중인 이벤트 개수
+	// 진행 중인 이벤트 개수 (응모 중 + 당첨 선정 대기 = 발표일이 오늘보다 미래인 것)
 	public int getOngoingCount() {
-		return eventRepository.countByEventDrawingdateGreaterThanEqual(LocalDate.now());
+	    return eventRepository.countByEventDrawingdateGreaterThan(LocalDate.now());
 	}
 
-	// 종료된 이벤트 개수
+	// 종료된 이벤트 개수 (발표일이 오늘이거나 이미 지난 것)
 	public int getEndedCount() {
-		return eventRepository.countByEventDrawingdateLessThan(LocalDate.now());
+	    return eventRepository.countByEventDrawingdateLessThanEqual(LocalDate.now());
 	}
 	
-	// 상단 고정용: 당첨 선정 대기 목록 조회 (종료일 < 오늘 <= 발표일)
+	// 상단 고정용: 당첨 선정 대기 목록 조회 (종료일 <= 오늘 < 발표일)
 	@Override
 	public List<EventDTO> getDrawingList() {
 		// 
