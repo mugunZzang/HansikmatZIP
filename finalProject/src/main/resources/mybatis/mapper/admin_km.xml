@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="com.spring.app.admin.km.model.AdminDAO">
+
+	<select id="todaymembership" resultType="int">
+		select count(*)
+		from tbl_membership
+		where trunc(start_membershp_date) = trunc(sysdate)
+	</select>
+	
+	<select id="todaywriterecipe" resultType="int">
+		select count(*)
+		from tbl_recipe
+		where trunc(r_writedate) = trunc(sysdate)
+	</select>
+	
+	<select id="todaynewchef" resultType="int">
+		select count(*)
+		from tbl_chef_apply_list
+		where trunc(applicant_date) = trunc(sysdate)
+	</select>
+	
+	<resultMap type="HashMap" id="todaymap">
+		<result property="qna_subject" column="qna_subject" javaType="String" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="question_date" column="question_date" javaType="java.time.LocalDateTime" />
+		<result property="qna_status" column="qna_status" javaType="String" />
+	</resultMap>
+	
+	<select id="todayqna" resultMap="todaymap">
+		select qna_subject, nickname, question_date, qna_status
+		from tbl_qna A join tbl_user B
+		on A.fk_userseq = B.userseq
+		where trunc(question_date) = trunc(sysdate)
+		order by question_date desc
+		fetch first 5 rows only
+	</select>
+	
+	<resultMap type="HashMap" id="eventmap">
+		<result property="eventseq" column="eventseq" javaType="Integer" />
+		<result property="event_enddate" column="event_enddate" javaType="java.time.LocalDateTime" />
+		<result property="event_startdate" column="event_startdate" javaType="java.time.LocalDateTime" />
+		<result property="event_subject" column="event_subject" javaType="String" />
+	</resultMap>
+	
+	<select id="endevent" resultMap="eventmap">
+		select eventseq, trunc(event_enddate), trunc(event_startdate), event_subject
+		from tbl_event
+		where trunc(event_enddate) &gt; trunc(sysdate)
+		order by eventseq desc
+		fetch first 3 rows only
+	</select>
+	
+	<resultMap type="HashMap" id="revealmap">
+		<result property="r_imgname" column="r_imgname" javaType="String" />
+		<result property="r_subject" column="r_subject" javaType="String" />
+		<result property="recipeseq" column="recipeseq" javaType="Integer" />
+		<result property="r_writedate" column="r_writedate" javaType="java.time.LocalDateTime" />
+		<result property="nickname" column="nickname" javaType="String" />
+	</resultMap>
+	
+	<select id="revealrecipe" parameterType="String" resultMap="revealmap">
+		select r_imgname, r_subject, recipeseq, trunc(r_writedate), nickname
+		from tbl_recipe R join tbl_user U
+		on R.fk_userseq = U.userseq
+		where view_check = '검수대기'
+		OFFSET (to_number(#{currentShowPageNo})-1) * 4 ROW   
+		FETCH NEXT 4 ROW ONLY
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*)
+		from tbl_recipe
+		where view_check = '검수대기'
+	</select>
+
+</mapper>
+
