@@ -67,7 +67,7 @@
                         <div class="col-12 col-md-auto">
                             <a th:href="@{/admin/event/detail(eventseq=${drawDto.eventseq})}" class="d-block event-thumb">
                                 <img th:if="${not #strings.isEmpty(drawDto.event_image_filename)}"
-                                     th:src="@{/file_eventimageimage/{filename}(filename=${drawDto.event_image_filename})}"
+                                     th:src="@{/eventimageimage/{filename}(filename=${drawDto.event_image_filename})}"
                                      th:alt="${drawDto.event_subject}">
                                 <img th:unless="${not #strings.isEmpty(drawDto.event_image_filename)}"
                                      th:src="@{/images/jungyj/event/imageicon.png}"
@@ -143,7 +143,7 @@
                         <div class="col-12 col-md-auto">
                             <a th:href="@{/admin/event/detail(eventseq=${eventDto.eventseq})}" class="d-block event-thumb">
                                 <img th:if="${not #strings.isEmpty(eventDto.event_image_filename)}"
-                                     th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
+                                     th:src="@{/eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
                                      th:alt="${eventDto.event_subject}">
                                 <img th:unless="${not #strings.isEmpty(eventDto.event_image_filename)}"
                                      th:src="@{/images/jungyj/event/imageicon.png}"

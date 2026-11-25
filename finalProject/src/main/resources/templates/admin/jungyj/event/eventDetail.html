@@ -108,7 +108,7 @@
 
                 <!-- 이벤트 배너 이미지 (800x420 / 1200x630 비율) -->
                 <div class="event-detail-banner mx-auto mb-4">
-                    <img th:src="@{/file_eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
+                    <img th:src="@{/eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
 						 th:alt="${eventDto.event_subject}">
                 </div>
 
@@ -169,7 +169,7 @@
 					                   th:value="${entry.entryseq}"
 					                   th:disabled="${entry.chk_win == 1}">
 					            <div class="recipe-card-img">
-					                <img th:src="@{/file_recipeimage/{filename}(img=${entry.r_imgname})}" alt="레시피 썸네일">
+					                <img th:src="@{/recipeimage/{filename}(img=${entry.r_imgname})}" alt="레시피 썸네일">
 					            </div>
 					            <div class="card-body p-2">
 					                <div class="fw-semibold small text-truncate" th:text="${entry.r_subject}">레시피 제목</div>
@@ -226,7 +226,7 @@
 					    <label class="card recipe-select-card winner-card h-100">
 					         <span class="badge bg-warning text-dark winner-badge">당첨</span>
 					         <div class="recipe-card-img">
-					             <img th:src="@{/file_recipeimage/{filename}(img=${winner.r_imgname})}" alt="당첨 레시피">
+					             <img th:src="@{/recipeimage/{filename}(img=${winner.r_imgname})}" alt="당첨 레시피">
 					             
 					         </div>
 					         <div class="card-body p-2">
