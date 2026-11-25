@@ -20,13 +20,13 @@ create table tbl_user
 ,email_checked       NUMBER(1)     default 0      not null   -- 이메일 인증 여부(1: 인증완료, 0:미인증)                
 ,summary             nvarchar2(200)                          -- 자기소개  
 ,profile_orgfilename varchar2(255)                           -- 프로필 원본 파일명
-,profile_sysfilename varchar2(255)                not null   -- 프로필 저장 파일명   
+,profile_sysfilename varchar2(255)                           -- 프로필 저장 파일명   
 ,constraint PK_TBL_USER_USERSEQ primary key(userseq)
 ,constraint UQ_TBL_USER_SOCIAL_userid unique(social_userid)
 ,constraint UQ_TBL_USER_USERID  unique(userid)
 ,constraint UQ_TBL_USER_EMAIL  unique(email)
 );
-
+desc tbl_user;
 
 -- 회원 테이블 시퀀스
 create sequence seq_userseq;

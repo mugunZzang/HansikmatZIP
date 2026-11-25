@@ -93,10 +93,10 @@ public class EventListController {
 	
 	// 이벤트 탭 별로 리스트 가져오기(Ajax)
 	@GetMapping("/tablist")
-	public String tablist(@RequestParam(name="pageno") String currentShowPageNo,
-							@RequestParam(name="status") String status,
-							Model model,
-							HttpServletRequest request) {
+	public ModelAndView tablist(ModelAndView mav,
+								@RequestParam(name="pageno") String currentShowPageNo,
+								@RequestParam(name="status") String status,
+								HttpServletRequest request) {
 		
 		int sizePerPage = 5;
 		int pageno = Integer.parseInt(currentShowPageNo);
@@ -127,16 +127,18 @@ public class EventListController {
 						.build() )
 				.toList();
 		
-		model.addAttribute(eventDtoList);
+		mav.addObject("eventDtoList", eventDtoList);
 		
 		String ctxPath = request.getContextPath();
 		String pageBar = makePageBar(pageno, sizePerPage, totalPage, status, ctxPath);
-		model.addAttribute("pageBar", pageBar);
+		mav.addObject("pageBar", pageBar);
 		
-		model.addAttribute("status", status);
+		mav.addObject("status", status);
 		
 		
-		return "";
+		mav.setViewName("event/kimkc/event_fragment :: eventListFragment");
+		
+		return mav;
 	}
 	
 	
