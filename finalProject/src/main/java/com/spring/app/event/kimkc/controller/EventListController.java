@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -93,10 +94,10 @@ public class EventListController {
 	
 	// 이벤트 탭 별로 리스트 가져오기(Ajax)
 	@GetMapping("/tablist")
-	public ModelAndView tablist(ModelAndView mav,
-								@RequestParam(name="pageno") String currentShowPageNo,
-								@RequestParam(name="status") String status,
-								HttpServletRequest request) {
+	public String tablist(Model model,
+							@RequestParam(name="pageno") String currentShowPageNo,
+							@RequestParam(name="status") String status,
+							HttpServletRequest request) {
 		
 		int sizePerPage = 5;
 		int pageno = Integer.parseInt(currentShowPageNo);
@@ -126,19 +127,25 @@ public class EventListController {
 						.dDay(ChronoUnit.DAYS.between(LocalDate.now(), entity.getEventEnddate()))
 						.build() )
 				.toList();
+		System.out.println("-------------------------------");
+		System.out.println("누른 페이지 번호 : " + currentShowPageNo);
+		System.out.println("선택중인 탭 : " + status);
+		System.out.println("몇개 갖고옴? : " + eventDtoList.size());
+		eventDtoList.forEach(dto -> System.out.println(dto.toString()));
 		
-		mav.addObject("eventDtoList", eventDtoList);
+		
+		model.addAttribute("eventList", eventDtoList);
 		
 		String ctxPath = request.getContextPath();
 		String pageBar = makePageBar(pageno, sizePerPage, totalPage, status, ctxPath);
-		mav.addObject("pageBar", pageBar);
+		model.addAttribute("pageBar", pageBar);
 		
-		mav.addObject("status", status);
+		model.addAttribute("status", status);
 		
 		
-		mav.setViewName("event/kimkc/event_fragment :: eventListFragment");
+		//mav.setViewName("event/kimkc/event_fragment :: eventListFragment");
 		
-		return mav;
+		return "event/kimkc/event_fragment :: eventListFragment";
 	}
 	
 	
@@ -151,41 +158,53 @@ public class EventListController {
 		String pageBar = "";
 		int blockSize = 10;
 		int loop = 1;
-		int pageno = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
-		
+		int pageno = ((currentShowPageNo - 1) / blockSize) * blockSize + 1;
+
 		pageBar = "<ul style='list-style:none;'>";
-		String url = ctxPath + "/event/tablist?status=" + status;
-		
-		
+
 		// === [맨처음][이전] 만들기 === //	
-        if(pageno != 1) {
-           pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&pageno=1'>[맨처음]</a></li>";
-           pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&pageno="+(pageno-1)+"'>[이전]</a></li>"; 
-        }
-        
-        while( !(loop > blockSize || pageno > totalPage) ) {
-           
-           if(pageno == currentShowPageNo) {
-              pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageno+"</li>";
-           }
-           else {
-              pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"&pageno="+pageno+"'>"+pageno+"</a></li>"; 
-           }
-           
-           loop++;
-           pageno++;
-        }// end of while------------------------
-        
-        // === [다음][마지막] 만들기 === //
-        if(pageno <= totalPage) {
-           pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&pageno="+pageno+"'>[다음]</a></li>";
-           pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&pageno="+totalPage+"'>[마지막]</a></li>"; 
-        }
-        
-        pageBar += "</ul>";
-		
+		if (pageno != 1) {
+		    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt; cursor:pointer;' onclick=\"loadEventTab(1, '" + status + "')\">[맨처음]</li>";
+		    pageBar += "<li style='display:inline-block; width:50px; font-size:12pt; cursor:pointer;' onclick=\"loadEventTab(" + (pageno - 1) + ", '" + status + "')\">[이전]</li>"; 
+		}
+
+		while (!(loop > blockSize || pageno > totalPage)) {
+		    if (pageno == currentShowPageNo) {
+		        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>" + pageno + "</li>";
+		    } else {
+		        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; cursor:pointer;' onclick=\"loadEventTab(" + pageno + ", '" + status + "')\">" + pageno + "</li>"; 
+		    }
+		    loop++;
+		    pageno++;
+		}
+
+		// === [다음][마지막] 만들기 === //
+		if (pageno <= totalPage) {
+		    pageBar += "<li style='display:inline-block; width:50px; font-size:12pt; cursor:pointer;' onclick=\"loadEventTab(" + pageno + ", '" + status + "')\">[다음]</li>";
+		    pageBar += "<li style='display:inline-block; width:70px; font-size:12pt; cursor:pointer;' onclick=\"loadEventTab(" + totalPage + ", '" + status + "')\">[마지막]</li>"; 
+		}
+
+		pageBar += "</ul>";
+
 		return pageBar;
 	}
+	
+	
+	
+	// ===============================================================================================================================================================
+	
+	// 이벤트 상세 페이지
+	@GetMapping("/detail/{seq}")
+	public ModelAndView detail(ModelAndView mav,
+							@PathVariable(name="seq") String seq) {
+		
+		
+		
+		mav.setViewName("event/kimkc/event_detail");
+		
+		return mav;
+	}
+	
 	
 	
 }

@@ -31,6 +31,9 @@
 */-->
 <script th:inline="javascript">
 /*<![CDATA[*/
+	
+	const ctxPath = /*[[@{/}]]*/ '/';
+	
 	$(function(){
 		
 		// 탭 메뉴 전환 버튼
@@ -48,7 +51,9 @@
 	        const $targetPane = $(`#tab-content-${status}`);
 	        $targetPane.removeClass('d-none');
 			
-	        
+	        if ($targetPane.children().length === 0) {
+                loadEventTab(1, status);
+            }
 			
 		});
 		
@@ -57,6 +62,25 @@
 		// 
 		
 	}); 
+	
+	function loadEventTab(pageno, status) {
+		$.ajax({
+            url: ctxPath + 'event/tablist',
+            type: 'GET',
+            data: {
+                pageno: pageno,
+                status: status
+            },
+            success: function(htmlFragment) {
+                $(`#tab-content-${status}`).html(htmlFragment);
+            },
+            error: function() {
+                alert('목록을 불러오는데 실패했습니다.');
+            }
+        });
+	}
+	
+	
 		 
 /*]]>*/   
 </script>

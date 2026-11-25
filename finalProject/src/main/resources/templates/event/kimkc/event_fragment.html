@@ -12,18 +12,18 @@
 	    <div th:unless="${#lists.isEmpty(eventList)}" class="d-flex flex-column gap-3">
 	        
 	        <a th:each="event : ${eventList}" 
-	           
+	        	th:href="@{/event/detail/{seq}(seq=${event.eventseq})}" 
 	           class="text-decoration-none text-dark">
-	            <!-- th:href="" @{/event/detail/{seq}(seq=${event.eventSeq})} -->
+	            <!--  -->
             <div class="event-card p-3 bg-white">
                 <div class="row g-4 align-items-center">
 	                    
-                    <!-- 좌측: 이벤트 배너 이미지 영역 -->
+                    <!-- 좌측: 이벤트 	배너 이미지 영역 -->
                     <div class="col-12 col-md-5">
-                        <img  
+                        <img th:src="@{/images/event/{img}(img=${event.event_image_filename})}"
                              alt="이벤트 배너" 
                              class="event-banner-img rounded-3">
-                             <!-- th:src="@{/images/event/{img}(img=${event.bannerImg})}" -->
+                             <!--  -->
                     </div>
 
                     <!-- 우측: D-day 배지 + 제목 + 기간 -->
