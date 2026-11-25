@@ -1,5 +1,6 @@
 package com.spring.app.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,28 +9,57 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebPathConfig implements WebMvcConfigurer {
 	// URL 경로와 외부경로를 매핑시켜주는 설정 클래스 생성하기
 	
+	@Value("${file.profileimage-dir}")
+	private String profileimageDir;   // 프로필 이미지 업로드를 위한 폴더 경로
 
+	@Value("${file.qnaimage-dir}")
+	private String qnaimageDir;   // QnA 이미지 업로드를 위한 폴더 경로
+                      
+	@Value("${file.eventimageimage-dir}")
+	private String eventimageimageDir;   // 이벤트 배너 이미지 업로드를 위한 폴더 경로
+	
+	@Value("${file.reviewimage-dir}")
+	private String reviewimageDir;   // 리뷰 이미지 업로드를 위한 폴더 경로
+	  
+	@Value("${file.recipeimage-dir}")
+	private String recipeimageDir;   // 레시피 대표 이미지 업로드를 위한 폴더 경로
+	  
+	@Value("${file.rcpfinishedimage-dir}")
+	private String rcpfinishedimageDir;   // 레시피 완성 이미지 업로드를 위한 폴더 경로
+	  
+	@Value("${file.cookorderimage-dir}")
+	private String cookorderimageDir;   // 요리 순서 이미지 업로드를 위한 폴더 경로
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		
+		registry.addResourceHandler("/profileimage/**")
+        		.addResourceLocations("file:"+profileimageDir+"/",
+        		              		  "classpath:/static/images/");
 		
-		registry.addResourceHandler("/photoupload/**")
-		        .addResourceLocations("file:/",
-		        		              "classpath:/static/images/");
-		// Spring boot 에게 웹브라우저로 부터 "/photoupload/** 로 요청이 오면 실제 파일시스템의 photoupload 폴더를 찾아라" 라고 설정해주는 것이다.
-        // !!! 중요한 것은 꼭 접두어인 file: 과 접미어인 / 를 반드시 넣어주어야 한다.!!!  
-		// Spring 은 다음의 순서대로 찾는다. 
-		// 제일 먼저 외부 업로드 폴더를 먼저 검색하고(file_photoupload/~~~.jpg) 있으면 이것을 사용하고, 
-		// 만약에 없으면 static 을 검색한다.(static/images/~~~.jpg) 
+		registry.addResourceHandler("/qnaimage/**")
+				.addResourceLocations("file:"+qnaimageDir+"/",
+									  "classpath:/static/images/");
 		
-        // 그리고 스프링시큐리티 설정파일인 com.spring.app.security.config.SecurityConfig 에서 excludeUri 에 "/photoupload/**" 을 추가해 주어야 한다.
-	
-		registry.addResourceHandler("/productimages/**")
-        		.addResourceLocations("file:/",
-        		                      "classpath:/static/images/");
-		// Spring boot 에게 웹브라우저로 부터 "/photoupload/** 로 요청이 오면 실제 파일시스템의 photoupload 폴더를 찾아라" 라고 설정해주는 것이다.
-        // !!! 중요한 것은 꼭 접두어인 file: 과 접미어인 / 를 반드시 넣어주어야 한다.!!!  
+		registry.addResourceHandler("/eventimageimage/**")
+				.addResourceLocations("file:"+eventimageimageDir+"/",
+									  "classpath:/static/images/");
+		
+		registry.addResourceHandler("/reviewimage/**")
+				.addResourceLocations("file:"+reviewimageDir+"/",
+		              		  		  "classpath:/static/images/");
+		
+		registry.addResourceHandler("/recipeimage/**")
+				.addResourceLocations("file:"+recipeimageDir+"/",
+									  "classpath:/static/images/");
+		
+		registry.addResourceHandler("/rcpfinishedimage/**")
+				.addResourceLocations("file:"+rcpfinishedimageDir+"/",
+									  "classpath:/static/images/");
+		  
+		registry.addResourceHandler("/cookorderimage/**")
+				.addResourceLocations("file:"+cookorderimageDir+"/",
+							          "classpath:/static/images/");
 		
 	}
 	
