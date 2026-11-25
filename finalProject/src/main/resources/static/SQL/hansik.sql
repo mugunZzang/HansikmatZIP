@@ -412,7 +412,3 @@ select * from user_sequences;
 select * from EMBEDDING_TEXT_RECIPE;
 
 
-
-
-
-

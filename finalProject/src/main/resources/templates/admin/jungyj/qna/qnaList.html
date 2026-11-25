@@ -2,24 +2,78 @@
 <html th:replace="~{layout/layout_admin_main :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}"
       lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!-- 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. -->
 
 <head>
     <meta charset="UTF-8">
     <title>관리자 - 문의사항 목록</title>
-    <!--/* Bootstrap CSS */--> 
-	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
-	
-	<!-- /* 초기화 CSS */ -->
-	<link rel="stylesheet" th:href="@{/css/reset.css}">
+
 	<!-- 분리한 커스텀 CSS -->
     <link rel="stylesheet" type="text/css" th:href="@{/css/jungyj/qna/qna.css}">
     
     <style type="text/css"></style>
-    
-	<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	
+	$(function(){
+		$('button.answerBtn').on('click', function(e){
+//			alert("답변 등록 시작");
 
+			const $box = $(e.target).closest('.answer-box');
+		    const qnaSeq = $box.find('input[name="qnaseq"]').val();
+		    const answer = $box.find('textarea[name="answer"]').val();
+			
+//		    console.log("열린 글 번호:", qnaSeq);
+//			console.log(answer);
+//          답변작성합니다.
+	
+			if(answer.trim().length == 0){
+				alert("내용을 입력해주세요.");
+				return; // 종료
+			}
+			// ajax 처리 시작하기
+			// 비동기 처리로 작성하기
+			$.ajax({
+				url: /*[[@{/admin/qna/answerRegister}]]*/ "",
+				type: "post",
+				data: {"qnaSeq": qnaSeq,
+					   "answer": answer
+				},
+				dataType: "json",
+				success: function(json){
+					
+					// "answer": 1   --> 성공
+					// "answer": 0   --> 실패 
+					
+					if(json.answer == 1){
+//						alert("성공함");
+						location.reload()
+					} else{
+//						alert("실패함");
+					}
+					
+					// 작성한 내용을 기반으로 관리자에게 보여주기
+				},
+                error: function(request, status, error){
+    				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+    		    }
+			});
+			
+		});
+		
+		
+		// 취소 버튼 (textarea 비우기)
+	    $(document).on('click', '.cancelBtn', function(){
+	        $(this).closest('.answer-box').find('textarea[name="answer"]').val('');
+	    });
+		
+	}); // end of $(function(){})--------------------------------------------
+	
+	
+	
+ /*]]>*/   	
+</script>
 </head>
 <body>
 
@@ -27,26 +81,32 @@
 	<div class="qna-wrapper mx-auto">
 		<div class="d-flex justify-content-end align-items-center gap-4 bg-light border rounded px-3 py-2 mb-3 small">
 		    <div>
-		        <span class="text-muted me-1">답변 완료</span>
-		        <strong class="text-primary" id="completedCount" th:text="${pendingCount}">8</strong>건
+		        <span class="text-muted me-1">답변 미완료</span>
+		        <strong class="text-danger" id="completedCount" th:text="${pendingCount}">8</strong>건
 		    </div>
 		    <div class="vr"></div> <!-- Bootstrap 5 세로 구분선 -->
 		    <div>
-		        <span class="text-muted me-1">미답변</span>
-		        <strong class="text-danger" id="pendingCount" th:text="${completedCount}">4</strong>건
+		        <span class="text-muted me-1">답변 완료</span>
+		        <strong class="text-primary" id="pendingCount" th:text="${completedCount}">4</strong>건
 		    </div>
 		</div>
 		
 	    <!-- 1. 탭: 나중에 ?status=DONE / ?status=WAIT 같은 쿼리 파라미터로 분기하기 좋음 -->
 	    <ul class="nav nav-tabs mb-3">
 	        <li class="nav-item">
-	            <a class="nav-link active" aria-current="page" href="#">답변 미완료</a>
+	            <a class="nav-link"
+                   th:classappend="${status == 'pending'} ? 'active'"
+                   th:href="@{/admin/qna(status='pending')}">
+	               답변 미완료</a>
 	        </li>
 	        <li class="nav-item">
-	            <a class="nav-link" href="#">답변 완료</a>
+	            <a class="nav-link"
+                   th:classappend="${status == 'completed'} ? 'active'"
+                   th:href="@{/admin/qna(status='completed')}">
+	               답변 완료</a>
 	        </li>
 	    </ul>
-	
+	    
 		<!-- ★ 탭과 아코디언 사이: 건수 요약 바 -->
 		<!-- 목록이 비어있을 때 -->
 		<div th:if="${#lists.isEmpty(qnaDtoList)}" class="text-center py-5 text-muted border rounded-3">
@@ -108,23 +168,22 @@
 			
 			                <hr>
 			
-			                <!-- 1) 답변 미완료 상태일 때: 관리자 답변 작성 폼 -->
-			                <form th:if="${#strings.isEmpty(item.answer)}"
-			                      th:action="@{/admin/qna/answer}" method="post">
-			                    <input type="hidden" name="qnaseq" th:value="${item.qnaseq}">
-			                    <div class="mb-2">
-			                        <label th:for="'reply' + ${item.qnaseq}" class="form-label fw-semibold">관리자 답변</label>
-			                        <textarea th:id="'reply' + ${item.qnaseq}" name="answer"
-			                                  class="form-control" rows="3"
-			                                  placeholder="답변 내용을 입력하세요." required></textarea>
-			                    </div>
-			                    <div class="d-flex justify-content-end gap-2">
-			                        <button type="submit" class="btn btn-primary btn-sm">등록</button>
-			                        <button type="reset" class="btn btn-outline-secondary btn-sm">취소</button>
-			                    </div>
-			                </form>
-			
-			                <!-- 2) 답변 완료 상태일 때: 등록된 답변 표시 -->
+							<!-- 관리자 답변 작성란 -->
+							<div class="answer-box" th:if="${#strings.isEmpty(item.answer)}">
+							    <input type="hidden" name="qnaseq" th:value="${item.qnaseq}">
+							    <div class="mb-2">
+							        <label th:for="'reply' + ${item.qnaseq}" class="form-label fw-semibold">관리자 답변</label>
+							        <textarea th:id="'reply' + ${item.qnaseq}" name="answer"
+							                  class="form-control" rows="3"
+							                  placeholder="답변 내용을 입력하세요." required></textarea>
+							    </div>
+							    <div class="d-flex justify-content-end gap-2">
+							        <button type="button" class="btn btn-primary btn-sm answerBtn">등록</button>
+							        <button type="button" class="btn btn-outline-secondary btn-sm cancelBtn">취소</button>
+							    </div>
+							</div>
+										
+			                <!-- 답변 완료 상태일 때: 등록된 답변 표시 -->
 			                <div th:unless="${#strings.isEmpty(item.answer)}" class="bg-light p-3 rounded-3">
 			                    <div class="d-flex justify-content-between align-items-center mb-2">
 			                        <span class="fw-semibold text-primary small">관리자 답변</span>
@@ -143,16 +202,8 @@
 			    </div>
 
 
-			    <!-- 4. 페이지네이션 -->
-		    <nav class="mt-4" aria-label="문의사항 페이지네이션">
-		        <ul class="pagination justify-content-center">
-		            <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
-		            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-		            <li class="page-item"><a class="page-link" href="#">2</a></li>
-		            <li class="page-item"><a class="page-link" href="#">3</a></li>
-		            <li class="page-item"><a class="page-link" href="#">다음</a></li>
-		        </ul>
-		    </nav>
+			  <!-- 페이지네이션 -->
+            <div class="mt-5" th:utext="${pageBar}"></div>
 	    </div>
 	
 
