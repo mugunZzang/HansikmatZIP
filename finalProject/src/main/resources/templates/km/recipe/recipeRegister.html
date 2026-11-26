@@ -13,16 +13,171 @@
 <head>
 <meta charset="UTF-8">
 <title>레시피 작성</title>
-<link rel="stylesheet" href="">
+
+<!--/* Bootstrap CSS */--> 
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+
+<!--/* Font Awesome 6 Icons */-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!--/* Optional JavaScript */-->
+<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+  
+<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+<link rel="stylesheet" type="text/css" th:href="@{/css/km/recipeRegister.css}">
 
 <style type="text/css">
+  .form-section {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 20px 24px 24px;
+    margin-bottom: 24px;
+    background-color: #ffffff;
+  }
 
+  .section-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1b263b;
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #edf2f7;
+  }
 </style>
 
 <script th:inline="javascript">
 /*<![CDATA[*/
 	
+	// ================= 로그인한 경우 로그인 되어진 회원명 출력해주기 =================== //
+	// const JWT = JSON.parse(localStorage.getItem("JWT")) || {};// JWT 토큰이 저장된 곳 
+	// const name = JWT.name??'';
 	
+	$(function(){
+		
+		// ▣ CSRF AJAX 사용시 설정 및 실행하기 
+	    // templates/layout/layout_main.html 파일의 meta 태그 안에있는 content를 가져와서 AJAX  beforeSend(데이터를 전송하기전) 에 HTTP Header 를 SET 해야 한다.
+	    // const token = $("meta[name='_csrf']").attr("content");
+	    // const header = $("meta[name='_csrf_header']").attr("content");
+	    
+		// const JWT = JSON.parse(localStorage.getItem("JWT")) || {}; // JWT 토큰이 저장된 곳
+	    // const jwttoken = JWT.accessToken;
+		
+
+		$('button#btn_addingred').on('click', function(){
+			const v_html = `
+				<div class="ingredient-row">
+	              <input type="text" placeholder="음식명">
+	              <input type="text" placeholder="수량">
+	              <input type="text" placeholder="단위">
+	              <input type="text" placeholder="비고">
+	              <button type="button" class="btn-remove">X</button>
+	            </div>
+			`;
+			$(this).closest('.bundle-box').find('.ingredient-list').append(v_html);
+		});// end of $('button#btn_addingred').on('click', function(){
+			
+		$('button#btn_pocket').on('click', function(){
+			const v_html = `
+				<div class="bundle-box">
+		          <div class="bundle-header">
+		            <input type="text" placeholder="재료꾸러미명 (예: 주재료, 양념장)">
+		          </div>
+
+		          <div class="ingredient-list">
+		            <div class="ingredient-row first-ingredient">
+		              <input type="text" placeholder="음식명">
+		              <input type="text" placeholder="수량">
+		              <input type="text" placeholder="단위">
+		              <input type="text" placeholder="비고">
+		              <button type="button" class="btn-remove">X</button>
+		            </div>
+		            <div class="ingredient-row">
+		              <input type="text" placeholder="음식명">
+		              <input type="text" placeholder="수량">
+		              <input type="text" placeholder="단위">
+		              <input type="text" placeholder="비고">
+		              <button type="button" class="btn-remove">X</button>
+		            </div>
+		            <div class="ingredient-row">
+		              <input type="text" placeholder="음식명">
+		              <input type="text" placeholder="수량">
+		              <input type="text" placeholder="단위">
+		              <input type="text" placeholder="비고">
+		              <button type="button" class="btn-remove">X</button>
+		            </div>
+		          </div>
+		        </div>
+			`;
+			$(this).closest('.ingredient-section').find('.bundle-box').last().after(v_html);
+		});
+	});// end of $(function(){
+	
+	function recipeRegister(num){
+		if(num == "1"){
+			if($('input[id="recipe-title"]').val().trim() == "") {
+				alert('레시피 제목을 입력해주세요!');
+				$('input[id="recipe-title"]').val("").focus();
+				return;
+			}
+			
+			let r_intro = $('textarea[id="recipe-intro"]').val().trim();
+			if (r_intro === "") {
+				r_intro = " ";
+			}
+			
+			const catIds = [
+				  'cat-type',
+				  'cat-situation',
+				  'cat-ingredient',
+				  'cat-method',
+				  'cat-servings',
+				  'cat-time',
+				  'cat-level'
+				];
+
+			const categories = {};
+			catIds.forEach(function (id) {
+			  const val = $('select#' + id).val();
+			  categories[id] = val === "" ? " " : val;
+			});
+		}// end of if(num == "1"){
+		else if (num == 2) {
+			if($('input[id="recipe-title"]').val().trim() == "") {
+				alert('레시피 제목을 입력해주세요!');
+				$('input[id="recipe-title"]').val("").focus();
+				return;
+			}
+			
+			let r_intro = $('textarea[id="recipe-intro"]').val().trim();
+			if (r_intro === "") {
+				alert('레시피 소개를 입력해주세요!');
+				$('textarea[id="recipe-intro"]').val("").focus();
+				return;
+			}
+			
+			const catIds = [
+				  '종류',
+				  '상황',
+				  '주재료',
+				  '방법',
+				  '인원',
+				  '요리시간',
+				  '난이도'
+				];
+
+			for (const id of catIds) {
+				  const $select = $('select#' + id);
+				  if ($select.val() === "") {
+				    alert('레시피 ' + id + '를 선택해주세요!');
+				    $select.focus();
+				    return; // recipeRegister 함수 자체를 종료
+				  }
+				}
+			
+			
+		}// end of if (num == 2)
+	}// end of function recipeRegister()
 	
 /*]]>*/
 </script>
@@ -31,135 +186,226 @@
 <body>
 
     <div class="container">
+    <h1 class="page-title">레시피 등록</h1>
 
-<h2>레시피 등록하기</h2>
+    <form action="#" method="post">
+      <!-- 1. 상단 기본 정보 & 썸네일 -->
+      <section class="form-section top-section">
+        <div class="top-body" style="display: flex; gap: 24px;">
+          <div class="top-left" style="flex: 1.4;">
+            <div>
+              <label for="recipe-title">레시피 제목</label>
+              <input type="text" id="recipe-title" placeholder="예) 소고기 미역국 끓이기">
+            </div>
+            <div>
+              <label for="recipe-intro">레시피 소개</label>
+              <textarea id="recipe-intro" rows="4" placeholder="이 레시피의 탄생배경을 적어주세요."></textarea>
+            </div>
+            <div>
+              <label for="recipe-url">레시피 URL</label>
+              <input type="url" id="recipe-url" placeholder="레시피 동영상 등록은 유튜브만 가능합니다 https://까지 다 넣어주세요.">
+            </div>
+            <div>
+              <label for="recipe-tags">태그</label>
+              <input type="text" id="recipe-tags" placeholder="예) #미역국 #생일상 #초간단">
+            </div>
+          </div>
 
-	<form id="recipeForm">
-	
-	<!-- 사진 업로드 -->
-	<div class="section">
-	    <div class="section-title">📷 레시피 사진</div>
-	
-	    <label for="photoInput" class="upload-box">
-	        <strong>+ 사진 업로드</strong>
-	        <p>여러 장의 사진을 선택할 수 있습니다.</p>
-	    </label>
-	
-	    <input type="file" id="photoInput" accept="image/*" multiple>
-	
-	    <div class="preview" id="preview"></div>
-	</div>
-	
-	<!-- 기본 정보 -->
-	<div class="section">
-	    <div class="section-title">레시피 기본 정보</div>
-	
-	    <label>레시피 제목</label>
-	    <input type="text" placeholder="예) 맛있는 김치볶음밥" required>
-	    <br><br>
-	
-	    <label>레시피 소개</label>
-	    <textarea placeholder="레시피를 간단하게 소개해주세요."></textarea>
-	    <br><br>
-	
-	    <label>요리 종류</label>
-	    <select required>
-	        <option value="">선택해주세요</option>
-	        <option>밥/죽</option>
-	        <option>국/탕</option>
-	        <option>찌개</option>
-	        <option>반찬</option>
-	        <option>면/파스타</option>
-	        <option>디저트</option>
-	        <option>기타</option>
-	    </select>
-	</div>
-	
-	<!-- 요리 정보 -->
-	<div class="section">
-	    <div class="section-title">요리 정보</div>
-	
-	    <div class="row">
-	        <div>
-	            <label>조리 시간</label>
-	            <select>
-	                <option>5분 이내</option>
-	                <option>10분 이내</option>
-	                <option>20분 이내</option>
-	                <option>30분 이내</option>
-	                <option>1시간 이내</option>
-	                <option>1시간 이상</option>
-	            </select>
-	        </div>
-	
-	        <div>
-	            <label>난이도</label>
-	            <select>
-	                <option>쉬움</option>
-	                <option>보통</option>
-	                <option>어려움</option>
-	            </select>
-	        </div>
-	
-	        <div>
-	            <label>인분</label>
-	            <select>
-	                <option>1인분</option>
-	                <option>2인분</option>
-	                <option>3인분</option>
-	                <option>4인분</option>
-	                <option>5인분 이상</option>
-	            </select>
-	        </div>
-	    </div>
-	</div>
-	
-	<!-- 재료 -->
-	<div class="section">
-	    <div class="section-title">🥕 재료 입력</div>
-	
-	    <div id="ingredients">
-	        <div class="ingredient">
-	            <input type="text" placeholder="재료명" required>
-	            <input type="text" placeholder="수량 (예: 1개)">
-	            <button type="button" class="delete-btn"
-	                onclick="removeIngredient(this)">삭제</button>
-	        </div>
-	    </div>
-	
-	    <button type="button" class="add-btn" onclick="addIngredient()">
-	        + 재료 추가하기
-	    </button>
-	</div>
-	
-	<!-- 조리 순서 -->
-	<div class="section">
-	    <div class="section-title">🍳 조리 순서</div>
-	
-	    <div id="steps">
-	        <div class="step">
-	            <h3>STEP 1</h3>
-	            <textarea placeholder="첫 번째 조리 과정을 입력해주세요." required></textarea>
-	        </div>
-	    </div>
-	
-	    <button type="button" class="add-btn" onclick="addStep()">
-	        + 조리 순서 추가하기
-	    </button>
-	</div>
-	
-	<!-- 요리 팁 -->
-	<div class="section">
-	    <div class="section-title">💡 요리 팁</div>
-	    <textarea placeholder="요리 팁을 입력해주세요."></textarea>
-	</div>
-	
-	<button type="submit" class="submit-btn">
-	    레시피 등록하기
-	</button>
-	
-	</form>
-</div>
+          <div class="top-right" style="flex: 1;">
+            <div class="upload-box" onclick="document.getElementById('thumb-file').click()">
+              썸네일
+              <input type="file" id="thumb-file" accept=".png, .jpg" hidden>
+            </div>
+            <div class="upload-box" onclick="document.getElementById('video-thumb-file').click()">
+              동영상 썸네일
+              <input type="file" id="video-thumb-file" accept="image/*" hidden>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 카테고리 7종 -->
+      <section class="form-section">
+        <h2 class="section-heading">카테고리 분류</h2>
+        <div class="category-section" style="margin-bottom: 0;">
+          <div>
+            <label for="종류">종류</label>
+            <select id="종류">
+           	<option value="">선택</option>
+            	<option value="밥/죽/면">밥/죽/면</option>
+            	<option value="국/탕/찌개">국/탕/찌개</option>
+            	<option value="메인반찬">메인반찬</option>
+            	<option value="밑반찬">밑반찬</option>
+            	<option value="전/적/튀김">전/적/튀김</option>
+            	<option value="김치/젓갈/장아찌">김치/젓갈/장아찌</option>
+            </select>
+          </div>
+          <div>
+            <label for="상황">상황</label>
+            <select id="상황">
+            	<option value="">선택</option>
+            	<option value="혼밥/자취요리">혼밥/자취요리</option>
+            	<option value="손님초대/생일상">손님초대/생일상</option>
+            	<option value="술안주/해장">술안주/해장</option>
+            	<option value="다이어트/건강식">다이어트/건강식</option>
+            	<option value="도시락/밀키트">도시락/밀키트</option>
+            </select>
+          </div>
+          <div>
+            <label for="주재료">주재료</label>
+            <select id="주재료">
+           	<option value="">선택</option>
+            	<option value="육류">육류</option>
+            	<option value="해산물/건어물">해산물/건어물</option>
+            	<option value="채소/버섯류">채소/버섯류</option>
+            	<option value="달걀/유제품">달걀/유제품</option>
+            	<option value="가공식품/기타">가공식품/기타</option>
+            </select>
+          </div>
+          <div>
+            <label for="방법">방법</label>
+            <select id="방법">
+              <option value="">선택</option>
+            	<option value="볶음/조림/찜">볶음/조림/찜</option>
+            	<option value="끓이기">끓이기</option>
+            	<option value="전/구이/튀김">전/구이/튀김</option>
+            	<option value="무침/회">무침/회</option>
+            	<option value="에어프라이어/전자레인지">에어프라이어/전자레인지</option>
+            </select>
+          </div>
+          <div>
+            <label for="인원">인원</label>
+            <select id="인원">
+              <option value="">선택</option>
+            	<option value="1인분">1인분</option>
+            	<option value="2인분">2인분</option>
+            	<option value="3인분">3인분</option>
+            	<option value="4인분 이상">4인분 이상</option>
+            </select>
+          </div>
+          <div>
+            <label for="요리시간">요리시간</label>
+            <select id="요리시간">
+              <option value="">선택</option>
+            	<option value="5분이내">5분이내</option>
+            	<option value="10분이내">10분이내</option>
+            	<option value="15분이내">15분이내</option>
+            	<option value="20분이내">20분이내</option>
+            	<option value="30분이내">30분이내</option>
+            	<option value="1시간이내">1시간이내</option>
+            	<option value="1시간이상">1시간이상</option>
+            </select>
+          </div>
+          <div>
+            <label for="난이도">난이도</label>
+            <select id="난이도">
+              <option value="">선택</option>
+            	<option value="요린이">요린이</option>
+            	<option value="중급">중급</option>
+            	<option value="상급">상급</option> 
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 재료 꾸러미 -->
+      <section class="form-section ingredient-section">
+        <h2 class="section-heading">재료 꾸러미</h2>
+        <div class="bundle-box">
+          <div class="bundle-header">
+            <input type="text" placeholder="재료꾸러미명 (예: 주재료, 양념장)">
+          </div>
+
+          <div class="ingredient-list">
+            <div class="ingredient-row first-ingredient">
+              <input type="text" placeholder="음식명">
+              <input type="text" placeholder="수량">
+              <input type="text" placeholder="단위">
+              <input type="text" placeholder="비고">
+              <button type="button" class="btn-remove">X</button>
+            </div>
+            <div class="ingredient-row">
+              <input type="text" placeholder="음식명">
+              <input type="text" placeholder="수량">
+              <input type="text" placeholder="단위">
+              <input type="text" placeholder="비고">
+              <button type="button" class="btn-remove">X</button>
+            </div>
+            <div class="ingredient-row">
+              <input type="text" placeholder="음식명">
+              <input type="text" placeholder="수량">
+              <input type="text" placeholder="단위">
+              <input type="text" placeholder="비고">
+              <button type="button" class="btn-remove">X</button>
+            </div>
+          </div>
+
+          <div class="center-btn-wrap" id="addingred">
+            <button type="button" class="btn_addingred">재료추가</button>
+          </div>
+        </div>
+
+        <div class="center-btn-wrap">
+          <button type="button" class="btn-wide" id="btn_pocket">재료꾸러미 추가</button>
+        </div>
+      </section>
+
+      <!-- 4. 요리 순서 -->
+      <section class="form-section step-section">
+        <h2 class="section-heading">요리 순서</h2>
+
+        <div class="step-card">
+          <div class="step-desc">
+            <textarea rows="4" placeholder="요리설명을 입력하세요."></textarea>
+          </div>
+
+          <div class="step-photo-box">
+            사진
+          </div>
+
+          <div class="step-sub-inputs">
+            <input type="text" class="step-tip-input" placeholder="요리팁">
+            <!-- 시/분/초 개별 입력 영역 -->
+            <div class="step-timer-group">
+              <input type="number" min="0" max="99" placeholder="0"><span>시</span>
+              <input type="number" min="0" max="59" placeholder="0"><span>분</span>
+              <input type="number" min="0" max="59" placeholder="0"><span>초</span>
+            </div> <!--/* shef시에만 나오게끔 설정하기 */-->
+          </div>
+        </div>
+
+        <div class="center-btn-wrap">
+          <button type="button" class="btn-wide">요리순서 추가</button>
+        </div>
+      </section>
+
+      <!-- 5. 요리 완성 사진 -->
+      <section class="form-section">
+        <h2 class="section-heading">요리 완성 사진</h2>
+        <div class="complete-photos" style="margin-bottom: 0;">
+          <div class="complete-photo-box">요리완성<br>사진</div>
+          <div class="complete-photo-box">요리완성<br>사진</div>
+          <div class="complete-photo-box">요리완성<br>사진</div>
+        </div>
+      </section>
+
+      <!-- 6. 요리팁/주의사항 -->
+      <section class="form-section final-tip-section">
+        <h2 class="section-heading">요리팁 / 주의사항</h2>
+        <textarea rows="5" placeholder="요리팁/주의사항을 입력하세요."></textarea>
+      </section>
+
+      <!-- 7. 하단 액션 버튼 -->
+      <footer class="bottom-actions">
+        <button type="button">작성취소</button>
+        <div class="right-actions">
+          <button type="button" class="tembutton" onclick="recipeRegister(1)">저장하기</button>
+          <button type="button" class="btn-primary" onclick="recipeRegister(2)">무료 공개하기</button>
+          <button type="button" class="btn-paid " onclick="recipeRegister(3)">유료 공개하기</button>
+        </div>
+      </footer>
+    </form>
+  </div>
 
 </body>
 </html>

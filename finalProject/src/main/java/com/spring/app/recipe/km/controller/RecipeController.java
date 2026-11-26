@@ -26,8 +26,7 @@ public class RecipeController {
 	// @PreAuthorize("isAuthenticated()")      // 로그인한 사람만 접근할 수 있음
 	@GetMapping("recipeRegister")   
     public String recipeRegister() {
-    	
-    	
+    		
 		return "km/recipe/recipeRegister";
     }// end of public String recipeRegister() {
 	
