@@ -107,16 +107,23 @@
                 </div>
 
                 <!-- 이벤트 배너 이미지 (800x420 / 1200x630 비율) -->
-                <div class="event-detail-banner mx-auto mb-4">
-                    <img th:src="@{/eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
-						 th:alt="${eventDto.event_subject}">
-                </div>
-
-				<div class="mb-4">
-				    <h6 class="fw-bold text-secondary mb-2">이벤트 내용</h6>
-				    <div class="event-content-box bg-white border p-4 rounded-3">
-				        <div th:utext="${eventDto.event_contents}">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</div>
+			   <div class="mx-auto mb-4" style="max-width: 1024px;">
+			
+				    <!-- 이벤트 배너 이미지 -->
+				    <div class="event-detail-banner mb-4" style="width: 100%; max-width: 100%;">
+				        <img th:src="@{/eventimageimage/{filename}(filename=${eventDto.event_image_filename})}"
+				             th:alt="${eventDto.event_subject}"
+				             style="width: 100%; height: auto; display: block;">
 				    </div>
+				
+				    <!-- 이벤트 내용 -->
+				    <div>
+				        <h6 class="fw-bold text-secondary mb-2">이벤트 내용</h6>
+				        <div class="event-content-box bg-white border p-4 rounded-3">
+				            <div th:utext="${eventDto.event_contents}">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</div>
+				        </div>
+				    </div>
+				
 				</div>
 
                 <!-- 하단 버튼 -->
