@@ -16,7 +16,9 @@
 	<script th:inline="javascript">
 	    const contextPath = /*[[@{/}]]*/ "/";
 	</script>
-	
+	<!--/* 네이버스마트 에디터 */-->
+	<script type="text/javascript" th:src="@{/smarteditor/js/HuskyEZCreator.js}"></script>
+
 	<script type="text/javascript" th:src="@{/js/jungyj/event/eventRegister.js}"></script>
 </head>
 <body>
@@ -103,8 +105,12 @@
                 <!-- 중단: 스마트에디터 영역 -->
                 <div class="mb-4">
                     <label for="smartEditorContent" class="form-label fw-semibold">상세 내용</label>
-                    <textarea id="smartEditorContent" name="event_contents" class="form-control custom-input infoData" rows="12" placeholder="이벤트 상세 내용을 입력하세요."></textarea>
-               	    <span class="error">필수입력</span>
+                    <textarea id="smartEditorContent" 
+                              name="event_contents" 
+                              class="form-control custom-input infoData" 
+                              rows="12" 
+                              placeholder="이벤트 상세 내용을 입력하세요." 
+                              style="width: 100%; height: 612px;"></textarea>
                 </div>
 
                 <!-- 하단: 액션 버튼 바 -->

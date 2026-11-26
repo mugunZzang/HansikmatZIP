@@ -112,13 +112,12 @@
 						 th:alt="${eventDto.event_subject}">
                 </div>
 
-                <!-- 이벤트 내용 (나중에 스마트에디터 HTML -> th:utext로 출력) -->
-                <div class="mb-4">
-                    <h6 class="fw-bold text-secondary mb-2">이벤트 내용</h6>
-                    <div class="event-content-box p-4 rounded-3">
-                        <p class="mb-0" th:text="${eventDto.event_contents}">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</p>
-                    </div>
-                </div>
+				<div class="mb-4">
+				    <h6 class="fw-bold text-secondary mb-2">이벤트 내용</h6>
+				    <div class="event-content-box bg-white border p-4 rounded-3">
+				        <div th:utext="${eventDto.event_contents}">여기에 스마트에디터로 작성한 이벤트 상세 내용이 표시됩니다.</div>
+				    </div>
+				</div>
 
                 <!-- 하단 버튼 -->
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top">
