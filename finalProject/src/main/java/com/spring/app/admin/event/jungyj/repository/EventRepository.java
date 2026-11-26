@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.spring.app.entity.jungyj.Entry;
 import com.spring.app.entity.jungyj.Event;
 
 public interface EventRepository extends JpaRepository<Event, Integer>, EventRepositoryCustom {
@@ -34,6 +35,10 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
 
 	// 종료된 이벤트 개수 (발표일이 오늘이거나 이미 지난 것)
 	int countByEventDrawingdateLessThanEqual(LocalDate now);
+
+	// 발표일 == 오늘날짜
+	List<Event> findByEventDrawingdateEquals(LocalDate toDay);
+
 
 
 }

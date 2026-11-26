@@ -29,5 +29,14 @@ public class EntryRepositoryImpl implements EntryRepositoryCustom {
 	            .fetch();
         
 	}
+	
+	@Override
+	public List<Entry> findByEventEntryUser(Integer eventseq) {
+		return queryFactory
+				.select(entry)
+				.from(entry)
+				.where(entry.event.eventseq.eq(eventseq))
+				.fetch();
+	}
 
 }

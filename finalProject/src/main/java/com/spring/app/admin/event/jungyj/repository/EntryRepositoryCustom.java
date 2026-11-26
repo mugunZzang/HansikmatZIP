@@ -8,4 +8,7 @@ public interface EntryRepositoryCustom {
 
 	List<Entry> findEntriesByEventseq(Integer eventseq);
     
+	// 이벤트에 참여한 모든 인원 조회
+	List<Entry> findByEventEntryUser(Integer eventseq);
+
 }

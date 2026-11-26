@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.spring.app.entity.jungyj.Entry;
 import com.spring.app.entity.jungyj.Event;
 
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,8 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 	            .where(event.eventImageFilename.isNotNull())
 	            .fetch();
 	}
+
+
+
 
 }
