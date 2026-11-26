@@ -209,6 +209,15 @@ public class EventListController {
 		
 		// 이벤트 참여자 정보 가져오기
 		List<EntryDTO> entryDtoList = service.getEntryList(eventseq);
+		if(entryDtoList == null || entryDtoList.size() == 0) {
+			mav.addObject("entryTotalCount", 0);
+		}
+		else {
+			mav.addObject("entryList", entryDtoList);
+		}
+		
+		mav.addObject("event", eventDto);
+		
 		
 		
 		mav.setViewName("event/kimkc/event_detail");

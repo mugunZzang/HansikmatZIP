@@ -90,7 +90,7 @@ public class EventListService_imple implements EventListService {
 		return eventDto;
 	}
 
-
+	// 이벤트 참여자 목록 가져오기
 	@Override
 	public List<EntryDTO> getEntryList(int eventseq) {
 		List<EntryDTO> entryList = dao.getEntryList(eventseq);
