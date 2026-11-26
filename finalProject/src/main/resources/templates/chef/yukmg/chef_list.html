@@ -117,6 +117,10 @@
 			transform: scale(1.1);
 		}
 		
+		.desc-zone {
+			overflow:hidden;
+		}
+		
 		.chef-name:hover {
 			text-decoration:underline;
 		}
@@ -209,7 +213,7 @@
 						<span class="ranking-num fs-3 fw-semibold">1</span>
 						<div class="profile-zone">
 							<a href="#">
-								<img alt="프사" src="https://placehold.co/200x200" class="profile-photo">
+								<img alt="프사" th:src="@{/profileimage/{filename}(filename=${dto.profile_sysfilename})}" class="profile-photo">
 							</a>								
 						</div>
 						<div class="desc-zone">
@@ -220,19 +224,17 @@
 								<button class="btn btn-sm btn-primary rounded-pill">팔로우 +</button>
 							</div>
 							<div class="intro-zone">
-								<p class="p-0 m-0 my-2">
-									선선한 가을바람이 불어오는 공원에서 따뜻한 커피 한 잔을 마시며 잠시 숨을 고릅니다. 바쁜 일상 속에서 놓치고 있던 소소한 행복과 여유를 되찾는 이 시간이 참 소중하게 느껴집니다.
-								</p>								
+								<p th:text="${dto.summary}" class="p-0 m-0 my-2"></p>								
 							</div>
 							<div class="stat-zone">
 								<ul class="d-flex justify-content-start gap-3">
 									<li>
 										<i class="fa-solid fa-utensils"></i>
-										<span>10</span>
+										<span th:text="${dto.recipe_count}"></span>
 									</li>
 									<li>
 										<i class="fa-solid fa-scissors"></i>
-										<span>1528</span>
+										<span th:text="${dto.total_scrap_count}"></span>
 									</li>
 									<li>
 										<i class="fa-solid fa-user-plus"></i>

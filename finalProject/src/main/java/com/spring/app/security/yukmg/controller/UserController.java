@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value = "/security/")
+@RequestMapping(value = "/")
 public class UserController {
 
 	private final UserService userservice;
@@ -29,13 +29,13 @@ public class UserController {
     }
 	    
     // 누구나 접근 가능한 URL. 쉐프 - 랭킹
-    @GetMapping(value="chef/chef-list")
+    @GetMapping(value="chef/chef_list")
     public String chefRanking(Model model){
        
-       List<UserDTO> UserDTOList = userservice.getChefRanking();
+       List<UserDTO> userDTOList = userservice.getChefRanking();
+       System.out.println("👉 넘어온 데이터 개수: " + (userDTOList == null ? "null" : userDTOList.size()));
+       model.addAttribute("userDTOList", userDTOList);
        
-       model.addAttribute("UserDTOList", UserDTOList);
-       
-       return "chef/chef-list";
+       return "chef/yukmg/chef_list";
     }
 }

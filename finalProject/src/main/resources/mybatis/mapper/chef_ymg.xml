@@ -3,10 +3,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
-<mapper namespace="com.spring.app.security.yukmg.domain.UserDTO">
+<mapper namespace="chef">
 
-	<select id="getChefRanking" resultType="String">
-        
+	<select id="getChefRanking" resultType="UserDTO">
+        SELECT U.userseq
+		     , U.userid
+		     , U.name
+		     , U.nickname
+		     , U.summary
+		     , U.profile_orgfilename
+		     , NVL(U.profile_sysfilename, 'default.png') AS profile_sysfilename
+		     , (SELECT COUNT(*) 
+		          FROM tbl_recipe R 
+		         WHERE R.fk_userseq = U.userseq) AS recipe_count
+		     , (SELECT COUNT(DISTINCT SR.fk_recipeseq || '-' || SF.fk_userseq)
+		          FROM tbl_recipe R
+		          JOIN tbl_scrap_recipe SR
+		            ON R.recipeseq = SR.fk_recipeseq
+		          JOIN tbl_scrap_folder SF
+		            ON SR.fk_folderseq = SF.folderseq
+		         WHERE R.fk_userseq = U.userseq
+		           AND SF.fk_userseq != U.userseq) AS total_scrap_count
+		  FROM tbl_user U
+		  JOIN tbl_authorities A
+		    ON U.userseq = A.fk_userseq
+		 WHERE A.authority = 'ROLE_CHEF'
+		 ORDER BY total_scrap_count DESC, recipe_count DESC, U.userseq ASC
     </select>
 
 </mapper>

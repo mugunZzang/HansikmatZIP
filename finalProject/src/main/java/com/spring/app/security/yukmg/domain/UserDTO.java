@@ -35,5 +35,9 @@ public class UserDTO {
     private String summary;					// 자기소개
     private String profile_orgfilename;		// 프로필 원본 파일명	
     private String profile_sysfilename;		// 프로필 저장 파일명
+    private int recipe_count;	// 레시피 수
+    private int total_scrap_count;	// 스크랩 수
+    
+    private List<String> authorities;  // 권한
 	
 }
