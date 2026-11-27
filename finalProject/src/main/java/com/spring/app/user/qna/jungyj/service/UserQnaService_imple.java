@@ -1,8 +1,12 @@
 package com.spring.app.user.qna.jungyj.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,12 +58,35 @@ public class UserQnaService_imple implements UserQnaService {
             }
         }
 		
-        
-		
-		
 		
 	}
 	
+	@Override
+	public List<QnaDTO> getPageQna(int userseq, int currentShowPageNo, int sizePerPage) {
+		List<QnaDTO> qnaDtoList;
+		try {
+			
+			Map<String, Integer> paraMap = new HashMap<>();
+			paraMap.put("userseq", userseq);
+			paraMap.put("currentShowPageNo", currentShowPageNo);
+			paraMap.put("sizePerPage", sizePerPage);
+			
+			qnaDtoList = userQnaDao.qnaSelectAll(paraMap);
+			
+	       
+		} catch(Exception e) {
+        	e.printStackTrace();
+        }
+		return qnaDtoList;
+	}
+
+	
+	// ================================== Service 내부에서 사용하는 함수 =================================
+	
+	// 특정 조건에 맞는 게시글의 총 개수를 조회
+	private int qnaTotalCount(int userseq) {
+		return userQnaDao.qnaTotalCount(userseq);
+	}
 	
 	// 첨부파일 업로드 해주는 함수 
 	private String doFileUpload(byte[] bytes, String originalFilename, String path) {
@@ -72,7 +99,9 @@ public class UserQnaService_imple implements UserQnaService {
 		}
 		
 		return fileName;
-	} // end of private String updateFile(byte[] bytes, String originalFilename, String path)---------------
+	}  // end of private String updateFile(byte[] bytes, String originalFilename, String path)---------------
+
+
 
 
 }

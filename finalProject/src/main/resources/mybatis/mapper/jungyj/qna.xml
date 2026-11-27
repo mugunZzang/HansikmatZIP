@@ -31,10 +31,18 @@
 		) 
 	</insert>
 	
+	<!-- 스케줄링을 위한 서버에 저장된 파일명 조회 -->
 	<select id="findAllUsedQnaImageFilenames" resultType="string">
 		SELECT qna_sysfilename
 	    FROM tbl_qna_images
 	    WHERE qna_sysfilename IS NOT NULL
+	</select>
+	
+	<!-- qna 총 개수 -->
+	<select id="qnaTotalCount" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*)
+		FROM tbl_qna
+		WHERE fk_userseq = #{userseq}
 	</select>
 	
 </mapper>
