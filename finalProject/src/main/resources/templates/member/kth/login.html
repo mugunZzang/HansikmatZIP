@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/kth/layout_main_kth :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div})}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>한식맛ZIP - 로그인</title>
+
+    <!-- 로그인 CSS -->
+    <link rel="stylesheet" th:href="@{/css/kth/login.css}">
+
+    <style type="text/css">
+    </style>
+
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+
+	    const contextPath = /*[[@{/}]]*/ '';
+
+	    $(function() {
+
+	        // 로그인 버튼 클릭
+	        $("button#btnLOGIN").on("click", function() {
+	            func_Login();
+	        });
+
+	        // 비밀번호 입력 후 엔터
+	        $("input#passwd").on("keyup", function(event) {
+	            if(event.keyCode == 13) {
+	                func_Login();
+	            }
+	        });
+
+	        // 카카오 로그인은 추후 구현
+	        $("button#btnKakaoLogin").on("click", function() {
+	            alert("카카오 로그인은 준비 중입니다.");
+	        });
+
+	    });
+
+
+	    // 일반 로그인 (JWT)
+	    function func_Login() {
+
+	        const userid = $("input#memberid").val();
+	        const passwd = $("input#passwd").val();
+
+	        // 아이디 입력 여부 확인
+	        if(userid.trim() == "") {
+	            alert("아이디를 입력하세요!!");
+	            $("input#memberid").val("");
+	            $("input#memberid").focus();
+	            return;
+	        }
+
+	        // 비밀번호 입력 여부 확인
+	        if(passwd.trim() == "") {
+	            alert("비밀번호를 입력하세요!!");
+	            $("input#passwd").val("");
+	            $("input#passwd").focus();
+	            return;
+	        }
+
+	        // 로그인 요청 데이터
+	        const data = {
+	            "userid": userid,
+	            "passwd": passwd
+	        };
+
+	        const token = $("meta[name='_csrf']").attr("content");
+	        const header = $("meta[name='_csrf_header']").attr("content");
+
+	        $.ajax({
+	            url: contextPath + "auth/login",
+	            method: "post",
+	            data: JSON.stringify(data),
+	            contentType: "application/json; charset=utf-8",
+	            dataType: "json",
+
+	            beforeSend: function(xhr) {
+	                if(token && header) {
+	                    xhr.setRequestHeader(header, token);
+	                }
+	            },
+
+	            success: function(json) {
+
+	                if("accessToken" in json) {
+
+	                    //alert("로그인 성공되었습니다.");
+
+	                    // JWT 토큰 저장하기
+	                   // Access Token 정보 저장하기
+						const jwt = {
+						    "grantType": json.grantType,
+						    "accessToken": json.accessToken,
+						    "accessTokenExpiresIn": json.accessTokenExpiresIn
+						};
+						
+						localStorage.setItem("JWT", JSON.stringify(jwt));
+
+	                    // 로그인 이전 페이지로 이동하기
+	                    if(json.prevURLPage) {
+	                        location.href = json.prevURLPage;
+	                    }
+	                    else {
+	                        location.href = contextPath + "index";
+	                    }
+
+	                }
+	                else {
+
+	                    alert("로그인 실패!!");
+	                    localStorage.removeItem("JWT");
+
+	                }
+
+	            },
+
+	            error: function(request, status, error) {
+
+	                switch(request.status) {
+
+	                    case 401:
+
+	                        alert("로그인 실패!! 아이디 또는 암호를 잘못 입력하셨습니다.");
+
+	                        $("input#passwd").val("");
+	                        $("input#passwd").focus();
+
+	                        break;
+
+	                    default:
+
+	                        alert("code: " + request.status
+	                            + "\nmessage: " + request.responseText
+	                            + "\nerror: " + error);
+
+	                        break;
+
+	                }
+
+	            }
+
+	        });
+
+	    }
+	    
+	  
+
+	/*]]>*/
+	</script>
+
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <div class="login-container">
+
+        <!-- 로그인 제목 -->
+        <h2 class="login-title">로그인</h2>
+
+        <p class="login-description">
+            한식맛ZIP에 로그인하고<br>
+            더 많은 레시피와 기능을 이용해 보세요.
+        </p>
+
+        <!-- 로그인 폼 영역 -->
+        <div class="login-box">
+
+            <form name="loginFrm" onsubmit="return false;">
+
+                <!-- CSRF 토큰 -->
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+
+                <!-- 아이디 -->
+                <div class="login-input-wrap">
+
+                    <i class="fa-regular fa-user"></i>
+
+                    <input type="text"
+                           class="login-input"
+                           name="memberid"
+                           id="memberid"
+                           placeholder="아이디를 입력해 주세요."
+                           autocomplete="username"/>
+
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="login-input-wrap">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input type="password"
+                           class="login-input"
+                           name="passwd"
+                           id="passwd"
+                           placeholder="비밀번호를 입력해 주세요."
+                           autocomplete="current-password"/>
+
+                </div>
+
+                <!-- 아이디 저장 -->
+                <div class="login-save">
+
+                    <input type="checkbox" id="saveId"/>
+
+                    <label for="saveId">아이디 저장</label>
+
+                </div>
+
+                <!-- 로그인 버튼 -->
+                <button type="button" id="btnLOGIN">
+                    로그인
+                </button>
+
+            </form>
+
+            <!-- 계정 관련 링크 -->
+            <div class="login-links">
+
+                <a href="#" onclick="return false;">아이디 찾기</a>
+
+                <span>|</span>
+
+                <a href="#" onclick="return false;">비밀번호 찾기</a>
+
+                <span>|</span>
+
+                <a th:href="@{/memberRegister}">회원가입</a>
+
+            </div>
+
+            <!-- 또는 -->
+            <div class="login-divider">
+                또는
+            </div>
+
+            <!-- 카카오 로그인 -->
+            <button type="button" id="btnKakaoLogin">
+
+                <img th:src="@{/images/kth/login/kakaologin.png}"
+                     class="kakao-icon"
+                     alt="카카오"/>
+
+                카카오로 간편 로그인
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

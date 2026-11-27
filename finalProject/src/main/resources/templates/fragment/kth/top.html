@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TOP 버튼</title>
+</head>
+<body>
+
+    <button type="button"
+            th:fragment="top-btn"
+            class="top-btn"
+            onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+
+        <i class="fa-solid fa-arrow-up"></i>
+        <span>TOP</span>
+
+    </button>
+
+</body>
+</html>

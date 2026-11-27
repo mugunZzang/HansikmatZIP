@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>접근 제한</title>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+    window.onload = function() {
+
+        const contextPath = /*[[@{/}]]*/ '';
+        const message = /*[[${message}]]*/ '';
+        const loc = /*[[${loc}]]*/ '';
+
+        alert(message);
+
+        location.replace(contextPath + loc.substring(1));
+
+    };
+
+/*]]>*/
+</script>
+
+</head>
+<body>
+</body>
+</html>

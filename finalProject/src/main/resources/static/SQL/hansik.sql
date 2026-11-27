@@ -412,7 +412,19 @@ select * from user_sequences;
 select * from EMBEDDING_TEXT_RECIPE;
 
 
+-- >>> refresh 토큰 테이블 생성하기 <<< --
+CREATE TABLE tbl_refreshtoken
+(fk_userseq      NUMBER       NOT NULL
+,rt_value        VARCHAR2(64) NOT NULL
+,CONSTRAINT PK_refreshtoken_userseq PRIMARY KEY(fk_userseq)
+,CONSTRAINT FK_refreshtoken_userseq FOREIGN KEY(fk_userseq)
+ REFERENCES tbl_user(userseq) ON DELETE CASCADE
+);
+SELECT fk_userseq, LENGTH(rt_value) AS hash_length
+FROM tbl_refreshtoken;
 
+SELECT fk_userseq, rt_value
+FROM tbl_refreshtoken;
 
-
-
+SELECT * FROM tbl_refreshtoken
+WHERE fk_userseq = 63;

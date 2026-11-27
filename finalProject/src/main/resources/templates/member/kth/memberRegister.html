@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/kth/layout_main_kth :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div})}" lang="ko" xmlns:th="http://www.thymeleaf.org"> 
+<!-- ::title 은   현재 페이지의 title   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 첫번째  파라미터로 전달한다. -->
+<!-- ::link 는    현재 페이지의 link    태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 두번째  파라미터로 전달한다. -->
+<!-- ::style 은   현재 페이지의 style   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 세번째  파라미터로 전달한다. -->
+<!-- ::script 는  현재 페이지의 script  태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 네번째  파라미터로 전달한다. -->
+<!-- ::section 은 현재 페이지의 section 태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 다섯번째 파라미터로 전달한다. -->
+
+<head>
+
+<meta charset="UTF-8">
+<title>회원가입 페이지</title>
+
+<link rel="stylesheet" th:href="@{/css/kth/memberRegister.css}" />
+
+<style type="text/css">
+.register-error { display: block; color: #c62828; font-size: 12px; grid-column: 2 / -1; margin-top: -6px; text-align: left; padding-left: 5px; }
+.register-error[hidden] { display: none; }
+#emailAuthRow[hidden] { display: none !important; }
+#emailAuthBtn:disabled, #verifyEmailBtn:disabled { opacity: .5; cursor: not-allowed; }
+#emailTimer { color: #c62828; font-size: 12px; white-space: nowrap; }
+#emailAuthMessage { margin-top: 0; }
+</style>
+
+
+<!--/* 자바스크립트 인라인 */-->
+<script th:inline="javascript">
+/*<![CDATA[*/
+    const contextPath = /*[[@{/}]]*/ '';
+
+    // 중복확인에 성공한 입력값을 기억한다.
+    const checkedValues = { nickname: null, userid: null, email: null };
+
+    let verifiedEmail = null;
+    let sentEmail = null;
+    let emailTimer = null;
+    let emailDeadline = 0;
+    let emailRequestVersion = 0;
+    let emailBusy = false;
+
+    $(function() {
+        // 입력창 아래에 오류 메시지 영역을 생성한다.
+        $('.register-input').not('#certificationCode').each(function() {
+            const $target = $(this);
+            const errorId = $target.attr('id') + 'Error';
+            $('<span>').attr('id', errorId).addClass('register-error')
+                .attr('role', 'status').prop('hidden', true)
+                .appendTo($target.closest('.register-row'));
+            $target.attr('aria-describedby', errorId);
+        });
+
+        $('input#name').on('blur', function(e) {
+            checkName($(e.target));
+        });
+
+        $('input#nickname').on('blur', function(e) {
+            checkNickname($(e.target));
+        });
+
+        $('input#userid').on('blur', function(e) {
+            checkUserid($(e.target));
+        });
+
+        $('input#passwd').on('blur', function(e) {
+            checkPasswd($(e.target));
+            if ($('input#pwdcheck').val() !== '') {
+                checkPwdcheck($('input#pwdcheck'));
+            }
+        });
+
+        $('input#pwdcheck').on('blur', function(e) {
+            checkPwdcheck($(e.target));
+        });
+
+        $('input#passwd, input#pwdcheck').on('input', function() {
+            if ($('input#pwdcheck').val() !== '' || $('input#pwdcheck').attr('aria-invalid') === 'true') {
+                checkPwdcheck($('input#pwdcheck'));
+            }
+        });
+
+        $('input#email').on('blur', function(e) {
+            checkEmail($(e.target));
+        });
+
+        $('input#mobile').on('blur', function(e) {
+            checkMobile($(e.target));
+        });
+
+        $('input#mobile').on('input', function() {
+            $(this).val($(this).val().replace(/[^0-9]/g, '').slice(0, 11));
+        });
+
+        // 입력값이 변경되면 중복확인을 다시 해야 한다.
+        $('input#nickname, input#userid, input#email').on('input', function() {
+            checkedValues[this.id] = null;
+            showError($(this), '');
+            if (this.id === 'email') {
+                resetEmailAuth();
+            }
+        });
+
+        $('#nicknameCheckBtn').on('click', function() {
+            if (checkNickname($('input#nickname'))) {
+                duplicateCheck($('input#nickname'), 'nicknameCheck', '닉네임');
+            }
+        });
+
+        $('#idCheckBtn').on('click', function() {
+            if (checkUserid($('input#userid'))) {
+                duplicateCheck($('input#userid'), 'useridCheck', '아이디');
+            }
+        });
+
+        $('#emailCheckBtn').on('click', function() {
+            if (checkEmail($('input#email'))) {
+                duplicateCheck($('input#email'), 'emailCheck', '이메일');
+            }
+        });
+
+        $('#emailAuthBtn').on('click', function() {
+            sendEmailCode();
+        });
+
+        $('#verifyEmailBtn').on('click', function() {
+            verifyEmailCode();
+        });
+
+        $('#certificationCode').on('input', function() {
+            $(this).val($(this).val().replace(/[^0-9]/g, '').slice(0, 6));
+        });
+
+        $('form[name=registerFrm]').on('submit', function(e) {
+            e.preventDefault();
+        });
+
+        $('button#memberRegisterBtn').on('click', function() {
+            goRegister();
+        });
+		
+		// 뒤로가기 버튼 클릭 시
+		$('button#backBtn').on('click', function() {
+
+		    if(document.referrer &&
+		       document.referrer.startsWith(location.origin + contextPath)) {
+		        history.back();
+		    }
+		    else {
+		        location.href = contextPath + 'index';
+		    }
+
+		});
+    });
+
+    // Function Declaration
+    function checkName($target) {
+        const bool = $target.val().trim().length > 1 && $target.val().trim().length <= 30;
+        if (!bool) {
+            if ($target.val().trim() === '') {
+                showError($target, '이름을 입력해주세요.');
+            }
+            else {
+                showError($target, '이름은 2~50자로 입력해주세요.');
+            }
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function checkNickname($target) {
+        const bool = $target.val().trim().length > 1 && $target.val().trim().length <= 50;
+        if (!bool) {
+            if ($target.val().trim() === '') {
+                showError($target, '닉네임을 입력해주세요.');
+            }
+            else {
+                showError($target, '닉네임은 2~50자로 입력해주세요.');
+            }
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function checkUserid($target) {
+        const regExp = new RegExp(/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$/);
+        const bool = regExp.test($target.val());
+        if (!bool) {
+            showError($target, '영문과 숫자를 포함하여 8~15자로 입력해 주세요.');
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function checkPasswd($target) {
+        const regExp = new RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!-\/:-@\[-`{-~])[!-~]{8,15}$/);
+        const bool = regExp.test($target.val());
+        if (!bool) {
+            showError($target, '영문 대소문자, 숫자, 특수문자를 포함하여 8~15자로 입력해 주세요.');
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    // 비밀번호와 비밀번호 확인 값이 일치하는지 검사한다.
+    function checkPwdcheck($target) {
+        if ($target.val() === '') {
+            showError($target, '비밀번호를 다시 입력해주세요.');
+            return false;
+        }
+        else if ($target.val() !== $('input#passwd').val()) {
+            showError($target, '비밀번호가 일치하지 않습니다.');
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function checkEmail($target) {
+        const regExp = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+        const bool = regExp.test($target.val()) && $target.val().length <= 200;
+        if (!bool) {
+            showError($target, '올바른 이메일 주소를 입력해 주세요.');
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function checkMobile($target) {
+        const regExp = new RegExp(/^010[0-9]{8}$/);
+        const bool = regExp.test($target.val());
+        if (!bool) {
+            showError($target, '휴대폰 번호를 올바르게 입력해 주세요.');
+            return false;
+        }
+        else {
+            showError($target, '');
+            return true;
+        }
+    }
+
+    function showError($target, message) {
+        const $error = $('#' + $target.attr('id') + 'Error');
+        $error.css('color', '#c62828');
+        if (message !== '') {
+            $error.text(message).prop('hidden', false);
+            $target.attr('aria-invalid', 'true');
+        }
+        else {
+            if (checkedValues[$target.attr('id')] === $target.val()) {
+                $error.text($target.val() + '은(는) 사용 가능합니다.').css('color', 'green').prop('hidden', false);
+            }
+            else {
+                $error.text('').prop('hidden', true);
+            }
+            $target.attr('aria-invalid', 'false');
+        }
+    }
+
+    // 중복확인 AJAX (서버에서는 isExists를 boolean으로 반환한다.)
+    function duplicateCheck($target, url, label) {
+        const field = $target.attr('id');
+        const value = $target.val();
+        const data = {};
+        data[field] = value;
+        checkedValues[field] = null;
+        if (field === 'email') {
+            resetEmailAuth();
+        }
+        const token = $("meta[name='_csrf']").attr('content');
+        const header = $("meta[name='_csrf_header']").attr('content');
+        const $button = $target.closest('.register-row').find('button').filter(function() {
+            return this.id !== 'emailAuthBtn';
+        });
+        $button.prop('disabled', true);
+
+        $.ajax({
+            url: contextPath + 'member/' + url,
+            data: data,
+            method: 'post',
+            dataType: 'json',
+            beforeSend: function(xhr) {
+                if (header && token) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            success: function(json) {
+                // 요청 중 입력값이 바뀌었다면 이전 결과를 표시하지 않는다.
+                if ($target.val() !== value) {
+                    return;
+                }
+                if (json.isExists === true) {
+                    showError($target, '이미 사용 중인 ' + label + '입니다.');
+                }
+                else if (json.isExists === false) {
+                    checkedValues[field] = value;
+                    showError($target, '');
+                    if (field === 'email') {
+                        $('#emailAuthBtn').prop('disabled', false);
+                    }
+                }
+                else {
+                    showError($target, '중복확인 결과를 확인할 수 없습니다.');
+                }
+            },
+            error: function(request, status, error) {
+                if ($target.val() === value) {
+                    showError($target, '중복확인 요청에 실패했습니다.');
+                }
+                console.log(request.status, error);
+            },
+            complete: function() {
+                $button.prop('disabled', false);
+            }
+        });
+    }
+
+    // 이메일 인증 상태 초기화
+    function resetEmailAuth() {
+        emailRequestVersion++;
+        clearInterval(emailTimer);
+        verifiedEmail = null;
+        sentEmail = null;
+        emailDeadline = 0;
+        $('#emailAuthRow').prop('hidden', true);
+        $('#certificationCode').val('').prop('disabled', false);
+        $('#verifyEmailBtn').prop('disabled', true);
+        $('#emailAuthBtn').text('이메일 인증').prop('disabled', true);
+        $('#emailTimer').text('');
+        $('#emailAuthMessage').text('').prop('hidden', true);
+    }
+
+    function showAuthMessage(message, success) {
+        $('#emailAuthMessage').text(message).prop('hidden', false);
+        if (success) {
+            $('#emailAuthMessage').css('color', 'green');
+        }
+        else {
+            $('#emailAuthMessage').css('color', '#c62828');
+        }
+    }
+
+    // 인증번호 발송
+    function sendEmailCode() {
+        const email = $('#email').val();
+        if (emailBusy || !checkEmail($('#email')) || checkedValues.email !== email) {
+            return;
+        }
+        resetEmailAuth();
+        const version = emailRequestVersion;
+        emailBusy = true;
+        $('#email, #emailCheckBtn').prop('disabled', true);
+        const token = $("meta[name='_csrf']").attr('content');
+        const header = $("meta[name='_csrf_header']").attr('content');
+        $.ajax({
+            url: contextPath + 'member/sendEmail',
+            method: 'post',
+            data: {email: email},
+            dataType: 'json',
+            beforeSend: function(xhr) {
+                if (header && token) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            success: function(json) {
+                if (version !== emailRequestVersion || $('#email').val() !== email) {
+                    return;
+                }
+                if (json.success === true) {
+                    sentEmail = email;
+                    $('#emailAuthRow').prop('hidden', false);
+                    $('#verifyEmailBtn').prop('disabled', false);
+                    $('#emailAuthBtn').text('재발송');
+                    showAuthMessage('인증번호가 발송되었습니다.', true);
+                    startEmailTimer();
+                }
+                else {
+                    showError($('#email'), '인증번호 발송에 실패했습니다.');
+                }
+            },
+            error: function() {
+                showError($('#email'), '인증번호 발송 요청에 실패했습니다.');
+            },
+            complete: function() {
+                emailBusy = false;
+                $('#email, #emailCheckBtn').prop('disabled', false);
+                if (checkedValues.email === $('#email').val()) {
+                    $('#emailAuthBtn').prop('disabled', false);
+                }
+            }
+        });
+    }
+
+    // 인증 유효시간 5분
+    function startEmailTimer() {
+        clearInterval(emailTimer);
+        emailDeadline = Date.now() + 5 * 60 * 1000;
+        $('#emailTimer').text('05:00');
+        emailTimer = setInterval(function() {
+            const remaining = Math.max(0, Math.ceil((emailDeadline - Date.now()) / 1000));
+            const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+            const seconds = String(remaining % 60).padStart(2, '0');
+            $('#emailTimer').text(minutes + ':' + seconds);
+            if (remaining === 0) {
+                clearInterval(emailTimer);
+                $('#verifyEmailBtn').prop('disabled', true);
+                showAuthMessage('인증시간이 만료되었습니다. 재발송해주세요.', false);
+            }
+        }, 1000);
+    }
+
+    // 인증번호 확인
+    function verifyEmailCode() {
+        const email = $('#email').val();
+        const certificationCode = $('#certificationCode').val();
+        const regExp = new RegExp(/^[0-9]{6}$/);
+        if (emailBusy || sentEmail !== email || verifiedEmail === email || Date.now() >= emailDeadline) {
+            return;
+        }
+        if (!regExp.test(certificationCode)) {
+            showAuthMessage('인증번호 6자리를 입력해주세요.', false);
+            return;
+        }
+        const version = emailRequestVersion;
+        const token = $("meta[name='_csrf']").attr('content');
+        const header = $("meta[name='_csrf_header']").attr('content');
+        emailBusy = true;
+        $('#email, #emailCheckBtn, #emailAuthBtn, #verifyEmailBtn, #certificationCode').prop('disabled', true);
+        $.ajax({
+            url: contextPath + 'member/verifyEmail',
+            method: 'post',
+            data: {email: email, certificationCode: certificationCode},
+            dataType: 'json',
+            beforeSend: function(xhr) {
+                if (header && token) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            success: function(json) {
+                if (version !== emailRequestVersion || $('#email').val() !== email) {
+                    return;
+                }
+                if (json.success === true) {
+                    verifiedEmail = email;
+                    clearInterval(emailTimer);
+                    $('#emailTimer').text('');
+                    $('#emailAuthBtn').text('인증완료');
+                    showAuthMessage('이메일 인증이 완료되었습니다.', true);
+                }
+                else {
+                    showAuthMessage('인증에 실패했습니다. 인증번호를 확인하거나 재발송해주세요.', false);
+                }
+            },
+            error: function() {
+                showAuthMessage('인증 확인 요청에 실패했습니다.', false);
+            },
+            complete: function() {
+                emailBusy = false;
+                $('#email, #emailCheckBtn').prop('disabled', false);
+                if (verifiedEmail !== email) {
+                    $('#emailAuthBtn, #certificationCode').prop('disabled', false);
+                    if (Date.now() < emailDeadline) {
+                        $('#verifyEmailBtn').prop('disabled', false);
+                    }
+                }
+            }
+        });
+    }
+
+    function goRegister() {
+        let bool = true;
+        if (!checkName($('input#name'))) {
+            bool = false;
+        }
+        if (!checkNickname($('input#nickname'))) {
+            bool = false;
+        }
+        if (!checkUserid($('input#userid'))) {
+            bool = false;
+        }
+        if (!checkPasswd($('input#passwd'))) {
+            bool = false;
+        }
+        if (!checkPwdcheck($('input#pwdcheck'))) {
+            bool = false;
+        }
+        if (!checkEmail($('input#email'))) {
+            bool = false;
+        }
+        if (!checkMobile($('input#mobile'))) {
+            bool = false;
+        }
+        if (!bool) {
+            return;
+        }
+        if (checkedValues.nickname !== $('input#nickname').val()) {
+            showError($('input#nickname'), '닉네임 중복확인을 해주세요.');
+            bool = false;
+        }
+        if (checkedValues.userid !== $('input#userid').val()) {
+            showError($('input#userid'), '아이디 중복확인을 해주세요.');
+            bool = false;
+        }
+        if (checkedValues.email !== $('input#email').val()) {
+            showError($('input#email'), '이메일 중복확인을 해주세요.');
+            bool = false;
+        }
+        if (!bool) {
+            return;
+        }
+        if (emailBusy || verifiedEmail !== $('input#email').val()) {
+            showError($('input#email'), '이메일 인증을 완료해주세요.');
+            return;
+        }
+
+        // 회원가입 AJAX
+        $('#memberRegisterBtn').prop('disabled', true);
+
+        $.ajax({
+            url: contextPath + 'memberRegisterEnd',
+            data: $('form[name=registerFrm]').serialize(),
+            method: 'post',
+            dataType: 'json',
+            success: function(json) {
+
+                if(json.success === true) {
+                    alert('회원가입이 완료되었습니다.');
+                    location.href = contextPath + 'login';
+                }
+                else {
+                    alert('회원가입에 실패했습니다.');
+                }
+            },
+            error: function(request, status, error) {
+                alert('회원가입 처리 중 오류가 발생했습니다.');
+                console.log(request.status, error);
+            },
+            complete: function() {
+                $('#memberRegisterBtn').prop('disabled', false);
+            }
+        });
+    }
+/*]]>*/
+</script>
+
+
+</head>
+
+<body>
+
+
+<div class="register-page">
+    <div class="register-container">
+
+        <!-- 회원가입 제목 -->
+        <h2 class="register-title">회원가입</h2>
+
+        <p class="register-desc">
+            한식맛ZIP의 회원이 되어<br>
+            다양한 서비스와 혜택을 이용해 보세요.
+        </p>
+
+        <!-- 회원가입 폼 영역 -->
+        <div class="register-box">
+
+            <form name="registerFrm" novalidate>
+
+                <!-- CSRF 토큰 -->
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+
+                <!-- 이름 -->
+                <div class="register-row">
+                    <label for="name">이름</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text"
+                               class="register-input"
+                               name="name"
+                               id="name"
+                               placeholder="이름을 입력해 주세요."
+                               autocomplete="name"/>
+                    </div>
+
+                    <div class="register-actions"></div>
+                </div>
+
+                <!-- 닉네임 -->
+                <div class="register-row">
+                    <label for="nickname">닉네임</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text"
+                               class="register-input"
+                               name="nickname"
+                               id="nickname"
+                               placeholder="닉네임을 입력해 주세요."
+                               autocomplete="nickname"/>
+                    </div>
+
+                    <div class="register-actions">
+                        <button type="button"
+                                class="register-check-btn"
+                                id="nicknameCheckBtn">
+                            중복확인
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 아이디 -->
+                <div class="register-row">
+                    <label for="userid">아이디</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-regular fa-id-card"></i>
+                        
+                        <div class="register-id-wrap">
+                        <input type="text"
+                               class="register-input"
+                               name="userid"
+                               id="userid"
+                               placeholder="아이디를 입력해 주세요."
+                               autocomplete="username"/>
+                               
+                             <span class="register-input-guide">
+                                 영문, 숫자 포함 8~15자
+                            </span>
+                      </div>
+                    </div>
+
+                    <div class="register-actions">
+                        <button type="button"
+                                class="register-check-btn"
+                                id="idCheckBtn">
+                             중복확인
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="register-row">
+                    <label for="passwd">비밀번호</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+
+                        <div class="register-password-wrap">
+                            <input type="password"
+                                   class="register-input"
+                                   name="passwd"
+                                   id="passwd"
+                                   placeholder="비밀번호를 입력해 주세요."
+                                   autocomplete="new-password"/>
+
+                            <span class="register-input-guide">
+                                영문 대소문자, 숫자, 특수문자 포함 8~15자
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="register-actions"></div>
+                </div>
+
+                <!-- 비밀번호 확인 (DB에 저장하지 않는 입력값) -->
+                <div class="register-row">
+                    <label for="pwdcheck">비밀번호 확인</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password"
+                               class="register-input"
+                               id="pwdcheck"
+                               placeholder="비밀번호를 다시 입력해주세요."
+                               autocomplete="new-password"/>
+                    </div>
+
+                    <div class="register-actions"></div>
+                </div>
+
+                <!-- 이메일 -->
+                <div class="register-row">
+                    <label for="email">이메일</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email"
+                               class="register-input"
+                               name="email"
+                               id="email"
+                               placeholder="이메일을 입력해 주세요."
+                               autocomplete="email"/>
+                    </div>
+
+                    <div class="register-actions">
+                        <button type="button"
+                                class="register-check-btn"
+                                id="emailCheckBtn">
+                             중복확인
+                        </button>
+
+                        <button type="button"
+                                class="register-check-btn"
+                                id="emailAuthBtn" disabled>
+                            이메일 인증
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 이메일 인증번호 (발송 성공 시 표시) -->
+                <div class="register-row" id="emailAuthRow" hidden>
+                    <label for="certificationCode">인증번호</label>
+                    <div class="register-input-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="text" class="register-input" id="certificationCode"
+                               placeholder="인증번호 6자리" maxlength="6"
+                               inputmode="numeric" autocomplete="one-time-code"/>
+                        <span id="emailTimer"></span>
+                    </div>
+                    <div class="register-actions">
+                        <button type="button" class="register-check-btn" id="verifyEmailBtn" disabled>인증확인</button>
+                    </div>
+                    <span id="emailAuthMessage" class="register-error" role="status" hidden></span>
+                </div>
+
+                <!-- 연락처 -->
+                <div class="register-row">
+                    <label for="mobile">연락처</label>
+
+                    <div class="register-input-wrap">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel"
+                               class="register-input"
+                               name="mobile"
+                               id="mobile"
+                               placeholder="숫자만 입력해 주세요. (01012345678)"
+                               autocomplete="tel"
+                               inputmode="numeric"
+                               maxlength="11"/>
+                    </div>
+
+                    <div class="register-actions"></div>
+                </div>
+
+				<!-- 뒤로가기 및 회원가입 버튼 -->
+				<div class="register-bottom-buttons">
+
+				    <button type="button" id="backBtn">
+				        <i class="fa-solid fa-arrow-left"></i>
+				        뒤로가기
+				    </button>
+
+				    <button type="button" id="memberRegisterBtn">
+				        <i class="fa-solid fa-user-plus"></i>
+				        회원가입
+				    </button>
+
+				</div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+   
+</body>
+</html>
