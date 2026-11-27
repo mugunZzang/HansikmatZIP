@@ -3,117 +3,301 @@
       lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<!--/* ::title 은   현재 페이지의 title   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 첫번째 파라미터로 전달한다. */-->
-<!--/* ::link  는   현재 페이지의 link    태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 두번째 파라미터로 전달한다. */--> 
-<!--/* ::style 은   현재 페이지의 style   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 세번째 파라미터로 전달한다. */-->
-<!--/* ::script 는  현재 페이지의 script  태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 네번째 파라미터로 전달한다. */-->
-<!--/* ::section 은 현재 페이지의 section 태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 다섯번째 파라미터로 전달한다. */-->
-<!--/* 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. */-->
-
 <head>
 <meta charset="UTF-8">
 <title>레시피 작성</title>
 
-<!--/* Bootstrap CSS */--> 
 <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
-
-<!--/* Font Awesome 6 Icons */-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-<!--/* Optional JavaScript */-->
 <script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
-  
 <script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
-
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" type="text/css" th:href="@{/css/km/recipeRegister.css}">
 
 <style type="text/css">
-  .form-section {
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 20px 24px 24px;
-    margin-bottom: 24px;
-    background-color: #ffffff;
-  }
-
-  .section-heading {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1b263b;
-    margin: 0 0 16px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #edf2f7;
-  }
+  
 </style>
 
 <script th:inline="javascript">
 /*<![CDATA[*/
-	
-	// ================= 로그인한 경우 로그인 되어진 회원명 출력해주기 =================== //
-	// const JWT = JSON.parse(localStorage.getItem("JWT")) || {};// JWT 토큰이 저장된 곳 
-	// const name = JWT.name??'';
-	
 	$(function(){
-		
-		// ▣ CSRF AJAX 사용시 설정 및 실행하기 
-	    // templates/layout/layout_main.html 파일의 meta 태그 안에있는 content를 가져와서 AJAX  beforeSend(데이터를 전송하기전) 에 HTTP Header 를 SET 해야 한다.
-	    // const token = $("meta[name='_csrf']").attr("content");
-	    // const header = $("meta[name='_csrf_header']").attr("content");
-	    
-		// const JWT = JSON.parse(localStorage.getItem("JWT")) || {}; // JWT 토큰이 저장된 곳
-	    // const jwttoken = JWT.accessToken;
-		
+		const $ingredientSection = $('.ingredient-section');
+		const $stepSection = $('.step-section');
 
-		$('button#btn_addingred').on('click', function(){
+		$ingredientSection.sortable({
+		    items: '> .bundle-box',
+		    handle: '.bundle-handle',
+		    cancel: 'input, textarea, select, button, .btn-remove, .btn-remove-bundle, .ingredient-list, .ingredient-row',
+		    axis: 'y',
+		    cursor: 'grabbing',
+		    opacity: 0.75,
+		    placeholder: 'bundle-placeholder',
+		    tolerance: 'pointer',
+		    helper: function (e, ui) {
+		        ui.children().each(function () {
+		            $(this).width($(this).width());
+		        });
+		        return ui;
+		    },
+		    start: function (e, ui) {
+		        ui.placeholder.height(ui.item.outerHeight());
+		        $('.ingredient-list.ui-sortable').sortable('disable');
+		    },
+		    stop: function () {
+		        $('.ingredient-list.ui-sortable').sortable('enable');
+		        refreshIngredientSortables();
+		    }
+		});
+
+		// 요리 순서(.step-section) 드래그 정렬
+		$stepSection.sortable({
+		    items: '> .step-card',
+		    handle: '.bundle-handle',
+		    cancel: 'input, textarea, select, button, .step-photo-box',
+		    axis: 'y',
+		    cursor: 'grabbing',
+		    opacity: 0.75,
+		    placeholder: 'step-placeholder',
+		    tolerance: 'pointer',
+		    helper: function (e, ui) {
+		        ui.children().each(function () {
+		            $(this).width($(this).width());
+		        });
+		        return ui;
+		    },
+		    start: function (e, ui) {
+		        ui.placeholder.height(ui.item.outerHeight());
+		    }
+		});
+
+		// 초기 재료 목록 sortable 적용
+		initIngredientRowSortable();
+
+		// 요리사진 박스 클릭 시 해당 카드의 파일 input 열기
+		$(document).on('click', '.step-photo-box', function(){
+			$(this).find('input[type="file"]').trigger('click');
+		});
+
+		// 2. 재료 추가 버튼
+		$(document).on('click', 'button.btn_addingred', function(){
 			const v_html = `
 				<div class="ingredient-row">
-	              <input type="text" placeholder="음식명">
-	              <input type="text" placeholder="수량">
-	              <input type="text" placeholder="단위">
-	              <input type="text" placeholder="비고">
+			      <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+	              <input type="text" name="ingredient_name" placeholder="음식명">
+	              <input type="text" name="quantity" placeholder="수량" class="ingredient-a">
+	              <input type="text" name="unit" placeholder="단위" class="ingredient-b">
+	              <input type="text" name="ing_note" placeholder="비고" class="ingredient-c">
 	              <button type="button" class="btn-remove">X</button>
 	            </div>
 			`;
-			$(this).closest('.bundle-box').find('.ingredient-list').append(v_html);
-		});// end of $('button#btn_addingred').on('click', function(){
-			
+			const $list = $(this).closest('.bundle-box').find('.ingredient-list');
+			$list.append(v_html);
+			if ($list.hasClass('ui-sortable')) {
+				$list.sortable('refresh');
+			}
+		});
+
+		// 3. 재료 행 삭제
+		$(document).on('click', 'button.btn-remove', function(){
+			const $list = $(this).closest('.ingredient-list');
+			if ($list.find('.ingredient-row').length > 1) {
+				$(this).closest('.ingredient-row').remove();
+			} else {
+				$(this).closest('.ingredient-row').find('input').val('');
+			}
+			if ($list.hasClass('ui-sortable')) {
+				$list.sortable('refresh');
+			}
+		});
+
+		// 4. 재료 꾸러미 추가 버튼
 		$('button#btn_pocket').on('click', function(){
 			const v_html = `
 				<div class="bundle-box">
 		          <div class="bundle-header">
-		            <input type="text" placeholder="재료꾸러미명 (예: 주재료, 양념장)">
+		            <span class="bundle-handle" title="꾸러미 순서 변경">☰</span>
+		            <input type="text" name="ingredient_bundle_name" placeholder="재료꾸러미명 (예: 주재료, 양념장)" class="ingredientname">
+		            <button type="button" class="btn-remove-bundle" title="꾸러미 삭제">X</button>
 		          </div>
 
 		          <div class="ingredient-list">
-		            <div class="ingredient-row first-ingredient">
-		              <input type="text" placeholder="음식명">
-		              <input type="text" placeholder="수량">
-		              <input type="text" placeholder="단위">
-		              <input type="text" placeholder="비고">
+		            <div class="ingredient-row">
+		              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+		              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+		              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+		              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+		              <input type="text" name="ing_note" placeholder="비고">
 		              <button type="button" class="btn-remove">X</button>
 		            </div>
 		            <div class="ingredient-row">
-		              <input type="text" placeholder="음식명">
-		              <input type="text" placeholder="수량">
-		              <input type="text" placeholder="단위">
-		              <input type="text" placeholder="비고">
+		              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+		              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+		              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+		              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+		              <input type="text" name="ing_note" placeholder="비고">
 		              <button type="button" class="btn-remove">X</button>
 		            </div>
 		            <div class="ingredient-row">
-		              <input type="text" placeholder="음식명">
-		              <input type="text" placeholder="수량">
-		              <input type="text" placeholder="단위">
-		              <input type="text" placeholder="비고">
+		              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+		              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+		              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+		              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+		              <input type="text" name="ing_note" placeholder="비고">
 		              <button type="button" class="btn-remove">X</button>
+		            </div>
+		          </div>
+		          
+		          <div class="center-btn-wrap" id="addingred">
+		            <button type="button" class="btn_addingred">재료추가</button>
+		          </div>
+		        </div>
+			`;
+			const $newBundle = $(v_html);
+		    $(this).closest('.center-btn-wrap').before($newBundle);
+		    initIngredientRowSortable($newBundle);
+		    refreshIngredientSortables();
+		});
+
+		// 5. 요리 꾸러미 삭제
+		$(document).on('click', 'button.btn-remove-bundle', function(){
+			$(this).closest('.bundle-box').remove();
+			$ingredientSection.sortable('refresh');
+		});
+		
+		// 6. 요리 순서 추가 버튼
+		$('button#btn-addcook').on('click', function(){
+			const v_html = `
+				<div class="step-card">
+		          <span class="bundle-handle" title="순서 변경" style="margin-bottom:10px;">☰</span>
+		          <div class="step-desc">
+		            <textarea rows="4" name="cook_description" placeholder="요리설명을 입력하세요." class="cookex"></textarea>
+		          </div>
+
+		          <div class="step-photo-box">
+		          	요리사진
+		            <input type="file" name="cook_original_filename" class="step-photo-input" accept="image/*" hidden>
+		          </div>
+
+		          <div class="step-sub-inputs">
+		            <input type="text" name="order_tip" class="step-tip-input" placeholder="요리팁">
+		            <div class="step-timer-group">
+		              <input type="number" name="timerh" min="0" max="99" placeholder="0"><span>시</span>
+		              <input type="number" name="timerm" min="0" max="59" placeholder="0"><span>분</span>
+		              <input type="number" name="timers" min="0" max="59" placeholder="0"><span>초</span>
 		            </div>
 		          </div>
 		        </div>
 			`;
-			$(this).closest('.ingredient-section').find('.bundle-box').last().after(v_html);
+			const $newBundle = $(v_html);
+		    $(this).parent().before($newBundle);
+		    $stepSection.sortable('refresh');
 		});
-	});// end of $(function(){
+	});
+
+	function validatePublicRecipe() {
+		if ($('input[id="recipe-title"]').val().trim() == "") {
+			alert('레시피 제목을 입력해주세요!');
+			$('input[id="recipe-title"]').val("").focus();
+			return false;
+		}
+
+		let r_intro = $('textarea[id="recipe-intro"]').val().trim();
+		if (r_intro === "") {
+			alert('레시피 소개를 입력해주세요!');
+			$('textarea[id="recipe-intro"]').val("").focus();
+			return false;
+		}
+
+		const thumbInput = document.getElementById('thumb-file');
+		if (!thumbInput || !thumbInput.files || thumbInput.files.length === 0) {
+			alert('썸네일을 등록해주세요!');
+			return false;
+		}
+
+		const catIds = [
+			'종류',
+			'상황',
+			'주재료',
+			'방법',
+			'인원',
+			'요리시간',
+			'난이도'
+		];
+
+		for (const id of catIds) {
+			const $select = $('select#' + id);
+			if ($select.val() === "") {
+				alert('레시피 ' + id + '를 선택해주세요!');
+				$select.focus();
+				return false;
+			}
+		}
+
+		// 재료꾸러미 유효성 검사
+		const $rows = $('.ingredient-row');
+		for (let i = 0; i < $rows.length; i++) {
+			const $row = $rows.eq(i);
+			const $a = $row.find('.ingredient-a');
+			const $b = $row.find('.ingredient-b');
+			const $c = $row.find('.ingredient-c');
+
+			if ($a.val().trim() === "") {
+				alert('음식명을 입력해주세요!');
+				$a.val("").focus();
+				return false;
+			}
+			if ($b.val().trim() === "") {
+				alert('수량을 입력해주세요!');
+				$b.val("").focus();
+				return false;
+			}
+			if ($c.val().trim() === "") {
+				alert('단위를 입력해주세요!');
+				$c.val("").focus();
+				return false;
+			}
+		}
+
+		const $cookrows = $('.step-card');
+		for (let i = 0; i < $cookrows.length; i++) {
+			const $row = $cookrows.eq(i);
+			const $cookex = $row.find('.cookex');
+			const cookphotoEl = $row.find('.step-photo-input')[0];
+
+			if ($cookex.val().trim() === "") {
+				alert('음식설명을 입력해주세요!');
+				$cookex.val("").focus();
+				return false;
+			}
+			if (!cookphotoEl || !cookphotoEl.files || cookphotoEl.files.length === 0) {
+				alert('요리순서 사진을 입력해주세요!');
+				return false;
+			}
+		}
+
+		const cookendIds = ['cookend-img1', 'cookend-img2', 'cookend-img3'];
+		let uploadedCount = 0;
+
+		for (let i = 0; i < cookendIds.length; i++) {
+			const imgInput = document.getElementById(cookendIds[i]);
+			if (imgInput && imgInput.files && imgInput.files.length > 0) {
+				uploadedCount++;
+			}
+		}
+
+		if (uploadedCount === 0) {
+			alert('요리 완성 사진을 최소 1장 이상 등록해주세요!');
+			return false;
+		}
+
+		return true;
+	}
 	
 	function recipeRegister(num){
+		const paidCheck = (num == 3 || num == "3") ? "유료" : "무료";
+		$('#paid_check').val(paidCheck);
+
 		if(num == "1"){
 			if($('input[id="recipe-title"]').val().trim() == "") {
 				alert('레시피 제목을 입력해주세요!');
@@ -121,104 +305,246 @@
 				return;
 			}
 			
-			let r_intro = $('textarea[id="recipe-intro"]').val().trim();
-			if (r_intro === "") {
-				r_intro = " ";
-			}
-			
-			const catIds = [
-				  'cat-type',
-				  'cat-situation',
-				  'cat-ingredient',
-				  'cat-method',
-				  'cat-servings',
-				  'cat-time',
-				  'cat-level'
-				];
+			const frm = new FormData(document.addFrm);
+			frm.set('paid_check', paidCheck);
 
-			const categories = {};
-			catIds.forEach(function (id) {
-			  const val = $('select#' + id).val();
-			  categories[id] = val === "" ? " " : val;
+			// 1. 기본 텍스트/요리팁/주의사항 공백 보정
+			const textFields = [
+				{ name: 'r_intro', val: $('textarea[id="recipe-intro"]').val() },
+				{ name: 'r_url', val: $('input[id="recipe-url"]').val() },
+				{ name: 'tag_name', val: $('input[id="recipe-tags"]').val() },
+				{ name: 'tip_caution', val: $('textarea[name="tip_caution"]').val() }
+			];
+			textFields.forEach(function(item) {
+				const trimmed = (item.val || "").trim();
+				frm.set(item.name, trimmed === "" ? " " : trimmed);
 			});
-		}// end of if(num == "1"){
-		else if (num == 2) {
-			if($('input[id="recipe-title"]').val().trim() == "") {
-				alert('레시피 제목을 입력해주세요!');
-				$('input[id="recipe-title"]').val("").focus();
-				return;
-			}
-			
-			let r_intro = $('textarea[id="recipe-intro"]').val().trim();
-			if (r_intro === "") {
-				alert('레시피 소개를 입력해주세요!');
-				$('textarea[id="recipe-intro"]').val("").focus();
-				return;
-			}
-			
-			const catIds = [
-				  '종류',
-				  '상황',
-				  '주재료',
-				  '방법',
-				  '인원',
-				  '요리시간',
-				  '난이도'
-				];
 
-			for (const id of catIds) {
-				  const $select = $('select#' + id);
-				  if ($select.val() === "") {
-				    alert('레시피 ' + id + '를 선택해주세요!');
-				    $select.focus();
-				    return; // recipeRegister 함수 자체를 종료
-				  }
+			// 2. 카테고리 7종 공백 보정
+			const catIds = ['종류', '상황', '주재료', '방법', '인원', '요리시간', '난이도'];
+			catIds.forEach(function(id) {
+				const val = $('select#' + id).val();
+				frm.set(id, (!val || val.trim() === "") ? " " : val);
+			});
+
+			// 3. 재료 꾸러미 순서(ingredient_bundle_order) & 재료 행 배열 공백 보정
+			const bundleOrders = [];
+			const bundleNames = [];
+			$('.bundle-box').each(function(idx) {
+				bundleOrders.push(String(idx + 1));
+				const bName = ($(this).find('.ingredientname').val() || "").trim();
+				bundleNames.push(bName === "" ? " " : bName);
+			});
+
+			const ingNames = [];
+			const quantities = [];
+			const units = [];
+			const ingNotes = [];
+
+			$('.ingredient-row').each(function() {
+				const $row = $(this);
+				const nameVal = ($row.find('input[name="ingredient_name"]').val() || "").trim();
+				const qtyVal = ($row.find('input[name="quantity"]').val() || "").trim();
+				const unitVal = ($row.find('input[name="unit"]').val() || "").trim();
+				const noteVal = ($row.find('input[name="ing_note"]').val() || "").trim();
+
+				ingNames.push(nameVal === "" ? " " : nameVal);
+				quantities.push(qtyVal === "" ? " " : qtyVal);
+				units.push(unitVal === "" ? " " : unitVal);
+				ingNotes.push(noteVal === "" ? " " : noteVal);
+			});
+
+			frm.delete('ingredient_bundle_order');
+			bundleOrders.forEach(v => frm.append('ingredient_bundle_order', v));
+
+			frm.delete('ingredient_bundle_name');
+			bundleNames.forEach(v => frm.append('ingredient_bundle_name', v));
+
+			frm.delete('ingredient_name');
+			ingNames.forEach(v => frm.append('ingredient_name', v));
+
+			frm.delete('quantity');
+			quantities.forEach(v => frm.append('quantity', v));
+
+			frm.delete('unit');
+			units.forEach(v => frm.append('unit', v));
+
+			frm.delete('ing_note');
+			ingNotes.forEach(v => frm.append('ing_note', v));
+
+			// 4. 요리 순서(cook_order_step) 및 항목 공백 보정
+			const cookOrderSteps = [];
+			const cookDescs = [];
+			const orderTips = [];
+			const timerH = [];
+			const timerM = [];
+			const timerS = [];
+			const cookPhotos = [];
+
+			$('.step-card').each(function(idx) {
+				cookOrderSteps.push(String(idx + 1));
+
+				const $card = $(this);
+				const desc = ($card.find('textarea[name="cook_description"]').val() || "").trim();
+				const tip = ($card.find('input[name="order_tip"]').val() || "").trim();
+				const h = ($card.find('input[name="timerh"]').val() || "").trim();
+				const m = ($card.find('input[name="timerm"]').val() || "").trim();
+				const s = ($card.find('input[name="timers"]').val() || "").trim();
+				const photoInput = $card.find('input[type="file"]')[0];
+
+				cookDescs.push(desc === "" ? " " : desc);
+				orderTips.push(tip === "" ? " " : tip);
+				timerH.push(h === "" ? " " : h);
+				timerM.push(m === "" ? " " : m);
+				timerS.push(s === "" ? " " : s);
+
+				if (photoInput && photoInput.files && photoInput.files.length > 0) {
+					cookPhotos.push(photoInput.files[0]);
+				} else {
+					cookPhotos.push(" ");
 				}
-			
-			
-		}// end of if (num == 2)
-	}// end of function recipeRegister()
+			});
+
+			frm.delete('cook_order_step');
+			cookOrderSteps.forEach(v => frm.append('cook_order_step', v));
+
+			frm.delete('cook_description');
+			cookDescs.forEach(v => frm.append('cook_description', v));
+
+			frm.delete('order_tip');
+			orderTips.forEach(v => frm.append('order_tip', v));
+
+			frm.delete('timerh');
+			timerH.forEach(v => frm.append('timerh', v));
+
+			frm.delete('timerm');
+			timerM.forEach(v => frm.append('timerm', v));
+
+			frm.delete('timers');
+			timerS.forEach(v => frm.append('timers', v));
+
+			frm.delete('cook_original_filename');
+			cookPhotos.forEach(v => frm.append('cook_original_filename', v));
+
+			// 5. 썸네일 공백 보정
+			const thumbInput = document.getElementById('thumb-file');
+			if (thumbInput && thumbInput.files && thumbInput.files.length > 0) {
+				frm.set('r_orgimgname', thumbInput.files[0]);
+			} else {
+				frm.set('r_orgimgname', ' ');
+			}
+
+			// 6. 요리 완성 사진 3장 공백 보정
+			frm.delete('rcp_original_file_name');
+			['cookend-img1', 'cookend-img2', 'cookend-img3'].forEach(function(id) {
+				const el = document.getElementById(id);
+				if (el && el.files && el.files.length > 0) {
+					frm.append('rcp_original_file_name', el.files[0]);
+				} else {
+					frm.append('rcp_original_file_name', ' ');
+				}
+			});
+
+			// 이후 $.ajax 또는 fetch로 frm 전송
+		}// if (num == 1) {
+		else if (num == 2 || num == 3) {
+			if (!validatePublicRecipe()) {
+				return;
+			}
+
+			const frm = new FormData(document.addFrm);
+			frm.set('paid_check', paidCheck);
+
+			const bundleOrders = [];
+			$('.bundle-box').each(function(idx) {
+				bundleOrders.push(String(idx + 1));
+			});
+			frm.delete('ingredient_bundle_order');
+			bundleOrders.forEach(v => frm.append('ingredient_bundle_order', v));
+
+			const cookOrderSteps = [];
+			$('.step-card').each(function(idx) {
+				cookOrderSteps.push(String(idx + 1));
+			});
+			frm.delete('cook_order_step');
+			cookOrderSteps.forEach(v => frm.append('cook_order_step', v));
+
+			// 이후 $.ajax 또는 fetch로 frm 전송
+		}
+	}
 	
+	function refreshIngredientSortables() {
+		if ($ingredientSection.hasClass('ui-sortable')) {
+			$ingredientSection.sortable('refresh');
+		}
+		$('.ingredient-list.ui-sortable').each(function () {
+			$(this).sortable('refresh');
+		});
+	}
+	
+	function initIngredientRowSortable($target) {
+		const $lists = $target ? $target.find('.ingredient-list') : $('.ingredient-list');
+		$lists.each(function(){
+			const $list = $(this);
+			if ($list.hasClass('ui-sortable')) {
+				$list.sortable('refresh');
+			} else {
+				$list.sortable({
+					items: '> .ingredient-row',
+					handle: '.drag-handle',
+					cancel: 'input, textarea, select, .btn-remove, .btn-remove-bundle',
+					axis: 'y',
+					cursor: 'move',
+					opacity: 0.8,
+					placeholder: 'ingredient-placeholder',
+					tolerance: 'pointer'
+				});
+			}
+		});
+	}
 /*]]>*/
 </script>
-
 </head>
 <body>
 
     <div class="container">
     <h1 class="page-title">레시피 등록</h1>
 
-    <form action="#" method="post">
+    <form name="addFrm" enctype="multipart/form-data" method="post">
+    <!-- CSRF 가 활성화된 경우 CSRF 토큰 설정하기 
+		<input type="hidden"
+     	       th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}" /> -->
+      <input type="hidden" name="paid_check" id="paid_check" value="무료">
       <!-- 1. 상단 기본 정보 & 썸네일 -->
       <section class="form-section top-section">
         <div class="top-body" style="display: flex; gap: 24px;">
           <div class="top-left" style="flex: 1.4;">
             <div>
               <label for="recipe-title">레시피 제목</label>
-              <input type="text" id="recipe-title" placeholder="예) 소고기 미역국 끓이기">
+              <input type="text" name="r_subject" id="recipe-title" placeholder="예) 소고기 미역국 끓이기">
             </div>
             <div>
               <label for="recipe-intro">레시피 소개</label>
-              <textarea id="recipe-intro" rows="4" placeholder="이 레시피의 탄생배경을 적어주세요."></textarea>
+              <textarea id="recipe-intro" name="r_intro" rows="4" placeholder="이 레시피의 탄생배경을 적어주세요."></textarea>
             </div>
             <div>
               <label for="recipe-url">레시피 URL</label>
-              <input type="url" id="recipe-url" placeholder="레시피 동영상 등록은 유튜브만 가능합니다 https://까지 다 넣어주세요.">
+              <input type="url" name="r_url" id="recipe-url" placeholder="레시피 동영상 등록은 유튜브만 가능합니다 https://까지 다 넣어주세요.">
             </div>
             <div>
               <label for="recipe-tags">태그</label>
-              <input type="text" id="recipe-tags" placeholder="예) #미역국 #생일상 #초간단">
+              <input type="text" name="tag_name" id="recipe-tags" placeholder="예) #미역국 #생일상 #초간단">
             </div>
           </div>
 
           <div class="top-right" style="flex: 1;">
             <div class="upload-box" onclick="document.getElementById('thumb-file').click()">
               썸네일
-              <input type="file" id="thumb-file" accept=".png, .jpg" hidden>
+              <input type="file" name="r_orgimgname" id="thumb-file" accept=".png, .jpg" hidden>
             </div>
-            <div class="upload-box" onclick="document.getElementById('video-thumb-file').click()">
+            <div class="upload-box">
               동영상 썸네일
-              <input type="file" id="video-thumb-file" accept="image/*" hidden>
             </div>
           </div>
         </div>
@@ -313,29 +639,33 @@
         <h2 class="section-heading">재료 꾸러미</h2>
         <div class="bundle-box">
           <div class="bundle-header">
-            <input type="text" placeholder="재료꾸러미명 (예: 주재료, 양념장)">
+            <span class="bundle-handle" title="꾸러미 순서 변경">☰</span>
+            <input type="text" name="ingredient_bundle_name" placeholder="재료꾸러미명 (예: 주재료, 양념장)" class="ingredientname">
           </div>
 
           <div class="ingredient-list">
             <div class="ingredient-row first-ingredient">
-              <input type="text" placeholder="음식명">
-              <input type="text" placeholder="수량">
-              <input type="text" placeholder="단위">
-              <input type="text" placeholder="비고">
+              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+              <input type="text" name="ing_note" placeholder="비고">
               <button type="button" class="btn-remove">X</button>
             </div>
             <div class="ingredient-row">
-              <input type="text" placeholder="음식명">
-              <input type="text" placeholder="수량">
-              <input type="text" placeholder="단위">
-              <input type="text" placeholder="비고">
+              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+              <input type="text" name="ing_note" placeholder="비고">
               <button type="button" class="btn-remove">X</button>
             </div>
             <div class="ingredient-row">
-              <input type="text" placeholder="음식명">
-              <input type="text" placeholder="수량">
-              <input type="text" placeholder="단위">
-              <input type="text" placeholder="비고">
+              <button type="button" class="drag-handle" title="드래그하여 순서 변경" aria-label="순서 변경">⋮⋮</button>
+              <input type="text" name="ingredient_name" placeholder="음식명" class="ingredient-a">
+              <input type="text" name="quantity" placeholder="수량" class="ingredient-b">
+              <input type="text" name="unit" placeholder="단위" class="ingredient-c">
+              <input type="text" name="ing_note" placeholder="비고">
               <button type="button" class="btn-remove">X</button>
             </div>
           </div>
@@ -355,27 +685,28 @@
         <h2 class="section-heading">요리 순서</h2>
 
         <div class="step-card">
+          <span class="bundle-handle" title="순서 변경" style="margin-bottom:10px;">☰</span>
           <div class="step-desc">
-            <textarea rows="4" placeholder="요리설명을 입력하세요."></textarea>
+            <textarea rows="4" name="cook_description" placeholder="요리설명을 입력하세요." class="cookex"></textarea>
           </div>
 
-          <div class="step-photo-box">
-            사진
+          <div class="step-photo-box" onclick="document.getElementById('cook-img').click()">
+          	요리사진
+            <input type="file" name="cook_original_filename" id="cook-img" class="step-photo-input" accept="image/*" hidden>
           </div>
 
           <div class="step-sub-inputs">
-            <input type="text" class="step-tip-input" placeholder="요리팁">
-            <!-- 시/분/초 개별 입력 영역 -->
+            <input type="text" name="order_tip" class="step-tip-input" placeholder="요리팁">
             <div class="step-timer-group">
-              <input type="number" min="0" max="99" placeholder="0"><span>시</span>
-              <input type="number" min="0" max="59" placeholder="0"><span>분</span>
-              <input type="number" min="0" max="59" placeholder="0"><span>초</span>
-            </div> <!--/* shef시에만 나오게끔 설정하기 */-->
+              <input type="number" name="timerh" min="0" max="99" placeholder="0"><span>시</span>
+              <input type="number" name="timerm" min="0" max="59" placeholder="0"><span>분</span>
+              <input type="number" name="timers" min="0" max="59" placeholder="0"><span>초</span>
+            </div>
           </div>
         </div>
 
         <div class="center-btn-wrap">
-          <button type="button" class="btn-wide">요리순서 추가</button>
+          <button type="button" class="btn-wide" id="btn-addcook">요리순서 추가</button>
         </div>
       </section>
 
@@ -383,16 +714,25 @@
       <section class="form-section">
         <h2 class="section-heading">요리 완성 사진</h2>
         <div class="complete-photos" style="margin-bottom: 0;">
-          <div class="complete-photo-box">요리완성<br>사진</div>
-          <div class="complete-photo-box">요리완성<br>사진</div>
-          <div class="complete-photo-box">요리완성<br>사진</div>
+          <div class="complete-photo-box" onclick="document.getElementById('cookend-img1').click()">
+          	요리완성<br>사진
+          	<input type="file" name="rcp_original_file_name" id="cookend-img1" class="step-photo-input" accept="image/*" hidden>
+          </div>
+          <div class="complete-photo-box" onclick="document.getElementById('cookend-img2').click()">
+          	요리완성<br>사진
+          	<input type="file" name="rcp_original_file_name" id="cookend-img2" class="step-photo-input" accept="image/*" hidden>
+          </div>
+          <div class="complete-photo-box" onclick="document.getElementById('cookend-img3').click()">
+          	요리완성<br>사진
+          	<input type="file" name="rcp_original_file_name" id="cookend-img3" class="step-photo-input" accept="image/*" hidden>
+          </div>
         </div>
       </section>
 
       <!-- 6. 요리팁/주의사항 -->
       <section class="form-section final-tip-section">
         <h2 class="section-heading">요리팁 / 주의사항</h2>
-        <textarea rows="5" placeholder="요리팁/주의사항을 입력하세요."></textarea>
+        <textarea rows="5" name="tip_caution" placeholder="요리팁/주의사항을 입력하세요."></textarea>
       </section>
 
       <!-- 7. 하단 액션 버튼 -->
