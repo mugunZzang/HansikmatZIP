@@ -12,6 +12,16 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+
+import com.spring.app.member.kth.service.CustomUserDetailsService_kth;
+import com.spring.app.member.kth.security.JwtAuthenticationFilter_kth;
 import jakarta.servlet.DispatcherType;
 
 @Configuration        // Spring 컨테이너가 처리해주는 클래스로서,
@@ -65,6 +75,50 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     
+    
+    
+    
+ // 사용자 로그인 인증을 처리하기 위한 AuthenticationManager 빈 등록
+    @Bean
+    public AuthenticationManager authenticationManager(
+            CustomUserDetailsService_kth customUserDetailsService) {
+
+        DaoAuthenticationProvider authenticationProvider =
+                new DaoAuthenticationProvider(customUserDetailsService);
+
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+
+        return new ProviderManager(authenticationProvider);
+
+    }
+
+
+    // JWT 필터가 서블릿 필터로 중복 등록되는 것을 방지하기
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter_kth> jwtFilterRegistration(
+            JwtAuthenticationFilter_kth jwtAuthenticationFilter) {
+
+        FilterRegistrationBean<JwtAuthenticationFilter_kth> registration =
+                new FilterRegistrationBean<>(jwtAuthenticationFilter);
+
+        registration.setEnabled(false);
+
+        return registration;
+
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
  // == 인증 실패시 401 에러 관련 예외처리(유효한 자격증명을 제공하지 않고 접근하려 할때 발생하는 에러이며 에러번호가 401임) == //  
     @Bean
     AuthenticationEntryPoint customAuthenticationEntryPoint() {
@@ -87,8 +141,11 @@ public class SecurityConfig {
     
     // SecurityFilterChain은 Spring Security에서 HTTP 요청을 처리하는 보안 필터들의 체인(순서 있는 목록)을 정의하는 인터페이스이다. 
     // 간단히 말해, 어떤 요청이 들어왔을 때 어떤 보안 필터들이 적용될지를 결정하는 역할을 하는 것이다.
+    
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            JwtAuthenticationFilter_kth jwtAuthenticationFilter) throws Exception {
     	/*
         CORS란?
          - HTTP 요청은 기본적으로 Cross-Site HTTP Requests 가 사용가능하다. 
@@ -196,10 +253,10 @@ public class SecurityConfig {
                        https://codevang.tistory.com/282
          */
         
-        String[] excludeUri = {"/test/**",
-        						"/security/everybody",  
-        						"/chef/chef_list",
-                             }; 
+    String[] excludeUri = {"/test/**",
+                       "/security/everybody",
+                       "/chef/chef_list",
+                     };
     	
         http
            .authorizeHttpRequests((auth) -> auth
@@ -236,7 +293,9 @@ public class SecurityConfig {
         		   //  permitAll() 은 "필터는 타지만 인증 검사만 안 한다"는 의미이고, ignoring() 은 "아예 필터를 타지 않는다"는 의미이다. 
         		   //  그래서 정적 리소스 허용은 permitAll() 도 가능하지만 우리는 아래에 ignoring() 을 사용하였다. 
         		   
-
+	// 관리자 전용 페이지 및 요청 접근 제한
+.requestMatchers("/km/admin/**",
+                 "/admin/**").hasRole("ADMIN")
         		   .anyRequest().permitAll()
  
 			);
@@ -260,6 +319,23 @@ public class SecurityConfig {
 	        ); // 동일한 사이트 주소를 가지는 src 의 iframe 만 동작하도록 허용해주는 것이다.
         
         
+        
+     // JWT와 세션을 함께 사용하기 위한 설정
+        http
+            .sessionManagement((sessionConfig) -> sessionConfig
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            );
+
+        // JWT 인증 필터 등록하기
+        http.addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class
+        );  
+        
+        
+        
+        
+        
 		return http.build();    // 메서드로 빈을 생성하는 것이므로 return 해줘야 한다.
     }
     
@@ -276,6 +352,7 @@ public class SecurityConfig {
                                  "/fullcalendar_5.10.1/**",
                                  "/Highcharts-10.3.1/**",
                                  "/images/**", 
+                                 "/profileimage/**",
                                  "/js/**", 
                                  "/smarteditor/**");  
     }
