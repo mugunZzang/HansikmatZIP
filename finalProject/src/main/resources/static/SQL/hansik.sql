@@ -26,7 +26,7 @@ create table tbl_user
 ,constraint UQ_TBL_USER_USERID  unique(userid)
 ,constraint UQ_TBL_USER_EMAIL  unique(email)
 );
-desc tbl_user;
+
 
 -- 회원 테이블 시퀀스
 create sequence seq_userseq;
@@ -406,25 +406,25 @@ create table tbl_search_rank
 ,constraint FK_tbl_search_rank_fk_searchseq foreign key (fk_searchseq) references tbl_searchname(searchseq)
 );
 
-insert into tbl_user(userseq, userid, passwd, name, nickname, email, mobile, email_checked, summary, profile_orgfilename, profile_sysfilename)
-values(SEQ_USERSEQ.nextval, 'admin_knowhow', '1234', '관리자', '장금이의 비법', 'admin1@test.com', '010-1234-1234', 1, null, null, 'default.png');
-commit;
-
-
 
 select * from tab;
 select * from user_sequences;
 select * from EMBEDDING_TEXT_RECIPE;
 
-admin_knowhow
 
-select * from tbl_user;
-SELECT * FROM  TBL_RECIPE;
+-- >>> refresh 토큰 테이블 생성하기 <<< --
+CREATE TABLE tbl_refreshtoken
+(fk_userseq      NUMBER       NOT NULL
+,rt_value        VARCHAR2(64) NOT NULL
+,CONSTRAINT PK_refreshtoken_userseq PRIMARY KEY(fk_userseq)
+,CONSTRAINT FK_refreshtoken_userseq FOREIGN KEY(fk_userseq)
+ REFERENCES tbl_user(userseq) ON DELETE CASCADE
+);
+SELECT fk_userseq, LENGTH(rt_value) AS hash_length
+FROM tbl_refreshtoken;
 
-nickname, profile_sysfilename
+SELECT fk_userseq, rt_value
+FROM tbl_refreshtoken;
 
-
-select * from tbl_event;
-select * from tbl_entry;
-
-select * from tbl_event;
+SELECT * FROM tbl_refreshtoken
+WHERE fk_userseq = 63;
