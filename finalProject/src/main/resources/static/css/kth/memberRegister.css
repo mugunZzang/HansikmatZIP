@@ -1,0 +1,230 @@
+@charset "UTF-8";
+
+
+
+/* 회원가입 전체 컨테이너 */
+.register-container {
+     background-color: white;
+     border-radius: 35px;
+     max-width: 1125px;
+     margin: 0 auto;
+     padding: 30px 20px 45px;
+     text-align: center;
+}
+
+/* 회원가입 제목 */
+.register-title {
+    font-size: 27px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+/* 회원가입 설명 */
+.register-desc {
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #888888;
+}
+
+/* 회원가입 폼 박스 */
+.register-box {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 35px;
+    background-color: #ffffff;
+    border: 1px solid #e2e2e2;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+/* 항목명 + 입력창 + 버튼 */
+.register-row {
+    display: grid;
+    grid-template-columns: 90px 400px 150px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    justify-content:center;
+   
+    
+}
+
+/* 이름, 닉네임 등의 항목명 */
+.register-row > label {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222222;
+}
+
+/* 아이콘과 입력창을 감싸는 영역 */
+.register-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+/* 입력창 아이콘 */
+.register-input-wrap > i {
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 17px;
+    color: #203681;
+}
+
+/* 실제 입력창 */
+.register-input {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 13px;
+    color: #333333;
+    box-sizing: border-box;
+    
+}
+
+/* 입력창 안내 문구 */
+.register-input::placeholder {
+    color: #999999;
+}
+
+/* 입력창 클릭 시 */
+.register-input-wrap:focus-within {
+    border-color: #203681;
+    box-shadow: 0 0 0 3px rgba(32, 54, 129, 0.08);
+}
+
+
+
+
+/* 아이디,비밀번호 입력 영역 */
+.register-id-wrap,
+.register-password-wrap {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 0;
+    
+}
+
+.register-id-wrap .register-input,
+.register-password-wrap .register-input {
+    height: 24px;
+}
+
+/* 아이디,비밀번호 조건 안내 */
+.register-input-guide {
+    display: block;
+    font-size: 11px;
+    color: #999999;
+    line-height: 1.6;
+    text-align: left;  
+    margin: 0;         
+    padding: 0;        
+    
+}
+
+/* 중복확인 및 인증 버튼 영역 */
+.register-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+/* 중복확인 및 인증 버튼 */
+.register-check-btn {
+    height: 30px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #64748B;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.register-check-btn:hover {
+    background-color: #ccd9f1;
+}
+
+/* 하단 버튼 영역 */
+.register-bottom-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* 뒤로가기 및 회원가입 버튼 공통 */
+#backBtn,
+#memberRegisterBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* 뒤로가기 버튼 */
+#backBtn {
+    border: 1px solid #64748B;
+    background-color: #ffffff;
+    color: #64748B;
+}
+
+#backBtn:hover {
+    background-color: #f1f5f9;
+}
+
+/* 회원가입 버튼 */
+#memberRegisterBtn {
+    border: none;
+    background-color: #1E3A8A;
+    color: #ffffff;
+}
+
+#memberRegisterBtn:hover {
+    background-color: #16275f;
+}
+
+.register-error {
+    display: block;
+    color: #c62828;
+    font-size: 12px;
+    grid-column: 2 / 4;
+    text-align: left;
+    margin-top: -6px;
+    padding-left: 5px;
+}
+
+.register-error[hidden] {
+    display: none;
+}
+
+
+        

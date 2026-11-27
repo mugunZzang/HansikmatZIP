@@ -1,0 +1,173 @@
+@charset "UTF-8";
+
+
+        /* 흰색 로그인 영역 */
+        .login-container {
+            background-color: white;
+            border-radius: 35px;
+            max-width: 1125px;
+            margin: 0 auto;
+            padding: 30px 20px 45px;
+            text-align: center;
+           
+        }
+
+        /* 로그인 제목 */
+        .login-title {
+            font-size: 27px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .login-description {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* 로그인 입력 폼 */
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            text-align: left;
+        }
+
+        /* 아이디, 비밀번호 입력창 */
+        .login-input-wrap {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .login-input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1e3a8a;
+            font-size: 17px;
+        }
+
+        .login-input {
+            width: 100%;
+            height: 43px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 0 15px 0 43px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .login-input:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 3px rgba(0,100,40,0.2);
+        }
+
+        /* 아이디 저장 */
+        .login-save {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 10px 0 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .login-save input {
+            accent-color: #1e3a8a;
+        }
+
+        /* 일반 로그인 버튼 */
+        #btnLOGIN {
+            width: 100%;
+            height: 43px;
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #btnLOGIN:hover {
+            background-color: #000080;
+        }
+
+        /* 아이디 찾기, 비밀번호 찾기, 회원가입 */
+        .login-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+            gap: 10px;
+        }
+
+        .login-links a {
+            color: #888;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .login-links a:hover {
+            color: #000080;
+        }
+
+        .login-links span {
+            color: #ddd;
+            font-size: 11px;
+        }
+
+        /* 또는 구분선 */
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 23px 0 20px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        /* 카카오 로그인 */
+        #btnKakaoLogin {
+            width: 100%;
+            height: 43px;
+            background-color: #FEE500;
+            color: #191919;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #btnKakaoLogin:hover {
+            background-color: #f5dc00;
+        }
+
+        .kakao-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        

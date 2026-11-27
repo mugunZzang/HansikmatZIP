@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="member_kth">
+
+
+ <!-- 아이디 중복검사 -->
+    <select id="idDuplicateCheck"
+            parameterType="String"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM tbl_user
+        WHERE userid = #{userid}
+
+    </select>
+
+
+    <!-- 닉네임 중복검사 -->
+    <select id="nicknameDuplicateCheck"
+            parameterType="String"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM tbl_user
+        WHERE nickname = #{nickname}
+
+    </select>
+
+
+    <!-- 이메일 중복검사 -->
+    <select id="emailDuplicateCheck"
+            parameterType="String"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM tbl_user
+        WHERE email = #{email}
+
+    </select>
+    
+    
+
+	<!-- 회원가입 -->
+<insert id="memberRegister"
+        parameterType="com.spring.app.member.kth.domain.MemberDTO_kth">
+
+    <selectKey keyProperty="userseq"
+               resultType="long"
+               order="BEFORE">
+        SELECT seq_userseq.nextval FROM dual
+    </selectKey>
+
+    INSERT INTO tbl_user
+    (userseq, userid, passwd, name, nickname,
+     email, mobile, email_checked)
+    VALUES
+    (#{userseq}, #{userid}, #{passwd}, #{name}, #{nickname},
+     #{email}, #{mobile}, 1)
+
+</insert>
+
+<!-- 일반회원 권한 부여 -->
+<insert id="insertAuthority" parameterType="long">
+    INSERT INTO tbl_authorities
+    (authseq, fk_userseq, authority)
+    VALUES
+    (seq_authseq.nextval, #{userseq}, 'ROLE_USER')
+</insert>
+
+
+<!-- 로그인할 회원정보 조회하기 -->
+<select id="findByUsername"
+        parameterType="String"
+        resultType="com.spring.app.member.kth.domain.MemberDTO_kth">
+
+    SELECT userseq, userid, passwd, name, nickname,
+           email, mobile, email_checked
+    FROM tbl_user
+    WHERE userid = #{userid}
+
+</select>
+
+
+<!-- 로그인할 회원의 권한 조회하기 -->
+<select id="authorityList"
+        parameterType="long"
+        resultType="String">
+
+    SELECT authority
+    FROM tbl_authorities
+    WHERE fk_userseq = #{userseq}
+
+</select>
+
+<!-- Refresh Token 저장하기 -->
+<update id="saveRefreshToken" parameterType="map">
+
+    MERGE INTO tbl_refreshtoken T
+    USING dual
+    ON (T.fk_userseq = #{userseq})
+
+    WHEN MATCHED THEN
+        UPDATE SET T.rt_value = #{rt_value}
+
+    WHEN NOT MATCHED THEN
+        INSERT (fk_userseq, rt_value)
+        VALUES (#{userseq}, #{rt_value})
+
+</update>
+
+
+<!-- Refresh Token 조회하기 -->
+<select id="findRefreshToken"
+        parameterType="long"
+        resultType="String">
+
+    SELECT rt_value
+    FROM tbl_refreshtoken
+    WHERE fk_userseq = #{userseq}
+
+</select>
+
+
+<!-- Refresh Token 갱신하기 -->
+<update id="updateRefreshToken" parameterType="map">
+
+    UPDATE tbl_refreshtoken
+    SET rt_value = #{rt_value}
+    WHERE fk_userseq = #{userseq}
+    AND rt_value = #{old_rt_value}
+
+</update>
+
+
+<!-- Refresh Token 삭제하기 -->
+<delete id="deleteRefreshToken" parameterType="map">
+
+    DELETE FROM tbl_refreshtoken
+    WHERE fk_userseq = #{userseq}
+    AND rt_value = #{rt_value}
+
+</delete>
+
+</mapper>
