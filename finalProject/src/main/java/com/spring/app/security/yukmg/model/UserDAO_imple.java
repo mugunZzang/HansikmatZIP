@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,26 +24,16 @@ public class UserDAO_imple implements UserDAO {
 	
 	private final AES256 aes256;
 	
-	// 쉐프 랭킹
+	// 총 셰프 수 조회 (페이징 계산용)
 	@Override
-	public List<UserDTO> getChefRanking(String sortType) {
-				
-		List<UserDTO> userDTOList = sqlsession.selectList("chef.getChefRanking", sortType);
-	      
-		List<UserDTO> list = null;
-	      
-      if(userDTOList != null) {
-         
-         list = new ArrayList<>();
-         
-         for(UserDTO userDTO : userDTOList) {
-              
-              list.add(userDTO);
-         }// end of for-----------------
-         
-      }
-      
-      return list;
+	public int getTotalChefCount() {
+	    return sqlsession.selectOne("chef.getTotalChefCount");
+	}
+
+	// 셰프 랭킹 페이징 목록 조회
+	@Override
+	public List<UserDTO> getChefRanking(Map<String, String> paraMap) {
+	    return sqlsession.selectList("chef.getChefRanking", paraMap);
 	}
 
 }

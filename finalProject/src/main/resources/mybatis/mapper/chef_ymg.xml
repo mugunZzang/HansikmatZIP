@@ -5,47 +5,65 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="chef">
 
-	<select id="getChefRanking" resultType="UserDTO">
+	<!-- 1. 총 셰프 수 조회 (페이징 계산용) -->
+	<select id="getTotalChefCount" resultType="int">
+	    SELECT COUNT(*)
+	      FROM tbl_user U
+	      JOIN tbl_authorities A
+	        ON U.userseq = A.fk_userseq
+	     WHERE A.authority = 'ROLE_CHEF'
+	</select>
+
+	<!-- 2. 셰프 목록 페이징 조회 -->
+	<select id="getChefRanking" parameterType="HashMap" resultType="UserDTO">
 	
-        SELECT U.userseq
-		     , U.userid
-		     , U.name
-		     , U.nickname
-		     , U.summary
-		     , U.profile_orgfilename
-		     , NVL(U.profile_sysfilename, 'default.png') AS profile_sysfilename
-		     , (SELECT COUNT(*) 
-		          FROM tbl_recipe R 
-		         WHERE R.fk_userseq = U.userseq) AS recipe_count
-		     , (SELECT COUNT(DISTINCT SR.fk_recipeseq || '-' || SF.fk_userseq)
-		          FROM tbl_recipe R
-		          JOIN tbl_scrap_recipe SR
-		            ON R.recipeseq = SR.fk_recipeseq
-		          JOIN tbl_scrap_folder SF
-		            ON SR.fk_folderseq = SF.folderseq
-		         WHERE R.fk_userseq = U.userseq
-		           AND SF.fk_userseq != U.userseq) AS total_scrap_count
-		     , (SELECT COUNT(*)
-		          FROM tbl_follow F
-		         WHERE F.following_userseq = U.userseq) AS follower_count
-		     , (SELECT NVL(SUM(R.r_views), 0)
-		          FROM tbl_recipe R
-		         WHERE R.fk_userseq = U.userseq) AS total_views
-		  FROM tbl_user U
-		  JOIN tbl_authorities A
-		    ON U.userseq = A.fk_userseq
-		 WHERE A.authority = 'ROLE_CHEF'
-		 <choose>
-		     <when test="sortType == 'views'">
-		         ORDER BY total_views DESC, follower_count DESC, U.userseq ASC
-		     </when>
-		     <when test="sortType == 'scrap'">
-		         ORDER BY total_scrap_count DESC, follower_count DESC, U.userseq ASC
-		     </when>
-		     <otherwise>
-		         ORDER BY follower_count DESC, total_scrap_count DESC, recipe_count DESC, U.userseq ASC
-		     </otherwise>
-		 </choose>
+        SELECT *
+	      FROM (
+	            SELECT ROWNUM AS rnum
+	                 , T.*
+	              FROM (
+	                    SELECT U.userseq
+	                         , U.userid
+	                         , U.name
+	                         , U.nickname
+	                         , U.summary
+	                         , U.profile_orgfilename
+	                         , NVL(U.profile_sysfilename, 'default.png') AS profile_sysfilename
+	                         , (SELECT COUNT(*) 
+	                              FROM tbl_recipe R 
+	                             WHERE R.fk_userseq = U.userseq) AS recipe_count
+	                         , (SELECT COUNT(DISTINCT SR.fk_recipeseq || '-' || SF.fk_userseq)
+	                              FROM tbl_recipe R
+	                              JOIN tbl_scrap_recipe SR
+	                                ON R.recipeseq = SR.fk_recipeseq
+	                              JOIN tbl_scrap_folder SF
+	                                ON SR.fk_folderseq = SF.folderseq
+	                             WHERE R.fk_userseq = U.userseq
+	                               AND SF.fk_userseq != U.userseq) AS total_scrap_count
+	                         , (SELECT COUNT(*)
+	                              FROM tbl_follow F
+	                             WHERE F.following_userseq = U.userseq) AS follower_count
+	                         , (SELECT NVL(SUM(R.r_views), 0)
+	                              FROM tbl_recipe R
+	                             WHERE R.fk_userseq = U.userseq) AS total_views
+	                      FROM tbl_user U
+	                      JOIN tbl_authorities A
+	                        ON U.userseq = A.fk_userseq
+	                     WHERE A.authority = 'ROLE_CHEF'
+	                     <choose>
+	                         <when test="sortType == 'views'">
+	                             ORDER BY total_views DESC, follower_count DESC, U.userseq ASC
+	                         </when>
+	                         <when test="sortType == 'scrap'">
+	                             ORDER BY total_scrap_count DESC, follower_count DESC, U.userseq ASC
+	                         </when>
+	                         <otherwise>
+	                             ORDER BY follower_count DESC, total_scrap_count DESC, recipe_count DESC, U.userseq ASC
+	                         </otherwise>
+	                     </choose>
+	                   ) T
+	           )
+	     WHERE rnum BETWEEN #{startRno} AND #{endRno}
 		 
     </select>
 

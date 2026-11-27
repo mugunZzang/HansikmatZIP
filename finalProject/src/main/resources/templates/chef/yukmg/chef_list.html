@@ -157,7 +157,7 @@
 		 
 		 $(document).on("click", ".sort-btn", function() {
 		    const sortType = $(this).data("sort"); // 'follower', 'views', 'scrap'
-		    location.href = `/hansikmatzip/chef/chef_list?sortType=${sortType}`; // 실제 매핑 URL에 맞게 수정
+		    location.href = `/hansikmatzip/chef/chef_list?tab=ranking&sortType=${sortType}&currentShowPageNo=1`;
 		});
 	 /*]]>*/	
 	</script>
@@ -232,7 +232,8 @@
 					
 						<!-- /* 쉐프 카드 */ -->
 						<li th:each="dto, status: ${userDTOList}" class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
-							<span class="ranking-num fs-3 fw-semibold" th:text="${status.count}">1</span>
+							<span class="ranking-num fs-3 fw-semibold" 
+								th:text="${(currentShowPageNo - 1) * sizePerPage + status.count}">1</span>
 							<div class="profile-zone">
 								<a href="#">
 									<img alt="프사" th:src="@{/profileimage/{filename}(filename=${dto.profile_sysfilename})}" class="profile-photo">
@@ -269,10 +270,42 @@
 									</ul>
 								</div>
 							</div>
-						</li>
-						
-						
+						</li>						
 					</ul>
+					
+					<!-- /* 페이지내이션 */ -->
+					<nav aria-label="셰프 랭킹 페이지네이션" class="mt-4" th:if="${totalPage > 0}">
+					    <ul class="pagination justify-content-center">
+					
+					        <!-- [맨처음] & [이전 블럭] -->
+					        <li class="page-item" th:classappend="${startPage == 1} ? ' disabled'">
+					            <a class="page-link" th:href="@{/chef/chef_list(tab=${tab}, sortType=${sortType}, currentShowPageNo=1)}">&laquo;</a>
+					        </li>
+					        <li class="page-item" th:classappend="${startPage == 1} ? ' disabled'">
+					            <a class="page-link" th:href="@{/chef/chef_list(tab=${tab}, sortType=${sortType}, currentShowPageNo=${startPage - 1})}">&lsaquo;</a>
+					        </li>
+					
+					        <!-- 페이지 번호 반복 -->
+					        <li class="page-item" 
+					            th:each="page : ${#numbers.sequence(startPage, endPage)}"
+					            th:classappend="${page == currentShowPageNo} ? ' active'">
+					            <a class="page-link" 
+					               th:text="${page}" 
+					               th:href="@{/chef/chef_list(tab=${tab}, sortType=${sortType}, currentShowPageNo=${page})}">1</a>
+					        </li>
+					
+					        <!-- [다음 블럭] & [맨마지막] -->
+					        <li class="page-item" th:classappend="${endPage == totalPage} ? ' disabled'">
+					            <a class="page-link" th:href="@{/chef/chef_list(tab=${tab}, sortType=${sortType}, currentShowPageNo=${endPage + 1})}">&rsaquo;</a>
+					        </li>
+					        <li class="page-item" th:classappend="${endPage == totalPage} ? ' disabled'">
+					            <a class="page-link" th:href="@{/chef/chef_list(tab=${tab}, sortType=${sortType}, currentShowPageNo=${totalPage})}">&raquo;</a>
+					        </li>
+					
+					    </ul>
+					</nav>					
+					<!-- /* 페이지내이션 끝 */ -->
+					
 				</div>			
 				<!-- /* 랭킹 리스트 끝 */ -->
 				
