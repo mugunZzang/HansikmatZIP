@@ -29,6 +29,16 @@
 			A.fk_eventseq = #{eventseq}
 		ORDER BY A.entryseq DESC
 	</select>
+	
+	
+	<!-- 이미 참여한 이벤트인지 검사하기 -->
+	<select id="hasUserEnteredEvent" resultType="int">
+		SELECT COUNT(*)
+		FROM tbl_entry
+		WHERE
+			fk_eventseq = #{eventseq} AND fk_userseq = #{userseq}
+	</select>
+
 
 </mapper>
 

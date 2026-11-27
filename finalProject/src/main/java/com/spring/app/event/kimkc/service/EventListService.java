@@ -23,4 +23,7 @@ public interface EventListService {
 	// 페이지별 이벤트 참여 레시피 목록 갖고오기
 	Page<Entry> getPageEntry(int pageNo, int sizePerPage, int eventseq);
 
+	// 이미 참여한 이벤트인지 검사하기
+	int hasUserEnteredEvent(long eventseq, long userseq);
+
 }

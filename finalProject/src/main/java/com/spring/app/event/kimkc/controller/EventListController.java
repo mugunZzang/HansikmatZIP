@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import com.spring.app.event.kimkc.domain.EventListDTO;
 import com.spring.app.event.kimkc.service.EventListService;
 import com.spring.app.kimkc.entity.Entry;
 import com.spring.app.kimkc.entity.Event;
+import com.spring.app.member.kth.domain.CustomUserDetails_kth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,9 @@ public class EventListController {
 	
 	// 이벤트 리스트 불러오기 
 	@GetMapping("list")
-	public ModelAndView list(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView list(ModelAndView mav, 
+							HttpServletRequest request, 
+							@AuthenticationPrincipal CustomUserDetails_kth loginuser) {
 		
 		
 		
@@ -79,6 +83,12 @@ public class EventListController {
 		
 		
 		mav.addObject("eventDtoList", eventDtoList);
+		
+		
+		// TODO: 사용자가 이미 해당 이벤트에 참여했는지 넘겨줘야 함.
+		if(loginuser != null) {
+			System.out.println("로그인중인 사람의 seq" + loginuser.getUserseq());
+		}
 		
 		
 		// 페이지바 만들기
@@ -380,5 +390,44 @@ public class EventListController {
 	}
 	
 	
+	// ===============================================================================================================================================================
+	
+	// 이미 참여한 이벤트인지 검사하기
+	@GetMapping("checkEntry")
+	@ResponseBody
+	public Map<String, Object> checkEntry(
+	        @RequestParam("seq") long eventseq,
+	        @AuthenticationPrincipal CustomUserDetails_kth loginuser) {
+
+	    Map<String, Object> result = new HashMap<>();
+	    boolean alreadyEntered = false;
+
+	    if (loginuser != null) {
+	        int n = service.hasUserEnteredEvent(eventseq, loginuser.getUserseq());
+	        alreadyEntered = n == 1? true:false;
+	    }
+
+	    result.put("alreadyEntered", alreadyEntered);
+	    return result;
+	}
+	
+	
+	
+	// ===============================================================================================================================================================
+	
+	// 내 레시피 불러오기
+	@GetMapping("myrecipes")
+	public String myrecipes(Model model) {
+		
+		// TODO: 로그인정보로부터 userseq를 받아와야 함
+		
+		
+		
+		
+		
+		//myRecipeList로
+		
+		return "";
+	}
 	
 }

@@ -134,4 +134,14 @@ public class EventListService_imple implements EventListService {
 		
 		return page;
 	}
+
+	// ========================================================================================================================
+	
+	
+	// 이미 참여한 이벤트인지 검사하기
+	@Override
+	public int hasUserEnteredEvent(long eventseq, long userseq) {
+		int n = dao.hasUserEnteredEvent(eventseq, userseq);
+		return n;
+	}
 }

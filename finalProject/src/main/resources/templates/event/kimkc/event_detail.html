@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="~{layout/layout_main :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}" 
+<html th:replace="~{layout/kth/layout_main_kth :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::div.container})}" 
       lang="ko" 
       xmlns:th="http://www.thymeleaf.org">
 
@@ -8,7 +8,7 @@
 <title th:text="${event != null ? event.event_subject + ' - 한식맛ZIP' : '제 199회 한식맛ZIP 공모전 - 한식맛ZIP'}">한식맛ZIP</title>
 
 <!--/* Bootstrap CSS */--> 
-<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+<!-- <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}"> -->
 
 <!--/* 커스텀 CSS */-->
 <link rel="stylesheet" type="text/css" th:href="@{/css/kimkc/event/event_detail.css}">
@@ -16,8 +16,8 @@
 <style type="text/css"></style>
 
 <!--/* Optional JavaScript */-->
-<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
-<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+<!-- <script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script> -->
+<!-- <script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script> -->
 
 <script th:inline="javascript">
 /*<![CDATA[*/
@@ -149,6 +149,35 @@ function openEntryModal() {
 	
 	// 쉐프인 사람만 가능하게 권한 검사(나중에)
 	
+	
+	// 이미 참여하였는지 검사하기
+	const jwt = func_getJwt(); // layout_main_kth.html의 공통 함수
+    const eventseq = /*[[${event.eventseq}]]*/ 0;
+	let isAlreadyEntered = false;
+    if (jwt && jwt.accessToken) {
+    	$.ajax({
+            url: ctxPath + 'event/checkEntry',
+            method: 'GET',
+            data: { seq: eventseq },
+            headers: {
+                "Authorization": jwt.grantType + " " + jwt.accessToken
+            },
+            success: function(res) {
+                if (res.alreadyEntered) {
+                    isAlreadyEntered = true;
+                    
+                }
+            }
+        });	
+    }
+    if(isAlreadyEntered) {
+    	alert("이미 참여한 이벤트입니다.");
+		return;
+    }
+	
+    
+    
+    
 	
 	// 내 레시피 목록 불러오기
 	const entryModal = new bootstrap.Modal(document.getElementById('entryModal'));
@@ -400,7 +429,7 @@ function openEntryModal() {
                 <div class="modal-footer border-0 justify-content-center gap-3 pt-4 pb-2">
                     <form id="eventEntryForm" th:action="@{/event/entry}" method="post" class="m-0">
                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
-                        <input type="hidden" name="eventId" th:value="${event != null ? event.eventId : 1}">
+                        <input type="hidden" name="eventId" th:value="${event != null ? event.eventseq : 1}">
                         <input type="hidden" name="recipeId" id="selectedRecipeId" value="">
 
                         <button type="submit"
@@ -412,7 +441,7 @@ function openEntryModal() {
                         </button>
                     </form>
 
-                    <a th:href="@{/recipe/register(eventId=${event != null ? event.eventId : ''})}"
+                    <a th:href="@{/recipe/register(eventId=${event != null ? event.eventseq : ''})}"
                        class="btn btn-dark py-2 px-5 rounded-3 fs-6"
                        style="min-width: 180px;">
                         레시피 신규 등록
