@@ -5,6 +5,7 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="com.spring.app.event.kimkc.model.EventListDAO">
 
+	<!-- 이벤트 상세 정보 -->
 	<select id="getEventDetail" parameterType="int" resultType="kkc_EventListDTO">
 		SELECT
 			eventseq, event_subject, event_startdate, event_enddate,
@@ -14,21 +15,19 @@
 		WHERE eventseq = #{eventseq}
 	</select>
 
-
+	<!-- 이벤트 참여 목록 -->
 	<select id="getEntryList" parameterType="int" resultType="kkc_EntryDTO">
-		<!-- private Long entryseq;
-    		private Long fk_eventseq;
-    		private Long fk_userseq;
-    		private Long fk_recipeseq;
-    		private Integer chk_win; // 1: 당첨, 0: 미당첨
-
-    	// - 조인 조회 및 화면 출력용 추가 필드 -
-    		private String event_subject;
-    		private String nickname;
-    		private String profile_sysfilename;
-    		private String r_subject;
-    		private String r_imgname; -->
-	
+		SELECT 
+			A.entryseq, A.fk_eventseq, A.fk_userseq, A.fk_recipeseq, A.chk_win,
+			B.nickname, B.profile_sysfilename, C.r_subject, C.r_imgname
+		FROM
+			tbl_entry A JOIN tbl_user B
+			ON A.fk_userseq = B.userseq
+			JOIN tbl_recipe C
+			ON A.fk_recipeseq = C.recipeseq
+		WHERE
+			A.fk_eventseq = #{eventseq}
+		ORDER BY A.entryseq DESC
 	</select>
 
 </mapper>

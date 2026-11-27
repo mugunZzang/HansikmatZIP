@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 
 import com.spring.app.event.kimkc.domain.EntryDTO;
 import com.spring.app.event.kimkc.domain.EventListDTO;
+import com.spring.app.kimkc.entity.Entry;
 import com.spring.app.kimkc.entity.Event;
 
 public interface EventListService {
@@ -18,5 +19,8 @@ public interface EventListService {
 
 	// 이벤트 참여 레시피 리스트 가져오기
 	List<EntryDTO> getEntryList(int eventseq);
+
+	// 페이지별 이벤트 참여 레시피 목록 갖고오기
+	Page<Entry> getPageEntry(int pageNo, int sizePerPage, int eventseq);
 
 }
