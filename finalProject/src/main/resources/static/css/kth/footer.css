@@ -1,0 +1,98 @@
+
+/* 푸터 전체 */
+.footer {
+    background-color: #eeeeee;
+    padding: 30px 0 40px;
+}
+
+/* 푸터 큰 흰색 카드 */
+.footer-card {
+    width: 1125px;
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 30px 40px 20px;
+    background-color: white;
+    border-radius: 25px;
+}
+
+/* 회사 정보 + SNS 가로 배치 */
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+/* 회사 정보 */
+.footer-info {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.8;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #555;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+/* SNS */
+.footer-sns {
+    text-align: center;
+}
+
+.footer-sns h3 {
+    font-size: 17px;
+    margin-bottom: 55px;
+}
+
+.sns-list {
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+}
+
+.sns-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #111;
+    font-size: 13px;
+}
+
+.sns-item i {
+    font-size: 32px;
+}
+
+/* 저작권 표시 */
+.footer-copyright {
+    border-top: 1px solid #ddd;
+    margin-top: 25px;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+}
+
+
+/* SNS 이미지 */
+.sns-item img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    display: block;
+}
+
+/* SNS 이미지 마우스 효과 */
+.sns-item img:hover {
+    transform: scale(1.08);
+    transition: transform 0.2s ease;
+}

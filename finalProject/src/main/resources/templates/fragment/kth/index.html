@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/kth/layout_main_kth :: layout(~{::title}, ~{::link}, ~{::style}, ~{::script}, ~{::section})}"
+      lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/* ::title 은   현재 페이지의 title   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 첫번째 파라미터로 전달한다. */-->
+<!--/* ::link  는   현재 페이지의 link    태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 두번째 파라미터로 전달한다. */--> 
+<!--/* ::style 은   현재 페이지의 style   태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 세번째 파라미터로 전달한다. */-->
+<!--/* ::script 는  현재 페이지의 script  태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 네번째 파라미터로 전달한다. */-->
+<!--/* ::section 은 현재 페이지의 section 태그를 읽어다가 templates/layout/layout_main.html 파일의 th:fragment="layout(title, link, css, script, content)" 에 있는 다섯번째 파라미터로 전달한다. */-->
+<!--/* 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. */-->
+
+  
+
+
+<head>
+
+   <!-- 직접 만든 메인 CSS -->
+    <link rel="stylesheet" th:href="@{/css/kth/main.css}">
+    
+    
+<meta charset="UTF-8">
+<title>한식맛ZIP</title>
+<link rel="stylesheet" href="">
+
+<style type="text/css"></style>
+
+<script th:inline="javascript"></script>
+
+</head>
+<body>
+
+
+<!-- 메인 -->
+
+
+<!-- 메인 -->
+<main class="main-container">
+
+    <!-- 1. 오늘의 레시피 -->
+    <section class="recipe-section">
+        <h2 class="section-title">오늘의 레시피</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+    <!-- 2. 최신 레시피 -->
+    <section class="recipe-section">
+        <h2 class="section-title">최신 레시피</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+    <!-- 3. 이벤트 -->
+    <section class="recipe-section">
+        <h2 class="section-title">이벤트</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+    <!-- 4. 이달의 셰프 -->
+    <section class="recipe-section">
+        <h2 class="section-title">이달의 셰프</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+    <!-- 5. 베스트 레시피 -->
+    <section class="recipe-section">
+        <h2 class="section-title">베스트 레시피</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+    <!-- 6. 최근 본 레시피 -->
+    <section class="recipe-section">
+        <h2 class="section-title">최근 본 레시피</h2>
+        <div class="recipe-slider"></div>
+    </section>
+
+</main>
+
+
+
+
+	
+</body>
+</html>
