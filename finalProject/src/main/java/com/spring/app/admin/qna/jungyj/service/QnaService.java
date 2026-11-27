@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
-import com.spring.app.admin.qna.jungyj.domain.QnaDTO;
+import com.spring.app.qna.jungyj.domain.QnaDTO;
 
 public interface QnaService {
 	

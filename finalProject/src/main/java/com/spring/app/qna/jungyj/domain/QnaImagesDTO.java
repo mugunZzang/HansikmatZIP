@@ -1,4 +1,4 @@
-package com.spring.app.admin.qna.jungyj.domain;
+package com.spring.app.qna.jungyj.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

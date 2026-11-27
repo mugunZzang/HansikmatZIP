@@ -69,7 +69,7 @@ public class EventService_imple implements EventService {
 	public void eventRegister(EventDTO eventDto, MultipartFile multipartFile) throws Exception {		
 		// 1. 서버에 파일 저장 및 DTO에 파일명 세팅
 	    if (multipartFile != null && !multipartFile.isEmpty()) {
-	        String serverFileName = updateFile(multipartFile.getBytes(), multipartFile.getOriginalFilename(), eventimageimageDir);
+	        String serverFileName = doFileUpload(multipartFile.getBytes(), multipartFile.getOriginalFilename(), eventimageimageDir);
 	        eventDto.setEvent_image_org_filename(multipartFile.getOriginalFilename());
 	        eventDto.setEvent_image_filename(serverFileName);
 	    }
@@ -332,7 +332,7 @@ public class EventService_imple implements EventService {
 			
 			// 1-1. 파일명이 다르다면 기존 파일 먼저 저장
 			if ( !newOrgFilename.equals(originEvent.getEventImageOrgFilename()) ) {
-		        String serverFileName = updateFile(multipartFile.getBytes(), multipartFile.getOriginalFilename(), eventimageimageDir);
+		        String serverFileName = doFileUpload(multipartFile.getBytes(), multipartFile.getOriginalFilename(), eventimageimageDir);
 		        
 		        
 		        originEvent.setEventImageOrgFilename(newOrgFilename);  // 객체 필드 변화
@@ -378,7 +378,7 @@ public class EventService_imple implements EventService {
 
 	
 	// 첨부파일 업로드 해주는 함수 
-	private String updateFile(byte[] bytes, String originalFilename, String path) {
+	private String doFileUpload(byte[] bytes, String originalFilename, String path) {
 		
 		String fileName = "";
 		try {

@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.spring.app.admin.qna.jungyj.domain.QnaDTO;
 import com.spring.app.admin.qna.jungyj.repository.QnaRepository;
 import com.spring.app.entity.jungyj.Qna;
+import com.spring.app.qna.jungyj.domain.QnaDTO;
 
 import lombok.RequiredArgsConstructor;
 

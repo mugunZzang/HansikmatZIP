@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="com.spring.app.user.qna.jungyj.model.UserQnaDAO">
+
+	<!-- 1. 문의글 등록 (insert 후 qnaDto.qnaseq에 방금 딴 시퀀스 번호가 담김) -->
+	<insert id="insertQna" parameterType="com.spring.app.qna.jungyj.domain.QnaDTO">
+		<!-- order: BEFORE 는 INSERT(태그) SQL문이 동작하기 이전에 작동하는 것
+			 order: AFTER 는 INSERT(태그) SQL문이 동작한 이후에 작동하는 것 
+			
+			 keyProperty 는 DTO에 할당되어야 하므로 필드명을 동일하게 작성	 
+		-->
+	    <selectKey keyProperty="qnaseq" resultType="Integer" order="BEFORE">
+	        SELECT seq_qnaseq.nextval FROM dual
+	    </selectKey>
+	    INSERT INTO tbl_qna (
+	        qnaseq, fk_userseq, qna_subject, qna_content, qna_status, question_date
+	    ) VALUES (
+	        #{qnaseq}, #{fk_userseq}, #{qna_subject}, #{qna_content}, '접수', sysdate
+	    )
+	</insert>
+	
+	<!-- 2. tbl_qna_images 테이블에 채번해온 값을 이용해 Insert -->
+	<insert id="insertQnaImage" parameterType="com.spring.app.qna.jungyj.domain.QnaImagesDTO">
+		INSERT INTO tbl_qna_images(
+			qna_imgseq, fk_qnaseq, qna_orgfilename, qna_sysfilename
+		) VALUES (
+			seq_qna_imgseq.nextval, #{fk_qnaseq}, #{qna_orgfilename}, #{qna_sysfilename}
+		) 
+	</insert>
+	
+</mapper>
+

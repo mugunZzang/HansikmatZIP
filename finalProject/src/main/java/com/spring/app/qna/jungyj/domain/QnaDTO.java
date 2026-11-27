@@ -1,4 +1,4 @@
-package com.spring.app.admin.qna.jungyj.domain;
+package com.spring.app.qna.jungyj.domain;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +26,7 @@ public class QnaDTO {
 
     // 사용자 닉네임 필드(조회용)
     private String nickname;
+    
     
 	// Qna Entity를 통째로 받아서 DTO로 변환하는 생성자(목록 조회용)
 	public QnaDTO(Qna qna) {

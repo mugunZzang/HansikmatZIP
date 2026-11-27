@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.spring.app.admin.qna.jungyj.domain.QnaDTO;
 import com.spring.app.admin.qna.jungyj.service.QnaService;
+import com.spring.app.qna.jungyj.domain.QnaDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

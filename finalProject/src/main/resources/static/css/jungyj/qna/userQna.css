@@ -1,0 +1,130 @@
+@charset "UTF-8";
+
+.qna-wrapper {
+    background-color: #F8FAFC;
+    color: #334155;
+    min-height: 80vh;
+}
+.qna-page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1E3A8A;
+}
+.qna-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.qna-input, .qna-textarea {
+    border: 1px solid #E2E8F0;
+    border-radius: 0.5rem;
+    color: #334155;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.qna-input:focus, .qna-textarea:focus {
+    border-color: #1E3A8A;
+    box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.15);
+}
+.write_tit {
+    height: 60px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+.qna-textarea {
+    height: 360px;
+    resize: vertical;
+    line-height: 1.65;
+}
+/* 이미지 첨부 박스 */
+.upload-box {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border: 2px dashed #CBD5E1;
+    border-radius: 0.75rem;
+    background-color: #F8FAFC;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+.upload-box:hover {
+    border-color: #F97316;
+    background-color: #FFF7ED;
+}
+.upload-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.upload-placeholder {
+    text-align: center;
+    color: #64748B;
+    font-size: 0.85rem;
+}
+.upload-placeholder i {
+    font-size: 1.75rem;
+    color: #94A3B8;
+    margin-bottom: 6px;
+}
+.btn-remove-img {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.75);
+    color: #FFFFFF;
+    border: none;
+    font-size: 0.75rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+/* 브랜드 버튼 */
+.btn-navy {
+    background-color: #1E3A8A;
+    border-color: #1E3A8A;
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: 0.5rem;
+}
+.btn-navy:hover {
+    background-color: #172554;
+    border-color: #172554;
+    color: #FFFFFF;
+}
+.guide-badge {
+    background-color: #FFF7ED;
+    color: #F97316;
+    border: 1px solid #FED7AA;
+    font-weight: 600;
+}
+
+.preview-item {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background-color: #FFFFFF;
+}
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.preview-item .btn-remove-img {
+    display: flex; 
+}
+.upload-box.is-full {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
