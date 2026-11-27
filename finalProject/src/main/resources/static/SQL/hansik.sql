@@ -20,7 +20,7 @@ create table tbl_user
 ,email_checked       NUMBER(1)     default 0      not null   -- 이메일 인증 여부(1: 인증완료, 0:미인증)                
 ,summary             nvarchar2(200)                          -- 자기소개  
 ,profile_orgfilename varchar2(255)                           -- 프로필 원본 파일명
-,profile_sysfilename varchar2(255)                not null   -- 프로필 저장 파일명   
+,profile_sysfilename varchar2(255)                           -- 프로필 저장 파일명   
 ,constraint PK_TBL_USER_USERSEQ primary key(userseq)
 ,constraint UQ_TBL_USER_SOCIAL_userid unique(social_userid)
 ,constraint UQ_TBL_USER_USERID  unique(userid)
@@ -412,7 +412,19 @@ select * from user_sequences;
 select * from EMBEDDING_TEXT_RECIPE;
 
 
+-- >>> refresh 토큰 테이블 생성하기 <<< --
+CREATE TABLE tbl_refreshtoken
+(fk_userseq      NUMBER       NOT NULL
+,rt_value        VARCHAR2(64) NOT NULL
+,CONSTRAINT PK_refreshtoken_userseq PRIMARY KEY(fk_userseq)
+,CONSTRAINT FK_refreshtoken_userseq FOREIGN KEY(fk_userseq)
+ REFERENCES tbl_user(userseq) ON DELETE CASCADE
+);
+SELECT fk_userseq, LENGTH(rt_value) AS hash_length
+FROM tbl_refreshtoken;
 
+SELECT fk_userseq, rt_value
+FROM tbl_refreshtoken;
 
-
-
+SELECT * FROM tbl_refreshtoken
+WHERE fk_userseq = 63;
