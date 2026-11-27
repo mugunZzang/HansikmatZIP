@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> 
+   
+      
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+
+
+<header th:fragment="header">
+
+    <div class="header-top">
+
+        <!-- 로고 -->
+        <div class="logo">
+            <a th:href="@{/index}">
+                <img th:src="@{/images/kth/logo/logo.png}" alt="한식맛ZIP">
+            </a>
+        </div>
+
+        <!-- 검색창 -->
+        <div class="search-box">
+            <input type="text" placeholder="오늘은 무슨 메뉴를 만들어 볼까요?">
+            <button type="button" aria-label="검색">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+
+       
+        <!-- 우측 아이콘 -->
+        <div class="header-icons">
+
+			<a sec:authorize="isAuthenticated()"
+			   href="#" class="icon-circle bell" aria-label="알림">
+			    <i class="fa-solid fa-bell"></i>
+			</a>
+           
+		    
+			<a sec:authorize="isAuthenticated()"
+			   href="#" id="mypageDropdown" class="icon-circle user"
+			   data-bs-toggle="dropdown" aria-expanded="false"
+			   aria-label="마이페이지">
+
+			    <i class="fa-solid fa-circle-user"></i>
+
+			</a>
+		
+		    
+		
+		    <!-- 마이페이지 드롭다운 -->
+			<div sec:authorize="isAuthenticated()"
+			class="dropdown-menu mypage-menu"
+			aria-labelledby="mypageDropdown">
+		
+		        <!-- 프로필 영역 -->
+		        <a class="dropdown-item mypage-profile" href="#">
+		            <i class="fa-solid fa-circle-user"></i>
+		            <span sec:authentication="principal.nickname"></span>
+		        </a>
+		
+		        <div class="mypage-divider"></div>
+		
+		        <!-- 메뉴 영역 -->
+		        <div class="mypage-menu-list">
+		
+		            <a class="dropdown-item" th:href="@{/}">내 활동</a>
+		
+		            <a class="dropdown-item" th:href="@{/}">노트</a>
+		
+		            <a class="dropdown-item" th:href="@{/}">문의하기</a>
+		
+		            <a class="dropdown-item" th:href="@{/}">나만의 냉장고</a>
+		
+		            <a class="dropdown-item" th:href="@{/}">멤버십</a>
+		
+		            <a class="dropdown-item" th:href="@{/}">회원정보수정</a>
+		
+		        </div>
+		
+		        <div class="mypage-divider"></div>
+		
+		        <!-- 로그아웃 영역 -->
+		       <a class="dropdown-item mypage-logout" href="#"
+				   onclick="func_Logout(); return false;">
+				    로그아웃
+				</a>
+		
+		    </div>
+
+
+
+			<a sec:authorize="isAuthenticated()"
+			   href="#" class="icon-circle write" aria-label="글쓰기">
+			    <i class="fa-solid fa-pen-to-square"></i>
+			</a>
+            
+			<a sec:authorize="hasRole('ADMIN')"
+			   th:href="@{/km/admin/admin_index}" class="icon-circle write" aria-label="관리자">
+			    <i class="fa-solid fa-user-gear"></i>
+			</a>
+            
+			<a sec:authorize="isAnonymous()"
+			   th:href="@{/login}" class="icon-circle write" aria-label="로그인">
+			    <i class="fa-sharp fa-solid fa-arrow-right-to-bracket"></i>
+			</a>
+			
+			<a sec:authorize="isAnonymous()"
+			   th:href="@{/memberRegister}" class="icon-circle write" aria-label="회원가입">
+			    <i class="fa-solid fa-user-plus"></i>
+			</a>
+            
+			<a sec:authorize="isAuthenticated()"
+			   href="#" class="icon-circle write" aria-label="로그아웃"
+			   onclick="func_Logout(); return false;">
+			    <i class="fa-sharp fa-solid fa-arrow-right-from-bracket"></i>
+			</a>
+			            
+
+        </div>
+        
+    </div>
+
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <ul>
+            <li><a href="#">분류</a></li>
+            <li><a href="#">랭킹</a></li>
+            <li><a href="#">노하우</a></li>
+            <li><a href="#">이벤트</a></li>
+            <li><a href="#">쉐프</a></li>
+            <li><a href="#">내주변 학원</a></li>
+        </ul>
+    </nav>
+
+</header>
+
+		
+</body>
+</html>

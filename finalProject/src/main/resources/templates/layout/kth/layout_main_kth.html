@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html th:fragment="layout(title, link, css, script, content)"
+      lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/* 타임리프는 백엔드 서버에서 HTML을 동적으로 렌더링하는 용도로 사용된다. */-->
+
+<head>
+<meta charset="UTF-8">
+<!--/* Required meta tags */-->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+
+<meta name="_csrf"
+      th:if="${_csrf != null}"
+      th:content="${_csrf.token}"/>
+
+<meta name="_csrf_header"
+      th:if="${_csrf != null}"
+      th:content="${_csrf.headerName}"/>
+
+<!--/* 1. 맨 위의 layout fragment 의 title 내용으로 교체 되어짐 */-->
+<title th:replace="${title}">한식맛ZIP</title>
+
+<!-- /* 초기화 CSS */ -->
+<link rel="stylesheet" th:href="@{/css/reset.css}">
+
+<!--/* Bootstrap CSS */--> 
+<link rel="stylesheet" type="text/css" th:href="@{/bootstrap-5.3.8-dist/css/bootstrap.min.css}">
+
+<!--/* Font Awesome 6 Icons */-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!-- 공통 CSS -->
+<link rel="stylesheet" th:href="@{/css/kth/common.css}">
+
+<!-- 헤더 CSS -->
+<link rel="stylesheet" th:href="@{/css/kth/header.css}">
+
+
+<!-- 푸터 CSS -->
+<link rel="stylesheet" th:href="@{/css/kth/footer.css}">
+
+
+<!--/* 2. 맨 위의 layout fragment 의 link 내용으로 교체 되어짐 */-->
+<link th:replace="${link}" rel="stylesheet" href="">
+
+<!--/* 3. 맨 위의 layout fragment 의 css 내용으로 교체 되어짐 */-->
+<style th:replace="${css}" type="text/css"></style>
+
+<!--/* Optional JavaScript */-->
+<script type="text/javascript" th:src="@{/js/jquery-4.0.0.js}"></script>
+  
+<script type="text/javascript" th:src="@{/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js}"></script>
+
+<!--/* 4. 맨 위의 layout fragment 의 script 내용으로 교체 되어짐 */-->
+<script th:replace="${script}" th:inline="javascript"></script>
+
+
+</head>
+<body>
+
+	<div id="mycontainer">
+		
+
+		<div id="myheader" th:insert="~{fragment/kth/header :: header}"></div>
+		
+		  <!-- 메인페이지 회색 배경 + 페이지별 본문 -->
+        <div id="mycontent" class="page-container" th:insert="${content}">
+          </div>
+
+		
+		<div id="myfooter" th:insert="~{fragment/kth/footer :: footer}"></div>
+		
+		 <!-- 챗봇 버튼 -->
+        <div id="mychatbot" class="chatbot"
+             th:insert="~{fragment/kth/chatbot :: chatbot}">
+        </div>
+		
+		<!-- TOP 버튼 -->
+		<div id="top" class="top-btn" th:insert="~{fragment/kth/top :: top-btn}"></div>
+	
+		
+		<!--/* 자바스크립트 인라인 */-->
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+    const jwtContextPath = /*[[@{/}]]*/ '';
+
+    // JWT 재발급 요청 중복 방지
+    let jwtReissueRequest = null;
+    
+    // 로그아웃 요청 중복 방지
+    let jwtLogoutInProgress = false;
+
+    // localStorage에 저장된 JWT 가져오기
+    function func_getJwt() {
+
+        const jwt = localStorage.getItem("JWT");
+
+        if(jwt == null) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(jwt);
+        }
+        catch(e) {
+            localStorage.removeItem("JWT");
+            return null;
+        }
+
+    }
+
+
+    // Access Token 만료 여부 확인하기
+    function func_isAccessTokenExpired() {
+
+        const jwt = func_getJwt();
+
+        if(jwt == null) {
+            return true;
+        }
+
+        const bool =
+            Date.now() >= Number(jwt.accessTokenExpiresIn);
+
+        return bool;
+
+    }
+
+
+    // Access Token 재발급하기
+    function func_reissueAccessToken() {
+
+        // 이미 재발급 요청 중이면 기존 요청 사용하기
+        if(jwtReissueRequest != null) {
+            return jwtReissueRequest;
+        }
+
+        const savedJwt = localStorage.getItem("JWT");
+
+        const csrfToken =
+            $("meta[name='_csrf']").attr("content");
+
+        const csrfHeader =
+            $("meta[name='_csrf_header']").attr("content");
+
+        jwtReissueRequest = $.ajax({
+
+            url: jwtContextPath + "auth/reissue",
+            type: "post",
+            dataType: "json",
+
+            beforeSend: function(xhr) {
+
+                if(csrfToken && csrfHeader) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                }
+
+            },
+
+            success: function(json) {
+
+                // 요청 도중 로그인 정보가 변경되었는지 확인하기
+                if(localStorage.getItem("JWT") == savedJwt) {
+
+                    const jwt = {
+                        "grantType": json.grantType,
+                        "accessToken": json.accessToken,
+                        "accessTokenExpiresIn": json.accessTokenExpiresIn
+                    };
+
+                    // 재발급된 JWT 저장하기
+                    localStorage.setItem("JWT", JSON.stringify(jwt));
+
+                }
+
+            },
+
+            error: function(request) {
+
+                if(request.status == 401) {
+
+                    if(localStorage.getItem("JWT") == savedJwt) {
+
+                        localStorage.removeItem("JWT");
+
+                        alert("로그인 인증이 만료되었습니다. 다시 로그인해주세요.");
+
+                        location.href = jwtContextPath + "login";
+
+                    }
+
+                }
+                else {
+
+                    console.log("Access Token 재발급 요청 실패");
+
+                }
+
+            },
+
+            complete: function() {
+
+                jwtReissueRequest = null;
+
+            }
+
+        });
+
+        return jwtReissueRequest;
+
+    }
+
+
+        // Access Token 만료 확인 및 자동 재발급하기
+        function func_checkJwt() {
+
+        // 로그아웃 중이면 자동 재발급하지 않기
+        if(jwtLogoutInProgress) {
+            return;
+        }
+
+        const jwt = func_getJwt();
+        
+        // JWT가 없으면 재발급 요청하지 않기
+        if(jwt == null) {
+            return;
+        }
+
+        // Access Token이 만료되었으면 재발급하기
+        if(func_isAccessTokenExpired()) {
+
+            func_reissueAccessToken();
+
+        }
+
+    }
+
+    
+     // 로그아웃하기
+        function func_Logout() {
+
+            if(jwtLogoutInProgress) {
+                return;
+            }
+
+            const bool = confirm("로그아웃 하시겠습니까?");
+
+            if(!bool) {
+                return;
+            }
+
+            jwtLogoutInProgress = true;
+
+            // 재발급 요청 중이면 완료된 후 로그아웃하기
+            if(jwtReissueRequest != null) {
+
+                jwtReissueRequest.always(function() {
+
+                    func_logoutRequest();
+
+                });
+
+            }
+            else {
+
+                func_logoutRequest();
+
+            }
+
+        }
+
+
+        // 서버에 로그아웃 요청하기
+        function func_logoutRequest() {
+
+            const csrfToken =
+                $("meta[name='_csrf']").attr("content");
+
+            const csrfHeader =
+                $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+
+                url: jwtContextPath + "auth/logout",
+                type: "post",
+                dataType: "json",
+
+                beforeSend: function(xhr) {
+
+                    if(csrfToken && csrfHeader) {
+
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+
+                    }
+
+                },
+
+                success: function(json) {
+
+                    if(json.success) {
+
+                        // localStorage에 저장된 JWT 삭제하기
+                        localStorage.removeItem("JWT");
+
+                        alert("로그아웃 되었습니다.");
+
+                        // 메인페이지로 이동하기
+                        location.href = jwtContextPath + "index";
+
+                    }
+                    else {
+
+                        jwtLogoutInProgress = false;
+
+                        alert("로그아웃에 실패하였습니다.");
+
+                    }
+
+                },
+
+                error: function(request) {
+
+                    jwtLogoutInProgress = false;
+
+                    alert("로그아웃 처리 중 오류가 발생하였습니다.");
+
+                }
+
+            });
+
+        }    
+        
+        
+        
+  
+    $(document).ready(function() {
+
+        // 페이지 접속 시 JWT 확인하기
+        func_checkJwt();
+
+        // 1분마다 Access Token 만료 여부 확인하기
+        setInterval(function() {
+
+            func_checkJwt();
+
+        }, 1000 * 60);
+
+    });
+
+/*]]>*/
+</script>
+	</div>
+
+</body>
+</html>
