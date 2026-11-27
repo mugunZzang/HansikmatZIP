@@ -1,0 +1,223 @@
+header {
+    background-color: white;
+}
+
+/* 상단 헤더 */
+.header-top {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 9%;
+    gap: 35px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 로고 */
+.logo {
+    flex-shrink: 0;
+}
+
+.logo img {
+    width: 165px;
+    height: auto;
+    display: block;
+}
+
+/* 검색창 */
+.search-box {
+    width: 600px;
+    height: 40px;
+    border: 2px solid #20344c;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    background: #eeeeee;
+}
+
+.search-box input {
+    flex: 1;
+    width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 15px;
+    font-size: 17px;
+    background: transparent;
+}
+
+.search-box button {
+    width: 45px;
+    height: 125%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: #1e3a8a;
+}
+
+
+/* 오른쪽 아이콘 */
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-shrink: 0;
+}
+
+.icon-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 27px;
+    color: #1e3a8a;
+    background-color: transparent;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* 아이콘 색상 통일 */
+
+.bell,
+.user,
+.write {
+    background-color: transparent;
+    color: #1e3a8a;
+}
+
+/* 마우스를 올렸을 때 */
+
+.icon-circle:hover {
+    color: #000080;
+}
+
+.icon-circle:hover i {
+    color: #000080;
+}
+
+
+/* 네비게이션 */
+.navbar {
+    height: 62px;
+    display: flex;
+    align-items: center;
+    padding: 0 9%;
+    background-color: white;
+}
+
+.navbar ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 55px;
+}
+
+.navbar a {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: nowrap;
+	
+	color: #1e3a8a;           
+	text-decoration: none;      
+	
+	position: relative;
+	top: 6px;
+	
+}
+
+.navbar a:hover {
+    color: #000080;
+}
+
+
+/* 마이페이지 드롭다운 전체 영역 */
+.header-icon {
+    position: relative;
+   
+}
+
+/* 드롭다운 메뉴 박스 */
+.header-icons .mypage-menu {
+    width: 165px;
+    min-width: 165px;
+    padding: 0;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    margin-left: -69px !important;
+    margin-top: 10px !important;
+}
+
+/* 프로필 영역 */
+.header-icons .mypage-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 10px;
+    text-align:center;
+}
+
+/* 프로필 아이콘 */
+.mypage-profile > i {
+    font-size: 30px;
+    color: #203681;
+    position:relative;
+    left: -30px;
+    
+}
+
+/* 프로필 닉네임 */
+.mypage-profile > span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222222;
+    position:relative;
+    left:-18px;
+}
+
+/* 메뉴 구분선 */
+.mypage-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #dddddd;
+}
+
+/* 메뉴 목록 영역 */
+.mypage-menu-list {
+    padding: 8px 0;
+}
+
+/* 개별 메뉴 */
+.mypage-menu .dropdown-item {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #222222;
+    padding: 7px 10px;
+    transition: background-color 0.2s;
+}
+
+/* 메뉴에 마우스를 올렸을 때 */
+.mypage-menu .dropdown-item:hover {
+    background-color: #eef2f8;
+    color: #203681;
+}
+
+/* 메뉴 클릭 시 */
+.mypage-menu .dropdown-item:active {
+    background-color: #e0e9f8;
+    color: #203681;
+}
+
+/* 로그아웃 영역 */
+.mypage-menu .mypage-logout {
+    padding: 10px;
+}
+
