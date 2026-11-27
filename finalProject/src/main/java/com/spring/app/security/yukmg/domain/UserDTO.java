@@ -37,6 +37,8 @@ public class UserDTO {
     private String profile_sysfilename;		// 프로필 저장 파일명
     private int recipe_count;	// 레시피 수
     private int total_scrap_count;	// 스크랩 수
+    private int follower_count;	// 팔로워 수
+    private int total_views;	// 총 조회수
     
     private List<String> authorities;  // 권한
 	

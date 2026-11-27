@@ -7,6 +7,6 @@ import com.spring.app.security.yukmg.domain.UserDTO;
 public interface UserDAO {
 
 	// 쉐프 조회
-	List<UserDTO> getChefRanking();
+	List<UserDTO> getChefRanking(String sortType);
 	
 }

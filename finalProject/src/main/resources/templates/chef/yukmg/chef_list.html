@@ -151,6 +151,15 @@
 	*/-->
 	<script th:inline="javascript">
 	 /*<![CDATA[*/
+		 $(document).on("click", ".sub-tab-btn", function() {
+		    const tab = $(this).data("tab"); // 'ranking' 또는 'new'
+		    location.href = `/hansikmatzip/chef/chef_list?tab=${tab}`;
+		});		 
+		 
+		 $(document).on("click", ".sort-btn", function() {
+		    const sortType = $(this).data("sort"); // 'follower', 'views', 'scrap'
+		    location.href = `/hansikmatzip/chef/chef_list?sortType=${sortType}`; // 실제 매핑 URL에 맞게 수정
+		});
 	 /*]]>*/	
 	</script>
 </head>
@@ -194,65 +203,88 @@
 		<!--/* 쉐프 영역 */-->
 		<div class="tab-pane fade show active p-3" id="chef-pane" role="tabpanel" aria-labelledby="chef-tab" tabindex="0">
 		
-			<div class="btn-group w-100 chef-tab-second" role="group" aria-label="쉐프 탭메뉴">
-			  <button type="button" class="btn fs-5 fw-bold active">랭킹</button>
-			  <button type="button" class="btn fs-5 fw-bold">새로운 쉐프</button>
+			<div class="btn-group w-100 chef-tab-second"id="chefSubTab" role="group" aria-label="쉐프 탭메뉴">
+			  <button type="button" class="btn fs-5 fw-bold sub-tab-btn"
+			  			data-tab="ranking"
+          				th:classappend="${tab == 'ranking' or tab == null} ? ' active'"
+          				role="tab">랭킹</button>
+			  <button type="button" class="btn fs-5 fw-bold sub-tab-btn"
+						data-tab="new"
+			          	th:classappend="${tab == 'new'} ? ' active'"
+			          	role="tab">새로운 쉐프</button>
 			</div>
 			
-			<div class="ranking-wrap p-3">
-				<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
-				  <button type="button" class="btn btn-sm btn-outline-secondary active">팔로워순</button>
-				  <button type="button" class="btn btn-sm btn-outline-secondary">조회순</button>
-				  <button type="button" class="btn btn-sm btn-outline-secondary">스크랩순</button>
-				</div>
-				
-				<ul class="pt-5 ranking-list">
-				
-					<!-- /* 쉐프 카드 */ -->
-					<li th:each="dto, status: ${userDTOList}" class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
-						<span class="ranking-num fs-3 fw-semibold">1</span>
-						<div class="profile-zone">
-							<a href="#">
-								<img alt="프사" th:src="@{/profileimage/{filename}(filename=${dto.profile_sysfilename})}" class="profile-photo">
-							</a>								
-						</div>
-						<div class="desc-zone">
-							<div class="name-zone d-flex justify-content-start flex-row align-items-center gap-4">
-								<a href="#" class="chef-name">
-									<p th:text="${dto.nickname}" class="p-0 m-0 fs-4 fw-bold"></p>
-								</a>
-								<button class="btn btn-sm btn-primary rounded-pill">팔로우 +</button>
-							</div>
-							<div class="intro-zone">
-								<p th:text="${dto.summary}" class="p-0 m-0 my-2"></p>								
-							</div>
-							<div class="stat-zone">
-								<ul class="d-flex justify-content-start gap-3">
-									<li>
-										<i class="fa-solid fa-utensils"></i>
-										<span th:text="${dto.recipe_count}"></span>
-									</li>
-									<li>
-										<i class="fa-solid fa-scissors"></i>
-										<span th:text="${dto.total_scrap_count}"></span>
-									</li>
-									<li>
-										<i class="fa-solid fa-user-plus"></i>
-										<span>13</span>
-									</li>
-									<li>
-										<i class="fa-solid fa-eye"></i>
-										<span>10999</span>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</li>
+			<div class="tab-content" id="chefSubTabContent">
+				<!-- /* 랭킹 리스트 */ -->
+				<div class="tab-pane fade ranking-wrap p-3" id="ranking-pane" role="tabpanel"
+         			th:classappend="${tab == 'ranking' or tab == null} ? ' show active'">
+					
+					<div class="btn-group float-end" role="group" aria-label="정렬 버튼">
+					    <button type="button" class="btn btn-sm btn-outline-secondary sort-btn" 
+					            data-sort="follower" th:classappend="${sortType == 'follower' or sortType == null} ? ' active'">팔로워순</button>
+					    <button type="button" class="btn btn-sm btn-outline-secondary sort-btn" 
+					            data-sort="views" th:classappend="${sortType == 'views'} ? ' active'">조회순</button>
+					    <button type="button" class="btn btn-sm btn-outline-secondary sort-btn" 
+					            data-sort="scrap" th:classappend="${sortType == 'scrap'} ? ' active'">스크랩순</button>
+					</div>
 					
 					
-				</ul>
-			</div>			
+					<ul class="pt-5 ranking-list">
+					
+						<!-- /* 쉐프 카드 */ -->
+						<li th:each="dto, status: ${userDTOList}" class="rounded-3 border p-3 d-flex justify-content-start align-items-center gap-4 mb-3">
+							<span class="ranking-num fs-3 fw-semibold" th:text="${status.count}">1</span>
+							<div class="profile-zone">
+								<a href="#">
+									<img alt="프사" th:src="@{/profileimage/{filename}(filename=${dto.profile_sysfilename})}" class="profile-photo">
+								</a>								
+							</div>
+							<div class="desc-zone">
+								<div class="name-zone d-flex justify-content-start flex-row align-items-center gap-4">
+									<a href="#" class="chef-name">
+										<p th:text="${dto.nickname}" class="p-0 m-0 fs-4 fw-bold"></p>
+									</a>
+									<button class="btn btn-sm btn-primary rounded-pill">팔로우 +</button>
+								</div>
+								<div class="intro-zone">
+									<p th:text="${dto.summary}" class="p-0 m-0 my-2"></p>								
+								</div>
+								<div class="stat-zone">
+									<ul class="d-flex justify-content-start gap-3">
+										<li>
+											<i class="fa-solid fa-utensils"></i>
+											<span th:text="${dto.recipe_count}"></span>
+										</li>
+										<li>
+											<i class="fa-solid fa-scissors"></i>
+											<span th:text="${dto.total_scrap_count}"></span>
+										</li>
+										<li>
+											<i class="fa-solid fa-user-plus"></i>
+											<span th:text="${dto.follower_count}"></span>
+										</li>
+										<li>
+											<i class="fa-solid fa-eye"></i>
+											<span th:text="${dto.total_views}"></span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</li>
+						
+						
+					</ul>
+				</div>			
+				<!-- /* 랭킹 리스트 끝 */ -->
 				
+				<!-- /* 새로운 쉐프 리스트 */ -->
+				<div class="tab-pane fade new-chef-wrap p-3" id="new-chef-pane" role="tabpanel"
+			         th:classappend="${tab == 'new'} ? ' show active'">
+			        새로운 쉐프 목록이 들어갈 영역입니다.
+			    </div>				
+				<!-- /* 새로운 쉐프 리스트 끝*/ -->
+				
+			</div>	
 		</div>
 	  
 		<!--/* 팔로윙 쉐프 영역 */-->

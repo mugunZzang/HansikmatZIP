@@ -20,8 +20,8 @@ public class UserService_imple implements UserService {
 	
 	// 쉐프 조회
 	@Override
-	public List<UserDTO> getChefRanking() {
-		List<UserDTO> userDTOList = userdao.getChefRanking();		
+	public List<UserDTO> getChefRanking(String sortType) {
+		List<UserDTO> userDTOList = userdao.getChefRanking(sortType);		
 		return userDTOList;
 	}
 

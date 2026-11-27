@@ -25,9 +25,9 @@ public class UserDAO_imple implements UserDAO {
 	
 	// 쉐프 랭킹
 	@Override
-	public List<UserDTO> getChefRanking() {
+	public List<UserDTO> getChefRanking(String sortType) {
 				
-		List<UserDTO> userDTOList = sqlsession.selectList("chef.getChefRanking");
+		List<UserDTO> userDTOList = sqlsession.selectList("chef.getChefRanking", sortType);
 	      
 		List<UserDTO> list = null;
 	      

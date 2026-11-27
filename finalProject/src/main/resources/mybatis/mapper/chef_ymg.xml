@@ -6,6 +6,7 @@
 <mapper namespace="chef">
 
 	<select id="getChefRanking" resultType="UserDTO">
+	
         SELECT U.userseq
 		     , U.userid
 		     , U.name
@@ -24,11 +25,28 @@
 		            ON SR.fk_folderseq = SF.folderseq
 		         WHERE R.fk_userseq = U.userseq
 		           AND SF.fk_userseq != U.userseq) AS total_scrap_count
+		     , (SELECT COUNT(*)
+		          FROM tbl_follow F
+		         WHERE F.following_userseq = U.userseq) AS follower_count
+		     , (SELECT NVL(SUM(R.r_views), 0)
+		          FROM tbl_recipe R
+		         WHERE R.fk_userseq = U.userseq) AS total_views
 		  FROM tbl_user U
 		  JOIN tbl_authorities A
 		    ON U.userseq = A.fk_userseq
 		 WHERE A.authority = 'ROLE_CHEF'
-		 ORDER BY total_scrap_count DESC, recipe_count DESC, U.userseq ASC
+		 <choose>
+		     <when test="sortType == 'views'">
+		         ORDER BY total_views DESC, follower_count DESC, U.userseq ASC
+		     </when>
+		     <when test="sortType == 'scrap'">
+		         ORDER BY total_scrap_count DESC, follower_count DESC, U.userseq ASC
+		     </when>
+		     <otherwise>
+		         ORDER BY follower_count DESC, total_scrap_count DESC, recipe_count DESC, U.userseq ASC
+		     </otherwise>
+		 </choose>
+		 
     </select>
 
 </mapper>

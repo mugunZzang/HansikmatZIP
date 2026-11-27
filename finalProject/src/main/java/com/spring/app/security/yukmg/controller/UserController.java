@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.app.security.yukmg.domain.UserDTO;
 import com.spring.app.security.yukmg.service.UserService;
@@ -30,11 +31,20 @@ public class UserController {
 	    
     // 누구나 접근 가능한 URL. 쉐프 - 랭킹
     @GetMapping(value="chef/chef_list")
-    public String chefRanking(Model model){
+    public String chefRanking(@RequestParam(name="tab", defaultValue="ranking") String tab,
+    							@RequestParam(name="sortType", defaultValue="follower") String sortType,
+    							Model model){
        
-       List<UserDTO> userDTOList = userservice.getChefRanking();
-       System.out.println("👉 넘어온 데이터 개수: " + (userDTOList == null ? "null" : userDTOList.size()));
+    	// 1. 랭킹 리스트 조회    	
+       List<UserDTO> userDTOList = userservice.getChefRanking(sortType);
+       
+       // 2. 새로운 쉐프 리스트 조회
+       // List<UserDTO> newChefList = userservice.getNewChefList();
+       
        model.addAttribute("userDTOList", userDTOList);
+       // model.addAttribute("newChefList", newChefList);
+       model.addAttribute("tab", tab);           // 현재 탭 상태 ('ranking' 또는 'new')
+       model.addAttribute("sortType", sortType); // 버튼 active 유지를 위해 뷰로 전달
        
        return "chef/yukmg/chef_list";
     }
