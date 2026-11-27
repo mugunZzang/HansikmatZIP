@@ -31,5 +31,11 @@
 		) 
 	</insert>
 	
+	<select id="findAllUsedQnaImageFilenames" resultType="string">
+		SELECT qna_sysfilename
+	    FROM tbl_qna_images
+	    WHERE qna_sysfilename IS NOT NULL
+	</select>
+	
 </mapper>
 

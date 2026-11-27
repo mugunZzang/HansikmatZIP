@@ -1,5 +1,7 @@
 package com.spring.app.user.qna.jungyj.model;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.qna.jungyj.domain.QnaDTO;
@@ -11,5 +13,7 @@ public interface UserQnaDAO {
 	void insertQna(QnaDTO qnaDto);
 
 	void insertQnaImage(QnaImagesDTO imgDto);
+	
+	List<String> findAllUsedQnaImageFilenames();
 
 }
